@@ -1,0 +1,41 @@
+﻿@page "/"
+@inject HttpClient Http
+@inject HealthSystem.Data.StravaTokenService TokenService
+
+<PageTitle>Home</PageTitle>
+
+<a href="/api/strava/authorize" target="_blank">auth</a>
+
+@if (activities != null)
+{
+    <ul>
+        @foreach (var activity in activities)
+        {
+            <li>@activity.name @(activity.distance / 1000.0)km</li>
+            <li>Heart rate: @activity.average_heartrate</li>
+        }
+    </ul>
+}
+
+@code{
+    private List<Activity> activities;
+
+    public class Activity
+    {
+        public string name { get; set; }
+        public float distance { get; set; }
+        public float average_heartrate { get; set; }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        Http.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenService.AccessToken);
+
+        var response = await Http.GetAsync("https://www.strava.com/api/v3/athlete/activities");
+        if (response.IsSuccessStatusCode)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            activities = System.Text.Json.JsonSerializer.Deserialize<List<Activity>>(json);
+        }
+    }
+}

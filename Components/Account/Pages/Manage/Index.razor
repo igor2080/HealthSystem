@@ -1,0 +1,142 @@
+﻿@page "/Account/Manage"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+@using HealthSystem.Data
+@using System.Security.Claims
+
+@inject UserManager<ApplicationUser> UserManager
+@* @inject SignInManager<ApplicationUser> SignInManager
+@inject IdentityUserAccessor UserAccessor *@
+@inject IdentityRedirectManager RedirectManager
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@rendermode InteractiveServer
+
+<PageTitle>Profile</PageTitle>
+
+<h3>Profile</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        @if (!string.IsNullOrWhiteSpace(status))
+        {
+            <div class="alert alert-success" role="alert">
+                @status
+            </div>
+        }
+        
+        <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post" @key="Input">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert" />
+            <div class="form-floating mb-3">
+                <input type="text" value="@Input.Username" class="form-control" placeholder="Please choose your username." disabled />
+                <label for="username" class="form-label">Username</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="text" value="@Input.Gender" class="form-control" disabled />
+                <label for="gender" class="form-label">Gender</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <InputDate @bind-Value="Input.DateOfBirth" class="form-control" disabled />
+                <label for="date-of-birth" class="form-label">Date of birth</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <InputText Value="@Input.Name" ValueChanged="@(value => Input.Name = value)" ValueExpression="@(() => Input.Name)" class="form-control" aria-required="true" placeholder="John" />
+                <label for="name" class="form-label">Name</label>
+                <ValidationMessage For="() => Input.Name" class="text-danger" />
+            </div>
+
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.Surname" class="form-control" aria-required="true" placeholder="John" />
+                <label for="surname" class="form-label">Last name</label>
+                <ValidationMessage For="() => Input.Surname" class="text-danger" />
+            </div>
+
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private ApplicationUser user = default!;
+    private string? username;
+    private string status = "";
+    // [CascadingParameter]
+    // private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var userId = authState.User?.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
+        user = await UserManager.FindByIdAsync(userId);
+        // user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+        // username = await UserManager.GetUserNameAsync(user);
+
+        Input.Username = user.UserName;
+        Input.Name = user.Name;
+        Input.Surname = user.Surname;
+        Input.Height = user.Height;
+        Input.DateOfBirth = user.Date_of_birth;
+        Input.Gender = user.Gender;
+    }
+
+    private async Task OnValidSubmitAsync(EditContext editContext)
+    {
+        if (Input.Name != user.Name)
+            user.Name = Input.Name;
+        if (Input.Surname != user.Surname)
+            user.Surname = Input.Surname;
+        if (Input.Height != user.Height)
+            user.Height = Input.Height;
+
+        await UserManager.UpdateAsync(user);
+        status = "Your profile has been updated";
+        StateHasChanged();
+        // if (Input.PhoneNumber != phoneNumber)
+        // {
+        //     var setPhoneResult = await UserManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
+        //     if (!setPhoneResult.Succeeded)
+        //     {
+        //         RedirectManager.RedirectToCurrentPageWithStatus("Error: Failed to set phone number.", HttpContext);
+        //     }
+        // }
+        //await SignInManager.RefreshSignInAsync(user);
+        //RedirectManager.RedirectToCurrentPage();
+        //RedirectManager.RedirectToCurrentPageWithStatus("Your profile has been updated", HttpContext);
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [Display(Name = "User name")]
+        public string Username { get; set; }
+
+        [Required]
+        [Display(Name = "Name")]
+        public string Name { get; set; }
+
+        [Required]
+        [Display(Name = "Last name")]
+        public string Surname { get; set; }
+
+        [Required]
+        [Display(Name = "Gender")]
+        public string Gender { get; set; }
+
+        [Required]
+        [Display(Name = "Date of birth")]
+        [DataType(DataType.Date)]
+        public DateTime DateOfBirth { get; set; }
+
+        [Required]
+        [Display(Name = "Height(cm)")]
+        [Range(100, 250, ErrorMessage = "Height must be between {1}cm and {2}cm")]
+        public float Height { get; set; }
+    }
+}
