@@ -1,0 +1,140 @@
+﻿@page "/recommendations/add"
+@attribute [Authorize(Roles = "Admin")]
+@using Microsoft.EntityFrameworkCore
+@using HealthSystem.Data
+@inject IDbContextFactory<HealthSystem.Data.ApplicationDbContext> DbFactory
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Recommendation</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Recommendation" OnValidSubmit="AddRecommendation" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert" />
+            <div class="mb-3">
+                <label for="description" class="form-label">Description:</label>
+                <InputText id="description" @bind-Value="Recommendation.Description" class="form-control" />
+                <ValidationMessage For="() => Recommendation.Description" class="text-danger" />
+            </div>
+            <div class="mb-3">
+                <label for="study_link" class="form-label">Study Link:</label>
+                <InputText id="study_link" @bind-Value="Recommendation.Study_Link" class="form-control" />
+                <ValidationMessage For="() => Recommendation.Study_Link" class="text-danger" />
+            </div>
+            <hr />
+            <span>Add parameters</span>
+            <input class="btn btn-info" @onclick="AddNewParameter" type="button" value="+" />
+            <div class="parameter-group">
+                @foreach (var parameter in TriggerParameters)
+                {
+                    <div class="trigger-group">
+                        <div>
+                            <div class="form-floating">
+                                <InputSelect class="form-control" @bind-Value="parameter.Type">
+                                    <option value="" selected disabled>
+                                        Select parameter type ...
+                                    </option>
+                                    @foreach (var informationType in InformationTypes)
+                                    {
+                                        <option checked="@(parameter.Type == informationType.Description)" value="@informationType.Description">
+                                            @informationType.Description
+                                        </option>
+                                    }
+                                </InputSelect>
+                                <label for="gender">Parameter type</label>
+                                <ValidationMessage For="() => parameter.Type" class="text-danger" />
+                            </div>
+
+                            <div class="form-floating">
+                                <InputNumber class="form-control" @bind-Value="parameter.Lower_Boundary" />
+                                <label class="form-label" for="parameter.Lower_Boundary">Lower boundary</label>
+                                <ValidationMessage For="() => parameter.Lower_Boundary" class="text-danger" />
+                            </div>
+
+                            <div class="form-floating">
+                                <InputNumber class="form-control" @bind-Value="parameter.Upper_Boundary" />
+                                <label class="form-label" for="parameter.Lower_Boundary">Upper boundary</label>
+                                <ValidationMessage For="() => parameter.Upper_Boundary" class="text-danger" />
+                            </div>
+
+                        </div>
+
+                        <div>
+                            <input class="btn btn-danger" @onclick="() => RemoveParameter(parameter)" type="button" value="-" />
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/recommendations">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    Recommendation Recommendation { get; set; } = new();
+
+    List<TriggerParameter> TriggerParameters { get; set; } = new();
+
+    List<InformationType> InformationTypes { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        using var context = DbFactory.CreateDbContext();
+
+        InformationTypes = context.InformationType.ToList();
+
+        StateHasChanged();
+    }
+
+    private async Task AddRecommendation()
+    {
+        using var context = DbFactory.CreateDbContext();
+        //add the recommendation itself
+        if (context.Recommendations.Count() < 1)
+            Recommendation.Id = 1;
+        else
+            Recommendation.Id = context.Recommendations.OrderByDescending(x => x.Id).First().Id + 1;
+        context.Recommendations.Add(Recommendation);
+        await context.SaveChangesAsync();
+
+        //add the trigger parameters associated with the recommendation, if any
+        foreach (var triggerParameter in TriggerParameters)
+        {
+            triggerParameter.RecommendationId = Recommendation.Id;
+            context.TriggerParameters.Add(triggerParameter);
+        }
+
+        await context.SaveChangesAsync();
+
+        NavigationManager.ToAbsoluteUri("/recommendations");
+    }
+
+    private void AddNewParameter()
+    {
+        TriggerParameters.Add(new TriggerParameter()
+            {
+                Recommendation = Recommendation,
+
+            });
+        StateHasChanged();
+    }
+
+    private void RemoveParameter(TriggerParameter parameter)
+    {
+        TriggerParameters.Remove(parameter);
+    }
+}

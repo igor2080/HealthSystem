@@ -1,0 +1,172 @@
+﻿@page "/recommendations/edit/{id:int}"
+@attribute [Authorize(Roles = "Admin")]
+@using Microsoft.EntityFrameworkCore
+@using HealthSystem.Data
+@inject IDbContextFactory<HealthSystem.Data.ApplicationDbContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>Recommendation</h2>
+<hr />
+@if (Recommendation is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Recommendation" OnValidSubmit="UpdateRecommendation" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert" />
+                <input type="hidden" name="Recommendation.Id" value="@Recommendation.Id" />
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description:</label>
+                    <InputText id="description" @bind-Value="Recommendation.Description" class="form-control" />
+                    <ValidationMessage For="() => Recommendation.Description" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="study_link" class="form-label">Study_Link:</label>
+                    <InputText id="study_link" @bind-Value="Recommendation.Study_Link" class="form-control" />
+                    <ValidationMessage For="() => Recommendation.Study_Link" class="text-danger" />
+                </div>
+                <hr />
+                <span>Add parameters</span>
+                <input class="btn btn-info" @onclick="AddNewParameter" type="button" value="+" />
+                <div class="parameter-group">
+                    @foreach (var parameter in TriggerParameters)
+                    {
+                        <div class="trigger-group">
+                            <div>
+                                <div class="form-floating">
+                                    <InputSelect class="form-control" @bind-Value="parameter.Type">
+                                        <option value="" selected disabled>
+                                            Select parameter type ...
+                                        </option>
+                                        @foreach (var informationType in InformationTypes)
+                                        {
+                                            <option checked="@(parameter.Type == informationType.Description)" value="@informationType.Description">
+                                                @informationType.Description
+                                            </option>
+                                        }
+                                    </InputSelect>
+                                    <label for="gender">Parameter type</label>
+                                    <ValidationMessage For="() => parameter.Type" class="text-danger" />
+                                </div>
+
+                                <div class="form-floating">
+                                    <InputNumber class="form-control" @bind-Value="parameter.Lower_Boundary" />
+                                    <label class="form-label" for="parameter.Lower_Boundary">Lower boundary</label>
+                                    <ValidationMessage For="() => parameter.Lower_Boundary" class="text-danger" />
+                                </div>
+
+                                <div class="form-floating">
+                                    <InputNumber class="form-control" @bind-Value="parameter.Upper_Boundary" />
+                                    <label class="form-label" for="parameter.Lower_Boundary">Upper boundary</label>
+                                    <ValidationMessage For="() => parameter.Upper_Boundary" class="text-danger" />
+                                </div>
+
+                            </div>
+
+                            <div>
+                                <input class="btn btn-danger" @onclick="() => RemoveParameter(parameter)" type="button" value="-" />
+                            </div>
+                        </div>
+                    }
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/recommendations">Back to List</a>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private Recommendation? Recommendation { get; set; }
+
+    List<TriggerParameter> TriggerParameters { get; set; } = new();
+
+    List<InformationType> InformationTypes { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        Recommendation ??= await context.Recommendations.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (Recommendation is null)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            InformationTypes = context.InformationType.ToList();
+            TriggerParameters = context.TriggerParameters.Where(x => x.RecommendationId == Recommendation.Id).ToList();
+        }
+    }
+    private async Task UpdateRecommendation()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(Recommendation!).State = EntityState.Modified;
+        foreach (var triggerParameter in TriggerParameters)
+        {
+            if (context.TriggerParameters.Any(x => x.RecommendationId == Recommendation!.Id
+                && x.Lower_Boundary == triggerParameter.Lower_Boundary
+                && x.Upper_Boundary == triggerParameter.Upper_Boundary
+            && x.Type == triggerParameter.Type))
+            {
+                continue;
+            }
+            else
+                context.TriggerParameters.Add(triggerParameter);
+        }
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!RecommendationExists(Recommendation!.Id))
+            {
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/");
+    }
+
+    private bool RecommendationExists(int id)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.Recommendations.Any(e => e.Id == id);
+    }
+
+    private void AddNewParameter()
+    {
+        TriggerParameters.Add(new TriggerParameter()
+            {
+                Recommendation = Recommendation,
+
+            });
+        StateHasChanged();
+    }
+
+    private void RemoveParameter(TriggerParameter parameter)
+    {
+        TriggerParameters.Remove(parameter);
+    }
+
+}

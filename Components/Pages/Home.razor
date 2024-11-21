@@ -11,8 +11,7 @@
     <ul>
         @foreach (var activity in activities)
         {
-            <li>@activity.name @(activity.distance / 1000.0)km</li>
-            <li>Heart rate: @activity.average_heartrate</li>
+            <li>@activity.name @(activity.distance / 1000.0)km, Heart rate: @activity.average_heartrate</li>
         }
     </ul>
 }
@@ -25,6 +24,8 @@
         public string name { get; set; }
         public float distance { get; set; }
         public float average_heartrate { get; set; }
+        public DateTime start_date_local { get; set; }
+        public int moving_time { get; set; }
     }
     protected override async Task OnInitializedAsync()
     {

@@ -1,0 +1,11 @@
+﻿.parameter-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.trigger-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin:0.5em 0;
+}

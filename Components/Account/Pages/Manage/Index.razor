@@ -55,6 +55,12 @@
                 <ValidationMessage For="() => Input.Surname" class="text-danger" />
             </div>
 
+            <div class="form-floating mb-3">
+                <InputNumber @bind-Value="Input.Height" class="form-control" aria-required="true" />
+                <label for="height" class="form-label">Height</label>
+                <ValidationMessage For="() => Input.Height" class="text-danger" />
+            </div>
+
             <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
         </EditForm>
     </div>

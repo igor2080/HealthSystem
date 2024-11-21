@@ -1,0 +1,74 @@
+﻿@page "/recommendations"
+@using HealthSystem.Data
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@attribute [Authorize]
+
+@if (userRoles.Contains("Admin"))
+{
+    <NavLink class="nav-link" href="recommendations/add">
+        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Add recommendation
+    </NavLink>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th> </th>
+            <th> </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Recommendations)
+        {
+            <tr>
+                <td>@item.Description</td>
+                <td>@item.Study_Link</td>
+                @if (userRoles.Contains("Admin"))
+                {
+                    
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<div>
+    all recommendations here if admin(+edit button), only filtered if regular user
+</div>
+
+@code {
+    ClaimsPrincipal user;
+    List<string> userRoles = new();
+    List<Recommendation> Recommendations = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        user = authState.User;
+        userRoles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(x => x.Value).ToList();
+        var userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        using var context = DbFactory.CreateDbContext();
+        Recommendations.Clear();
+        if (userRoles.Contains("Admin"))
+        {
+            Recommendations = context.Recommendations.ToList();
+        }
+        else
+        {
+            var information = context.MedicalInformation.Include("InformationType").Where(x => x.UserId == userId).ToList();
+            var inforomationTypes = information.Select(x => x.InformationTypeId).Distinct().ToList();
+            var triggers = context.TriggerParameters.Include("Recommendation").Where(x => !inforomationTypes.Any(y => x.RecommendationId == y)).ToList();
+            foreach (var trigger in triggers)
+            {
+                var info = information.FirstOrDefault(x => x.InformationType.Description == trigger.Type && x.Value >= trigger.Lower_Boundary && x.Value < trigger.Upper_Boundary);
+                if (info is not null)
+                    Recommendations.Add(trigger.Recommendation);
+            }
+        }
+        StateHasChanged();
+    }
+}

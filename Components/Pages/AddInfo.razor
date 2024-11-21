@@ -1,0 +1,95 @@
+﻿@page "/add-info"
+@using HealthSystem.Data
+@using System.ComponentModel.DataAnnotations
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+@if (selectedType < 1)
+{
+    <div class="add-buttons">
+        @foreach (var infoType in informationTypes)
+        {
+            <div class="btn btn-outline-dark" @onclick="()=>ChangeSelectedType(infoType.Id)">@infoType.Description</div>
+        }
+    </div>
+}
+else
+{
+    <button type="button" class="w-100 btn btn-lg btn-primary" @onclick="()=>{selectedType = 0; StateHasChanged();}">Back</button>
+    <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post" @key="Input">
+
+        <div>
+            <div class="form-floating mb-3">
+                <InputNumber @bind-Value="Input.InfoValue" class="form-control" aria-required="true" />
+                <label for="info-value" class="form-label">Value</label>
+                <ValidationMessage For="() => Input.InfoValue" class="text-danger" />
+            </div>
+
+            <div class="form-floating mb-3">
+                <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="Input.InfoDate" class="form-control" aria-required="true" />
+                <label for="date-of-birth" class="form-label">Information Date</label>
+                <ValidationMessage For="() => Input.InfoDate" class="text-danger" />
+            </div>
+        </div>
+        <button type="submit" class="w-100 btn btn-lg btn-primary">Submit</button>
+    </EditForm>
+}
+@code {
+    int selectedType = 0;
+    private InputModel Input { get; set; } = new();
+    private string status = "";
+    InformationType[] informationTypes;
+    string userId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var Context = DbFactory.CreateDbContext();
+        informationTypes = Context.InformationType.ToArray();
+        var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
+    }
+
+    public void ChangeSelectedType(int type)
+    {
+        selectedType = type;
+        StateHasChanged();
+    }
+
+    private async Task OnValidSubmitAsync(EditContext editContext)
+    {
+        using var Context = DbFactory.CreateDbContext();
+        
+        MedicalInformation information = new()
+            {
+                Value = Input.InfoValue,
+                Entry_Date = Input.InfoDate,
+                InformationType = Context.InformationType.Single(x => x.Id == selectedType),
+                UserId = userId
+            };
+        if (Context.MedicalInformation.Count() < 1)
+            information.Id = 1;
+        else
+            information.Id = Context.MedicalInformation.OrderByDescending(x => x.Id).First().Id + 1;
+        Context.MedicalInformation.Add(information);
+        await Context.SaveChangesAsync();
+        status = "Your profile has been updated";
+        selectedType = 0;
+
+
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [Display(Name = "Value")]
+        public float InfoValue { get; set; }
+
+        [Required]
+        [Display(Name = "Information date")]
+        [DataType(DataType.DateTime)]
+        public DateTime InfoDate { get; set; } = DateTime.Now;
+    }
+}
