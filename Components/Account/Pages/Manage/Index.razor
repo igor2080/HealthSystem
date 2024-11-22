@@ -24,7 +24,7 @@
                 @status
             </div>
         }
-        
+
         <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post" @key="Input">
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert" />
@@ -61,6 +61,12 @@
                 <ValidationMessage For="() => Input.Height" class="text-danger" />
             </div>
 
+            <div class="form-floating mb-3">
+                <InputText type="password" @bind-Value="Input.Intervals_API" class="form-control" />
+                <label for="Intervals_API" class="form-label">Intervals API key</label>
+                <ValidationMessage For="() => Input.Intervals_API" class="text-danger" />
+            </div>
+
             <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
         </EditForm>
     </div>
@@ -70,8 +76,6 @@
     private ApplicationUser user = default!;
     private string? username;
     private string status = "";
-    // [CascadingParameter]
-    // private HttpContext HttpContext { get; set; } = default!;
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
@@ -81,8 +85,6 @@
         var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         var userId = authState.User?.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
         user = await UserManager.FindByIdAsync(userId);
-        // user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-        // username = await UserManager.GetUserNameAsync(user);
 
         Input.Username = user.UserName;
         Input.Name = user.Name;
@@ -90,6 +92,7 @@
         Input.Height = user.Height;
         Input.DateOfBirth = user.Date_of_birth;
         Input.Gender = user.Gender;
+        Input.Intervals_API = user.Intervals_API;
     }
 
     private async Task OnValidSubmitAsync(EditContext editContext)
@@ -100,21 +103,12 @@
             user.Surname = Input.Surname;
         if (Input.Height != user.Height)
             user.Height = Input.Height;
+        if (Input.Intervals_API! != user.Intervals_API)
+            user.Intervals_API = Input.Intervals_API;
 
         await UserManager.UpdateAsync(user);
         status = "Your profile has been updated";
         StateHasChanged();
-        // if (Input.PhoneNumber != phoneNumber)
-        // {
-        //     var setPhoneResult = await UserManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-        //     if (!setPhoneResult.Succeeded)
-        //     {
-        //         RedirectManager.RedirectToCurrentPageWithStatus("Error: Failed to set phone number.", HttpContext);
-        //     }
-        // }
-        //await SignInManager.RefreshSignInAsync(user);
-        //RedirectManager.RedirectToCurrentPage();
-        //RedirectManager.RedirectToCurrentPageWithStatus("Your profile has been updated", HttpContext);
     }
 
     private sealed class InputModel
@@ -144,5 +138,8 @@
         [Display(Name = "Height(cm)")]
         [Range(100, 250, ErrorMessage = "Height must be between {1}cm and {2}cm")]
         public float Height { get; set; }
+
+        [Display(Name ="Intervals API key")]
+        public string Intervals_API{ get; set; }
     }
 }

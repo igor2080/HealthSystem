@@ -1,17 +1,23 @@
 ﻿@page "/"
+@using CsvHelper
+@using CsvHelper.Configuration
+@using HealthSystem.Data
+@using System.Globalization
+@using System.Text
 @inject HttpClient Http
-@inject HealthSystem.Data.StravaTokenService TokenService
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
 
 <PageTitle>Home</PageTitle>
 
-<a href="/api/strava/authorize" target="_blank">auth</a>
+@* <a href="/api/strava/authorize" target="_blank">auth</a> *@
 
 @if (activities != null)
 {
     <ul>
         @foreach (var activity in activities)
         {
-            <li>@activity.name @(activity.distance / 1000.0)km, Heart rate: @activity.average_heartrate</li>
+            <li>@activity.icu_resting_hr</li>
         }
     </ul>
 }
@@ -19,24 +25,26 @@
 @code{
     private List<Activity> activities;
 
-    public class Activity
-    {
-        public string name { get; set; }
-        public float distance { get; set; }
-        public float average_heartrate { get; set; }
-        public DateTime start_date_local { get; set; }
-        public int moving_time { get; set; }
-    }
+
     protected override async Task OnInitializedAsync()
     {
-        Http.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", TokenService.AccessToken);
+        //sample use
+        var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        var userId = authState.User?.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
+        var user = await UserManager.FindByIdAsync(userId);
+        Http.DefaultRequestHeaders.Add("authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"API_KEY:{user.Intervals_API}"))}");
 
-        var response = await Http.GetAsync("https://www.strava.com/api/v3/athlete/activities");
+        var response = await Http.GetAsync(@"https://intervals.icu/api/v1/athlete/0/activities.csv");
         if (response.IsSuccessStatusCode)
         {
-            var json = await response.Content.ReadAsStringAsync();
-            activities = System.Text.Json.JsonSerializer.Deserialize<List<Activity>>(json);
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    PrepareHeaderForMatch = args => args.Header.ToLower(),
+                };
+            using var reader = new StreamReader(response.Content.ReadAsStream());
+            using var csv = new CsvReader(reader, config);
+            activities  = csv.GetRecords<Activity>().ToList();
+            StateHasChanged();
         }
     }
 }
