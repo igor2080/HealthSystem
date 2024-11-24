@@ -1,5 +1,6 @@
 ﻿@page "/statistics"
 @using HealthSystem.Data
+@using static HealthSystem.Data.Utils
 @inject IDbContextFactory<ApplicationDbContext> DbFactory
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
@@ -13,16 +14,18 @@
     }
 </select>
 
-@if (selectedType is not null)
-{
-    <Line Data="data" Config="config" />
-}
+
+<Line Data="data" Config="config" @ref="lineGraph" />
+
 
 @code {
-    InformationType[] informationTypes;
+    List<InformationType> informationTypes;
     InformationType selectedType;
     string userId;
+    ApplicationUser user;
     object[] data;
+    IChartComponent lineGraph;
+
     LineConfig config = new LineConfig()
         {
             Padding = "auto",
@@ -34,15 +37,58 @@
     protected override async Task OnInitializedAsync()
     {
         using var Context = DbFactory.CreateDbContext();
-        informationTypes = Context.InformationType.ToArray();
+        informationTypes = Context.InformationType.ToList();
+        informationTypes.Add(new InformationType() { Id = -1, Description = "Metabolic Health" });
         var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
+        user = await UserManager.FindByIdAsync(userId);
     }
     private void OnSelectionChanged(ChangeEventArgs e)
     {
         selectedType = informationTypes.Single(x => x.Id == Convert.ToInt32(e.Value));
         using var Context = DbFactory.CreateDbContext();
         //data is averaged per month, then displayed as the month and the average value of that month
-        data = Context.MedicalInformation.Where(x=>x.UserId==userId).GroupBy(x => new { x.Entry_Date.Year, x.Entry_Date.Month }).Select(x => new { date = $"{x.Key.Month}-{x.Key.Year}", value = x.Average(y => y.Value) }).ToArray();
+        if (selectedType.Id != -1)
+        {
+            data = GetAveragePerMonth(Context.MedicalInformation.Where(x => x.UserId == userId && x.InformationTypeId == selectedType.Id));
+        }
+        else
+        {
+            var allData = Context.MedicalInformation.Where(x => x.UserId == userId).GroupBy(x => new { x.Entry_Date.Year, x.Entry_Date.Month }).ToList();
+            float weight = -1, waistSize = -1, insulin = -1, CGM = -1, triglyceride = -1, bloodPressureUpper = -1, bloodPressureLower = -1, LDLCholesterol = -1, HDLCholesterol = -1, restingHeartRate = -1;
+            List<object> list = new List<object>();
+
+            foreach (var monthlyData in allData)
+            {
+                weight = -1; waistSize = -1; insulin = -1; CGM = -1; triglyceride = -1; bloodPressureUpper = -1; bloodPressureLower = -1; LDLCholesterol = -1; HDLCholesterol = -1; restingHeartRate = -1;
+                if (monthlyData.Any(x => x.InformationTypeId == 1))//Waist Size
+                    waistSize = monthlyData.Where(x => x.InformationTypeId == 1).Average(x => x.Value);
+                if (monthlyData.Any(x => x.InformationTypeId == 2))//Blood Pressure
+                {
+                    bloodPressureUpper = monthlyData.Where(x => x.InformationTypeId == 2).Average(x => x.Value);
+                    bloodPressureLower = monthlyData.Where(x => x.InformationTypeId == 2).Average(x => x.SecondaryValue);
+                }
+                if (monthlyData.Any(x => x.InformationTypeId == 3))//Weight
+                    weight = monthlyData.Where(x => x.InformationTypeId == 3).Average(x => x.Value);
+                if (monthlyData.Any(x => x.InformationTypeId == 4))//Resting Heart Rate
+                    restingHeartRate = monthlyData.Where(x => x.InformationTypeId == 4).Average(x => x.Value);
+                if (monthlyData.Any(x => x.InformationTypeId == 5))//CGM
+                    CGM = monthlyData.Where(x => x.InformationTypeId == 5).Average(x => x.Value);
+                if (monthlyData.Any(x => x.InformationTypeId == 6))//Insulin
+                    insulin = monthlyData.Where(x => x.InformationTypeId == 6).Average(x => x.Value);
+                if (monthlyData.Any(x => x.InformationTypeId == 7))//Triglyceride
+                    triglyceride = monthlyData.Where(x => x.InformationTypeId == 7).Average(x => x.Value);
+                if (monthlyData.Any(x => x.InformationTypeId == 8))//HDL Cholesterol
+                    HDLCholesterol = monthlyData.Where(x => x.InformationTypeId == 8).Average(x => x.Value);
+                if (monthlyData.Any(x => x.InformationTypeId == 9))//LDL Cholesterol
+                    LDLCholesterol = monthlyData.Where(x => x.InformationTypeId == 9).Average(x => x.Value);
+                list.Add(new { date = $"{monthlyData.Key.Month}-{monthlyData.Key.Year}", value = GetMetabolicScore(user, weight, waistSize, insulin, CGM, triglyceride, bloodPressureUpper, bloodPressureLower, LDLCholesterol, HDLCholesterol, restingHeartRate) });
+            }
+
+            data = list.ToArray();
+        }
+        lineGraph.ChangeData(data);
+        StateHasChanged();
+
     }
 }
