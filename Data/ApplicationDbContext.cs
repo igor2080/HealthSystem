@@ -19,7 +19,7 @@ namespace HealthSystem.Data
                 new InformationType { Id = 1, Description = "Waist Size" },
                 new InformationType { Id = 2, Description = "Blood Pressure" },
                 new InformationType { Id = 3, Description = "Weight" },
-                new InformationType { Id = 4, Description = "Heart Rate" },
+                new InformationType { Id = 4, Description = "Resting Heart Rate" },
                 new InformationType { Id = 5, Description = "CGM" },
                 new InformationType { Id = 6, Description = "Insulin" },
                 new InformationType { Id = 7, Description = "Triglyceride" },

@@ -26,7 +26,7 @@
     LineConfig config = new LineConfig()
         {
             Padding = "auto",
-            XField = "month",
+            XField = "date",
             YField = "value",
             Smooth = true,
         };
@@ -42,6 +42,7 @@
     {
         selectedType = informationTypes.Single(x => x.Id == Convert.ToInt32(e.Value));
         using var Context = DbFactory.CreateDbContext();
-        data = Context.MedicalInformation.Where(x => x.UserId == userId && x.InformationTypeId == selectedType.Id).OrderBy(x=>x.Entry_Date).Select(x=>new {month = x.Entry_Date.ToString("MM-yyyy"), value=x.Value }).ToArray();
+        //data is averaged per month, then displayed as the month and the average value of that month
+        data = Context.MedicalInformation.Where(x=>x.UserId==userId).GroupBy(x => new { x.Entry_Date.Year, x.Entry_Date.Month }).Select(x => new { date = $"{x.Key.Month}-{x.Key.Year}", value = x.Average(y => y.Value) }).ToArray();
     }
 }

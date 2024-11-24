@@ -22,11 +22,28 @@ else
     <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post" @key="Input">
 
         <div>
-            <div class="form-floating mb-3">
-                <InputNumber @bind-Value="Input.InfoValue" class="form-control" aria-required="true" />
-                <label for="info-value" class="form-label">Value</label>
-                <ValidationMessage For="() => Input.InfoValue" class="text-danger" />
-            </div>
+            @if (selectedType == bloodPressureInfoType)
+            {
+                <div class="form-floating mb-3">
+                    <InputNumber @bind-Value="Input.InfoValue" class="form-control" aria-required="true" />
+                    <label for="info-value" class="form-label">Upper Value</label>
+                    <ValidationMessage For="() => Input.InfoValue" class="text-danger" />
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputNumber @bind-Value="Input.InfoSecondaryValue" class="form-control" aria-required="true" />
+                    <label for="info-value" class="form-label">Lower Value</label>
+                    <ValidationMessage For="() => Input.InfoSecondaryValue" class="text-danger" />
+                </div>
+            }
+            else
+            {
+                <div class="form-floating mb-3">
+                    <InputNumber @bind-Value="Input.InfoValue" class="form-control" aria-required="true" />
+                    <label for="info-value" class="form-label">Value</label>
+                    <ValidationMessage For="() => Input.InfoValue" class="text-danger" />
+                </div>
+            }
 
             <div class="form-floating mb-3">
                 <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="Input.InfoDate" class="form-control" aria-required="true" />
@@ -47,12 +64,14 @@ else
     private InputModel Input { get; set; } = new();
     private string status = "";
     InformationType[] informationTypes;
+    int bloodPressureInfoType = -1;
     string userId;
 
     protected override async Task OnInitializedAsync()
     {
         using var Context = DbFactory.CreateDbContext();
         informationTypes = Context.InformationType.ToArray();
+        bloodPressureInfoType = informationTypes.Single(x => x.Description == "Blood Pressure").Id;
         var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
     }
@@ -91,6 +110,10 @@ else
         [Required]
         [Display(Name = "Value")]
         public float InfoValue { get; set; }
+
+        [Required]
+        [Display(Name = "Secondary Value")]
+        public float InfoSecondaryValue { get; set; } = 0;
 
         [Required]
         [Display(Name = "Information date")]
