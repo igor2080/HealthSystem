@@ -4,13 +4,16 @@
 @using HealthSystem.Data
 @using System.Globalization
 @using System.Text
+@using AntDesign.Charts
 @inject HttpClient Http
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
-@* <a href="/api/strava/authorize" target="_blank">auth</a> *@
+<Line Data="data" Config="config"  />
+https://antblazor.com/en-US/charts/line
 
 @if (activities != null)
 {
@@ -25,6 +28,25 @@
 @code{
     private List<Activity> activities;
 
+     object[] data = new object[] {
+        new  { year = "1991", value = 3 },
+        new  { year = "1992", value = 4 },
+        new  { year = "1993", value = 3.5 },
+        new  { year = "1994", value = 5 },
+        new  { year = "1995", value = 4.9 },
+        new  { year = "1996", value = 6 },
+        new  { year = "1997", value = 7 },
+        new  { year = "1998", value = 9 },
+        new  { year = "1999", value = 13 },
+    };
+
+    LineConfig config = new LineConfig()
+        {
+            Padding = "auto",
+            XField = "year",
+            YField = "value",
+            Smooth = true,
+        };
 
     protected override async Task OnInitializedAsync()
     {

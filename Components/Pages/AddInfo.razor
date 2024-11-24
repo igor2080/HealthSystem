@@ -37,6 +37,11 @@ else
         <button type="submit" class="w-100 btn btn-lg btn-primary">Submit</button>
     </EditForm>
 }
+
+
+<div>Import from 3rd party apps</div>
+
+
 @code {
     int selectedType = 0;
     private InputModel Input { get; set; } = new();
@@ -61,7 +66,7 @@ else
     private async Task OnValidSubmitAsync(EditContext editContext)
     {
         using var Context = DbFactory.CreateDbContext();
-        
+
         MedicalInformation information = new()
             {
                 Value = Input.InfoValue,

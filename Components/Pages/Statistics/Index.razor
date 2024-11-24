@@ -1,0 +1,47 @@
+﻿@page "/statistics"
+@using HealthSystem.Data
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@attribute [Authorize]
+@rendermode InteractiveServer
+
+<select @onchange="OnSelectionChanged">
+    @foreach (var item in informationTypes)
+    {
+        <option value="@item.Id">@item.Description</option>
+    }
+</select>
+
+@if (selectedType is not null)
+{
+    <Line Data="data" Config="config" />
+}
+
+@code {
+    InformationType[] informationTypes;
+    InformationType selectedType;
+    string userId;
+    object[] data;
+    LineConfig config = new LineConfig()
+        {
+            Padding = "auto",
+            XField = "month",
+            YField = "value",
+            Smooth = true,
+        };
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var Context = DbFactory.CreateDbContext();
+        informationTypes = Context.InformationType.ToArray();
+        var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
+    }
+    private void OnSelectionChanged(ChangeEventArgs e)
+    {
+        selectedType = informationTypes.Single(x => x.Id == Convert.ToInt32(e.Value));
+        using var Context = DbFactory.CreateDbContext();
+        data = Context.MedicalInformation.Where(x => x.UserId == userId && x.InformationTypeId == selectedType.Id).OrderBy(x=>x.Entry_Date).Select(x=>new {month = x.Entry_Date.ToString("MM-yyyy"), value=x.Value }).ToArray();
+    }
+}
