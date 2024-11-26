@@ -4,6 +4,8 @@
 @inject IDbContextFactory<ApplicationDbContext> DbFactory
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject IJSRuntime JSRuntime
+@inject EmailService EmailService
 @attribute [Authorize]
 @rendermode InteractiveServer
 
@@ -15,8 +17,12 @@
 </select>
 
 
-<Line Data="data" Config="config" @ref="lineGraph" />
+<div style="width:600px; height:400px;">
+    <Line Data="data" Config="config" @ref="lineGraph" />
+</div>
 
+<button class="btn btn-light" @onclick="DownloadGraph">Download</button>
+<button class="btn btn-info" @onclick="SendGraph">Send as Email</button>
 
 @code {
     List<InformationType> informationTypes;
@@ -32,6 +38,13 @@
             XField = "date",
             YField = "value",
             Smooth = true,
+            Width = 20,
+            //LineStyle = new LineStyle() { Stroke = "#6897a7" }, - line color
+            //Theme = "dark",
+            Label = new Label
+            {
+                Visible = false
+            }
         };
 
     protected override async Task OnInitializedAsync()
@@ -42,6 +55,18 @@
         var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
         user = await UserManager.FindByIdAsync(userId);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            selectedType = informationTypes.First();
+            using var Context = DbFactory.CreateDbContext();
+            data = GetAveragePerMonth(Context.MedicalInformation.Where(x => x.UserId == userId && x.InformationTypeId == selectedType.Id));
+            lineGraph.ChangeData(data);
+            StateHasChanged();
+        }
     }
     private void OnSelectionChanged(ChangeEventArgs e)
     {
@@ -90,5 +115,17 @@
         lineGraph.ChangeData(data);
         StateHasChanged();
 
+    }
+
+
+    private async Task DownloadGraph()
+    {
+        await JSRuntime.InvokeVoidAsync("downloadCurrentPageGraph", selectedType.Description + ".png");
+    }
+
+    private async Task SendGraph()
+    {
+        var image = await JSRuntime.InvokeAsync<string>("getGraphAsImage");
+        await EmailService.SendEmailWithImageAsync("master20802@gmail.com", "test email", "", image);
     }
 }

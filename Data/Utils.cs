@@ -10,7 +10,7 @@
         }
         public static dynamic[] GetAveragePerMonth(IQueryable<MedicalInformation> data)
         {
-            return data.GroupBy(x => new { x.Entry_Date.Year, x.Entry_Date.Month }).Select(x => new { date = $"{x.Key.Month}-{x.Key.Year}", value = x.Average(y => y.Value) }).ToArray();
+            return data.GroupBy(x => new { x.Entry_Date.Year, x.Entry_Date.Month }).Select(x => new { date = $"{x.Key.Month}-{x.Key.Year}", value = float.Parse(x.Average(y => y.Value).ToString("0.00")) }).ToArray();
         }
 
         public static int GetMetabolicScore(ApplicationUser user, float weight, float waistSize, float insulin, float CGM, float triglyceride, float bloodPressureUpper, float bloodPressureLower, float LDLCholesterol, float HDLCholesterol, float restingHeartRate)
