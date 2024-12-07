@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="height:100%;">
 
 <head>
     <meta charset="utf-8" />
@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="HealthSystem.styles.css" />
+    <link href="_content/BlazorCalendar/BlazorCalendar.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="_content/BytexDigital.Blazor.Components.CookieConsent/styles.min.css" />
     <HeadOutlet />
 </head>
 
@@ -18,16 +20,23 @@
 
     <script src="_content/AntDesign.Charts/g2plot.min.js"></script>
     <script src="_content/AntDesign.Charts/ant-design-charts-blazor.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <script>
-        function getGraphAsImage(){
-            console.log(document.getElementsByTagName("canvas")[0].toDataURL("image/png"));
-            return document.getElementsByTagName("canvas")[0].toDataURL("image/png");
+        async function getGraphAsImage(){
+            const img = await html2canvas(document.getElementsByTagName("canvas")[0]);
+            return img.toDataURL("image/png");
         }
 
-        function downloadCurrentPageGraph(fileName){
-            const image = getGraphAsImage()
+        async function getPageAsImage(){
+            const img = await html2canvas(document.body);
+            return img.toDataURL("image/png");
+        }
+
+        async function downloadCurrentPageGraph(fileName){
+            const image = await getGraphAsImage();
             const link = document.createElement("a");
-            link.href=image;
+            link.href= image;
             link.download = fileName || "graph.png";
             link.click();
         }

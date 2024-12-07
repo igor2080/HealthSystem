@@ -1,119 +1,395 @@
 ﻿@page "/add-info"
+@using CsvHelper
+@using CsvHelper.Configuration
 @using HealthSystem.Data
 @using System.ComponentModel.DataAnnotations
+@using System.Text
+@using System.Globalization
 @inject IDbContextFactory<ApplicationDbContext> DbFactory
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject HttpClient Http
 @rendermode InteractiveServer
 @attribute [Authorize]
 
-@if (selectedType < 1)
-{
-    <div class="add-buttons">
-        @foreach (var infoType in informationTypes)
-        {
-            <div class="btn btn-outline-dark" @onclick="()=>ChangeSelectedType(infoType.Id)">@infoType.Description</div>
-        }
-    </div>
-}
-else
-{
-    <button type="button" class="w-100 btn btn-lg btn-primary" @onclick="()=>{selectedType = 0; StateHasChanged();}">Back</button>
-    <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post" @key="Input">
-
-        <div>
-            @if (selectedType == bloodPressureInfoType)
-            {
-                <div class="form-floating mb-3">
-                    <InputNumber @bind-Value="Input.InfoValue" class="form-control" aria-required="true" />
-                    <label for="info-value" class="form-label">Upper Value</label>
-                    <ValidationMessage For="() => Input.InfoValue" class="text-danger" />
-                </div>
-
-                <div class="form-floating mb-3">
-                    <InputNumber @bind-Value="Input.InfoSecondaryValue" class="form-control" aria-required="true" />
-                    <label for="info-value" class="form-label">Lower Value</label>
-                    <ValidationMessage For="() => Input.InfoSecondaryValue" class="text-danger" />
-                </div>
-            }
-            else
-            {
-                <div class="form-floating mb-3">
-                    <InputNumber @bind-Value="Input.InfoValue" class="form-control" aria-required="true" />
-                    <label for="info-value" class="form-label">Value</label>
-                    <ValidationMessage For="() => Input.InfoValue" class="text-danger" />
-                </div>
-            }
-
+<div class="container">
+    <EditForm Model="Input" FormName="info" OnValidSubmit="OnValidSubmitAsync" method="post">
+        <div class="date-row">
             <div class="form-floating mb-3">
-                <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="Input.InfoDate" class="form-control" aria-required="true" />
-                <label for="date-of-birth" class="form-label">Information Date</label>
+                <InputDate Type="InputDateType.Month" @bind-Value="Input.InfoDate" @bind-Value:after="@(()=>{UpdateValues();})" class="form-control addinfo-date" aria-required="true" />
+                <label for="date-of-birth" class="form-label addinfo-label">Information Date</label>
                 <ValidationMessage For="() => Input.InfoDate" class="text-danger" />
             </div>
         </div>
-        <button type="submit" class="w-100 btn btn-lg btn-primary">Submit</button>
+        <div>
+            <div class="info-row">
+                <div class="info-label">Waist Size</div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.WaistSize" /></div>
+                <div class="info-range">
+                    <div class="threshold-bar">
+                        <div class="segment bad"></div>
+                        <div class="segment normal"></div>
+                        <div class="segment good"></div>
+                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">Blood Pressure</div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.BloodPressureLower" /><InputNumber class="addinfo-number" @bind-Value="Input.BloodPressureUpper" /></div>
+                <div class="info-range">
+                    <div class="threshold-bar">
+                        <div class="segment bad"></div>
+                        <div class="segment normal"></div>
+                        <div class="segment good"></div>
+                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">Weight</div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.Weight" /></div>
+                <div class="info-range">
+                    <div class="threshold-bar">
+                        <div class="segment bad"></div>
+                        <div class="segment normal"></div>
+                        <div class="segment good"></div>
+                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">Resting Heart Rate</div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.RestingHeartRate" /></div>
+                <div class="info-range">
+                    <div class="threshold-bar">
+                        <div class="segment bad"></div>
+                        <div class="segment normal"></div>
+                        <div class="segment good"></div>
+                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">CGM</div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.CGM" /></div>
+                <div class="info-range">
+                    <div class="threshold-bar">
+                        <div class="segment bad"></div>
+                        <div class="segment normal"></div>
+                        <div class="segment good"></div>
+                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">Insulin</div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.Insulin" /></div>
+                <div class="info-range">
+                    <div class="threshold-bar">
+                        <div class="segment bad"></div>
+                        <div class="segment normal"></div>
+                        <div class="segment good"></div>
+                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">Triglyceride</div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.Triglyceride" /></div>
+                <div class="info-range">
+                    <div class="threshold-bar">
+                        <div class="segment bad"></div>
+                        <div class="segment normal"></div>
+                        <div class="segment good"></div>
+                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">HDL Cholesterol</div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.HDLCholesterol" /></div>
+                <div class="info-range">
+                    <div class="threshold-bar">
+                        <div class="segment bad"></div>
+                        <div class="segment normal"></div>
+                        <div class="segment good"></div>
+                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">LDL Cholesterol</div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.LDLCholesterol" /></div>
+                <div class="info-range">
+                    <div class="threshold-bar">
+                        <div class="segment bad"></div>
+                        <div class="segment normal"></div>
+                        <div class="segment good"></div>
+                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <button>Save</button>
     </EditForm>
-}
+</div>
 
 
-<div>Import from 3rd party apps</div>
 
 
 @code {
-    int selectedType = 0;
     private InputModel Input { get; set; } = new();
-    private string status = "";
-    InformationType[] informationTypes;
-    int bloodPressureInfoType = -1;
+    private string status;
     string userId;
+    ApplicationUser user;
 
     protected override async Task OnInitializedAsync()
     {
-        using var Context = DbFactory.CreateDbContext();
-        informationTypes = Context.InformationType.ToArray();
-        bloodPressureInfoType = informationTypes.Single(x => x.Description == "Blood Pressure").Id;
         var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
+        user = await UserManager.FindByIdAsync(userId);
+        UpdateValues();
+
+        //try get data from intervals
+        if (Input.RestingHeartRate == 0)
+        {
+            if (!Http.DefaultRequestHeaders.Contains("authorization"))
+                Http.DefaultRequestHeaders.Add("authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"API_KEY:{user.Intervals_API}"))}");
+            var response = await Http.GetAsync(@"https://intervals.icu/api/v1/athlete/0/activities.csv");
+            if (response.IsSuccessStatusCode)
+            {
+                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                    {
+                        PrepareHeaderForMatch = args => args.Header.ToLower(),
+                    };
+                using var reader = new StreamReader(response.Content.ReadAsStream());
+                using var csv = new CsvReader(reader, config);
+                var hr = csv.GetRecords<Activity>().Select(x => x.icu_resting_hr).ToList();
+                Input.RestingHeartRate = hr.Last();
+                StateHasChanged();
+            }
+        }
     }
 
-    public void ChangeSelectedType(int type)
+    private void UpdateValues()
     {
-        selectedType = type;
-        StateHasChanged();
+        using var Context = DbFactory.CreateDbContext();
+        var medicalInfo = Context.MedicalInformation.Where(x => x.Entry_Date.Year == Input.InfoDate.Year && x.Entry_Date.Month == Input.InfoDate.Month && x.UserId == userId);
+
+
+        Input.WaistSize = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 1)?.Value ?? 0;
+        Input.BloodPressureLower = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 2)?.Value ?? 0;
+        Input.BloodPressureUpper = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 2)?.SecondaryValue ?? 0;
+        Input.Weight = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 3)?.Value ?? 0;
+        Input.RestingHeartRate = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 4)?.Value ?? 0;
+        Input.CGM = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 5)?.Value ?? 0;
+        Input.Insulin = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 6)?.Value ?? 0;
+        Input.Triglyceride = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 7)?.Value ?? 0;
+        Input.HDLCholesterol = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 8)?.Value ?? 0;
+        Input.LDLCholesterol = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 9)?.Value ?? 0;
+    }
+
+    private void OnDateChanged(DateTime newValue)
+    {
+        UpdateValues();
     }
 
     private async Task OnValidSubmitAsync(EditContext editContext)
     {
         using var Context = DbFactory.CreateDbContext();
 
-        MedicalInformation information = new()
-            {
-                Value = Input.InfoValue,
-                Entry_Date = Input.InfoDate,
-                InformationType = Context.InformationType.Single(x => x.Id == selectedType),
-                UserId = userId
-            };
+        int id;
         if (Context.MedicalInformation.Count() < 1)
-            information.Id = 1;
+            id = 0;
         else
-            information.Id = Context.MedicalInformation.OrderByDescending(x => x.Id).First().Id + 1;
-        Context.MedicalInformation.Add(information);
+            id = Context.MedicalInformation.OrderByDescending(x => x.Id).First().Id;
+
+        var medicalInfo = Context.MedicalInformation.Where(x => x.Entry_Date.Year == Input.InfoDate.Year && x.Entry_Date.Month == Input.InfoDate.Month && x.UserId == userId);
+
+        var waistSize = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 1);
+        if (waistSize is null)
+        {
+            Context.MedicalInformation.Add(new MedicalInformation()
+                {
+                    Entry_Date = Input.InfoDate,
+                    UserId = userId,
+                    Id = ++id,
+                    InformationTypeId = 1,
+                    Value = Input.WaistSize,
+                });
+        }
+        else
+        {
+            waistSize.Value = Input.WaistSize;
+        }
+
+        var bloodPressure = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 2);
+        if (bloodPressure is null)
+        {
+            Context.MedicalInformation.Add(new MedicalInformation()
+                {
+                    Entry_Date = Input.InfoDate,
+                    UserId = userId,
+                    Id = ++id,
+                    InformationTypeId = 2,
+                    Value = Input.BloodPressureLower,
+                    SecondaryValue = Input.BloodPressureUpper,
+                });
+        }
+        else
+        {
+            bloodPressure.Value = Input.BloodPressureLower;
+            bloodPressure.SecondaryValue = Input.BloodPressureUpper;
+        }
+
+        var weight = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 3);
+        if (weight is null)
+        {
+            Context.MedicalInformation.Add(new MedicalInformation()
+                {
+                    Entry_Date = Input.InfoDate,
+                    UserId = userId,
+                    Id = ++id,
+                    InformationTypeId = 3,
+                    Value = Input.Weight,
+                });
+        }
+        else
+        {
+            weight.Value = Input.Weight;
+        }
+
+        var heartRate = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 4);
+        if (heartRate is null)
+        {
+            Context.MedicalInformation.Add(new MedicalInformation()
+                {
+                    Entry_Date = Input.InfoDate,
+                    UserId = userId,
+                    Id = ++id,
+                    InformationTypeId = 4,
+                    Value = Input.RestingHeartRate,
+                });
+        }
+        else
+        {
+            heartRate.Value = Input.RestingHeartRate;
+        }
+
+        var cgm = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 5);
+        if (cgm is null)
+        {
+            Context.MedicalInformation.Add(new MedicalInformation()
+                {
+                    Entry_Date = Input.InfoDate,
+                    UserId = userId,
+                    Id = ++id,
+                    InformationTypeId = 5,
+                    Value = Input.CGM,
+                });
+        }
+        else
+        {
+            cgm.Value = Input.CGM;
+        }
+
+        var insulin = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 6);
+        if (insulin is null)
+        {
+            Context.MedicalInformation.Add(new MedicalInformation()
+                {
+                    Entry_Date = Input.InfoDate,
+                    UserId = userId,
+                    Id = ++id,
+                    InformationTypeId = 6,
+                    Value = Input.Insulin,
+                });
+        }
+        else
+        {
+            insulin.Value = Input.Insulin;
+        }
+
+        var triglyceride = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 7);
+        if (triglyceride is null)
+        {
+            Context.MedicalInformation.Add(new MedicalInformation()
+                {
+                    Entry_Date = Input.InfoDate,
+                    UserId = userId,
+                    Id = ++id,
+                    InformationTypeId = 7,
+                    Value = Input.Triglyceride,
+                });
+        }
+        else
+        {
+            triglyceride.Value = Input.Triglyceride;
+        }
+
+        var hdlcholesterol = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 8);
+        if (hdlcholesterol is null)
+        {
+            Context.MedicalInformation.Add(new MedicalInformation()
+                {
+                    Entry_Date = Input.InfoDate,
+                    UserId = userId,
+                    Id = ++id,
+                    InformationTypeId = 8,
+                    Value = Input.HDLCholesterol,
+                });
+        }
+        else
+        {
+            hdlcholesterol.Value = Input.HDLCholesterol;
+        }
+
+        var ldlcholesterol = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 9);
+        if (ldlcholesterol is null)
+        {
+            Context.MedicalInformation.Add(new MedicalInformation()
+                {
+                    Entry_Date = Input.InfoDate,
+                    UserId = userId,
+                    Id = ++id,
+                    InformationTypeId = 9,
+                    Value = Input.LDLCholesterol,
+                });
+        }
+        else
+        {
+            ldlcholesterol.Value = Input.LDLCholesterol;
+        }
+
         await Context.SaveChangesAsync();
+        StateHasChanged();
         status = "Your profile has been updated";
-        selectedType = 0;
 
 
     }
 
     private sealed class InputModel
     {
-        [Required]
-        [Display(Name = "Value")]
-        public float InfoValue { get; set; }
-
-        [Required]
-        [Display(Name = "Secondary Value")]
-        public float InfoSecondaryValue { get; set; } = 0;
+        public float WaistSize { get; set; } = 0;
+        public float BloodPressureLower { get; set; } = 0;
+        public float BloodPressureUpper { get; set; } = 0;
+        public float Weight { get; set; } = 0;
+        public float RestingHeartRate { get; set; } = 0;
+        public float CGM { get; set; } = 0;
+        public float Insulin { get; set; } = 0;
+        public float Triglyceride { get; set; } = 0;
+        public float HDLCholesterol { get; set; } = 0;
+        public float LDLCholesterol { get; set; } = 0;
 
         [Required]
         [Display(Name = "Information date")]

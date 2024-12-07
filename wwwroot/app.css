@@ -2,8 +2,9 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-a, .btn-link {
-    color: #006bb7;
+a {
+    color: #4587DD;
+    text-decoration: none;
 }
 
 .btn-primary {
@@ -48,4 +49,27 @@ h1:focus {
 
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
+}
+
+
+.addinfo-number {
+    width: 45%;
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+    border-radius: 7px;
+    background-color: #E8F5FC;
+    border: 1px solid #4587dd;
+    text-align: center;
+    margin-right: 2%;
+    color: #4587dd;
+}
+
+.addinfo-date {
+    width: 50%;
+    margin: auto;
+    
+}
+.addinfo-label {
+    margin: auto;
+    left: 32% !important;
 }

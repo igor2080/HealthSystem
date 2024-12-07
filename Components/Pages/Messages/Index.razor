@@ -1,0 +1,77 @@
+﻿@page "/messages"
+@using HealthSystem.Data
+@using static Data.Utils
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@attribute [Authorize]
+
+@foreach (var thread in MessageThreads)
+{
+    <div>
+        <span>From: @userName</span>
+    </div>
+    <div>
+        @thread[0].Content
+    </div>
+    <div>
+        @thread[0].Image
+    </div>
+    <div>
+        Previous responses:
+        @foreach (var message in thread)
+        {
+            @if (message.Id == thread[0].Id)
+            {
+                continue;//skip the first one
+            }
+            <div>From: @message.Sender.Name</div>
+            <div>
+                @message.Content
+            </div>
+            <div>
+                @message.Image
+            </div>
+        }
+    </div>
+    <span>Reply</span>
+    <div>
+        <EditForm method="post" Model="Message" OnValidSubmit="SendResponse">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert" />
+            <div class="mb-3">
+                <label for="description" class="form-label">Message:</label>
+                <InputText id="description" @bind-Value="Message.Content" class="form-control" />
+                <ValidationMessage For="() => Message.Content" class="text-danger" />
+            </div>
+            <button type="submit" class="btn btn-primary">Reply</button>
+        </EditForm>
+    </div>
+    <span>==========</span>
+}
+
+
+@code {
+    List<Message> Messages = new();
+    List<List<Message>> MessageThreads = new();
+
+    Message Message { get; set; } = new();
+    string userName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        userName = authState.User.Identity.Name;
+        var userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        using var Context = DbFactory.CreateDbContext();
+        //all sent and received messages, should include all of the "related" messages too as users cannot send to other users
+        Messages = Context.Message.Include("Sender").Include("Receiver").Where(x => x.SenderId == userId && x.ReceiverId == userId).OrderByDescending(x => x.Date).ToList();
+        //all of the messages that were conversation starters
+        MessageThreads = GetMessagesByThread(Messages);
+    }
+
+    async Task SendResponse(EditContext editContext)
+    {
+
+    }
+}

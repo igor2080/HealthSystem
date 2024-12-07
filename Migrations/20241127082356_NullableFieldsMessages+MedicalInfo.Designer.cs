@@ -3,6 +3,7 @@ using System;
 using HealthSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241127082356_NullableFieldsMessages+MedicalInfo")]
+    partial class NullableFieldsMessagesMedicalInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -47,6 +50,7 @@ namespace HealthSystem.Migrations
                         .HasColumnType("REAL");
 
                     b.Property<string>("Intervals_API")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("LockoutEnabled")
@@ -214,9 +218,6 @@ namespace HealthSystem.Migrations
                     b.Property<int?>("PreviousMessageId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("ReadDate")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("ReceiverId")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -259,21 +260,20 @@ namespace HealthSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("InformationTypeId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<float>("Lower_Boundary")
                         .HasColumnType("REAL");
 
                     b.Property<int>("RecommendationId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<float>("Upper_Boundary")
                         .HasColumnType("REAL");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("InformationTypeId");
 
                     b.HasIndex("RecommendationId");
 
@@ -462,12 +462,6 @@ namespace HealthSystem.Migrations
 
             modelBuilder.Entity("HealthSystem.Data.TriggerParameter", b =>
                 {
-                    b.HasOne("HealthSystem.Data.InformationType", "Type")
-                        .WithMany()
-                        .HasForeignKey("InformationTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("HealthSystem.Data.Recommendation", "Recommendation")
                         .WithMany()
                         .HasForeignKey("RecommendationId")
@@ -475,8 +469,6 @@ namespace HealthSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("Recommendation");
-
-                    b.Navigation("Type");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

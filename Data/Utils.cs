@@ -8,6 +8,39 @@
             Acceptable = 1,
             Healthy = 2
         }
+
+        public static bool EqualMonths(this DateTime dt1,  DateTime dt2)
+        {
+            return dt1.Year == dt2.Year && dt1.Month==dt2.Month;
+        }
+
+        public static List<List<Message>> GetMessagesByThread(List<Message> messages)
+        {
+            var messageLookup = messages.ToDictionary(msg => msg.Id);
+            var threadStarters = messages
+            .Where(msg => msg.PreviousMessageId == null || !messageLookup.ContainsKey(msg.PreviousMessageId.Value))
+            .ToList();
+            var threads = new List<List<Message>>();
+            foreach (var starter in threadStarters)
+            {
+                var thread = new List<Message>();
+                var currentMessage = starter;
+
+                while (currentMessage != null)
+                {
+                    thread.Add(currentMessage);
+
+                    // Move to the next message in the chain
+                    currentMessage = currentMessage.PreviousMessageId.HasValue
+                        ? messageLookup.GetValueOrDefault(currentMessage.PreviousMessageId.Value)
+                        : null;
+                }
+
+                threads.Add(thread);
+            }
+            return threads;
+
+        }
         public static dynamic[] GetAveragePerMonth(IQueryable<MedicalInformation> data)
         {
             return data.GroupBy(x => new { x.Entry_Date.Year, x.Entry_Date.Month }).Select(x => new { date = $"{x.Key.Month}-{x.Key.Year}", value = float.Parse(x.Average(y => y.Value).ToString("0.00")) }).ToArray();
@@ -94,7 +127,7 @@
 
         public static HealthScore GetTriglycerideScore(float triglyceride)
         {
-            if(triglyceride == -1)
+            if (triglyceride == -1)
                 return HealthScore.Bad;
 
             if (triglyceride >= 50 && triglyceride <= 180)
@@ -121,7 +154,7 @@
 
         public static HealthScore GetHDLCholesterolScore(float HDLCholesterol)
         {
-            if(HDLCholesterol== -1) 
+            if (HDLCholesterol == -1)
                 return HealthScore.Bad;
 
             if (HDLCholesterol >= 60)
@@ -145,7 +178,7 @@
 
         public static HealthScore GetRestingHeartRateScore(float restingHeartRate)
         {
-            if(restingHeartRate==-1)
+            if (restingHeartRate == -1)
                 return HealthScore.Bad;
 
             if (restingHeartRate >= 40 && restingHeartRate <= 60)

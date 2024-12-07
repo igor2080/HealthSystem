@@ -15,7 +15,7 @@ namespace HealthSystem.Data
         public string Gender { get; set; }
         [PersonalData]
         public float Height { get; set; }
-        public string Intervals_API { get; set; }
+        public string? Intervals_API { get; set; }
     }
 
 }

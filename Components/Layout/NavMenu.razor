@@ -1,79 +1,76 @@
 ﻿@implements IDisposable
 @inject NavigationManager NavigationManager
 
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">HealthSystem</a>
+
+<div class="main-part">
+
+    <div class="menu">
+        <div class="logo-link">
+            <a class="" href="">Metabolic Health</a>
+        </div>
+        <nav class="menu-links">
+            <AuthorizeView>
+                <Authorized>
+                    <div class="nav-item">
+                        <NavLink class="menu-link" href="add-info">
+                            Add medical information
+                        </NavLink>
+                    </div>
+                    <div class="separator">|</div>
+                    <div class="nav-item">
+                        <NavLink class="menu-link" href="statistics">
+                            Statistics
+                        </NavLink>
+                    </div>
+                    <div class="separator">|</div>
+                    <div class="nav-item">
+                        <NavLink class="menu-link" href="recommendations">
+                            Recommendations
+                        </NavLink>
+                    </div>
+                    <div class="separator">|</div>
+                    <div class="nav-item">
+                        <NavLink class="menu-link" href="messages">
+                            My Messages
+                        </NavLink>
+                    </div>
+                    <div class="separator">|</div>
+
+                    <div class="nav-item">
+                        <NavLink class="menu-link" href="Account/Manage">
+                            My Profile
+                        </NavLink>
+                    </div>
+                    <div class="separator">|</div>
+                    <div class="nav-item">
+
+                        <form name="logoutForm" action="Account/Logout" method="post">
+                            <AntiforgeryToken />
+                            <a href="#" onclick="document.forms.logoutForm.submit();">Logout</a>
+                            <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                            <button style="display:none;" type="submit" class="nav-link">
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                </Authorized>
+                <NotAuthorized>
+                    <div class="nav-item">
+                        <NavLink class="menu-link" href="Account/Register">
+                            Register
+                        </NavLink>
+                    </div>
+                    <div class="separator">|</div>
+                    <div class="nav-item">
+                        <NavLink class="menu-link" href="Account/Login">
+                            Login
+                        </NavLink>
+                    </div>
+                </NotAuthorized>
+            </AuthorizeView>
+        </nav>
     </div>
 </div>
-
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="add-info">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Add medical information
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="statistics">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Statistics
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="recommendations">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Recommendations
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="auth">
-                <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
-            </NavLink>
-        </div>
-
-        <AuthorizeView>
-            <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Manage">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span>My Profile
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <form action="Account/Logout" method="post">
-                        <AntiforgeryToken />
-                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                        <button type="submit" class="nav-link">
-                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
-                        </button>
-                    </form>
-                </div>
-            </Authorized>
-            <NotAuthorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Register">
-                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Login">
-                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
-                    </NavLink>
-                </div>
-            </NotAuthorized>
-        </AuthorizeView>
-    </nav>
-</div>
-
 @code {
     private string? currentUrl;
 

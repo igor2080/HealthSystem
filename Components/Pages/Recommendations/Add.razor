@@ -36,13 +36,13 @@
                     <div class="trigger-group">
                         <div>
                             <div class="form-floating">
-                                <InputSelect class="form-control" @bind-Value="parameter.Type">
+                                <InputSelect class="form-control" @bind-Value="parameter.InformationTypeId">
                                     <option value="" selected disabled>
                                         Select parameter type ...
                                     </option>
                                     @foreach (var informationType in InformationTypes)
                                     {
-                                        <option checked="@(parameter.Type == informationType.Description)" value="@informationType.Description">
+                                        <option checked="@(parameter.InformationTypeId == informationType.Id)" value="@informationType.Id">
                                             @informationType.Description
                                         </option>
                                     }

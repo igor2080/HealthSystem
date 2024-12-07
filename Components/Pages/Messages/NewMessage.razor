@@ -1,0 +1,59 @@
+﻿@using HealthSystem.Data
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject IJSRuntime JSRuntime
+
+@rendermode InteractiveServer
+<div class="bottom-right-container">
+    <button @onclick="ToggleVisibility">
+        @(isVisible ? "Hide" : "Show")
+    </button>
+    @if (isVisible)
+    {
+        <div>
+            <span>Contact the administration</span>
+            <InputTextArea class="form-control" style="resize:both;" @bind-Value="Message.Content" />
+        </div>
+        <button @onclick="SendMessage" class="btn btn-primary">Send</button>
+    }
+</div>
+
+@code {
+    Message Message { get; set; } = new();
+    private bool isVisible = false;
+    AuthenticationState? authState;
+    private bool requireScreenshot = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+    }
+
+    private void ToggleVisibility()
+    {
+        isVisible = !isVisible;
+    }
+
+    private async Task SendMessage()
+    {
+        var admin = await UserManager.FindByEmailAsync("admin@site.com");
+        var user = await UserManager.FindByEmailAsync(authState.User.Identity.Name);
+        Message.ReceiverId = admin.Id;
+        Message.SenderId = user.Id;
+        Message.Date = DateTime.Now;
+        using var Context = DbFactory.CreateDbContext();
+        if (requireScreenshot)
+        {
+            Message.Image = await JSRuntime.InvokeAsync<string>("getPageAsImage");
+        }
+        if (Context.Message.Count() < 1)
+            Message.Id = 1;
+        else
+            Message.Id = Context.Message.OrderByDescending(x => x.Id).First().Id + 1;
+        Context.Message.Add(Message);
+        Context.SaveChanges();
+
+
+    }
+}

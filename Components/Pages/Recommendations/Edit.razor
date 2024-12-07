@@ -48,7 +48,7 @@ else
                                         </option>
                                         @foreach (var informationType in InformationTypes)
                                         {
-                                            <option checked="@(parameter.Type == informationType.Description)" value="@informationType.Description">
+                                            <option checked="@(parameter.InformationTypeId == informationType.Id)" value="@informationType.Description">
                                                 @informationType.Description
                                             </option>
                                         }

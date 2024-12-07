@@ -1,0 +1,11 @@
+﻿.main-part {
+    height: 100%;
+}
+
+.profile-part {
+    border-radius: 5px;
+    background-color: #fcfcfe;
+    height: 85%;
+    margin:5%;
+    padding:10%;
+}

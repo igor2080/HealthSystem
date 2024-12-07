@@ -1,3 +1,4 @@
+using BytexDigital.Blazor.Components.CookieConsent;
 using HealthSystem.Components;
 using HealthSystem.Components.Account;
 using HealthSystem.Data;
@@ -23,6 +24,15 @@ namespace HealthSystem
             builder.Services.AddScoped<IdentityRedirectManager>();
             builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
             builder.Services.AddScoped<EmailService>();
+            builder.Services.AddCookieConsent(o =>
+            {
+                o.UseDefaultConsentPrompt(prompt => {
+                    prompt.Position = ConsentModalPosition.BottomRight;
+                    prompt.Layout = ConsentModalLayout.Bar;
+                    prompt.SecondaryActionOpensSettings = false;
+                    prompt.AcceptAllButtonDisplaysFirst = true;
+                });
+            });
 
             builder.Services.AddAuthentication(options =>
                 {

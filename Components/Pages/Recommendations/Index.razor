@@ -64,7 +64,7 @@
             var triggers = context.TriggerParameters.Include("Recommendation").Where(x => !inforomationTypes.Any(y => x.RecommendationId == y)).ToList();
             foreach (var trigger in triggers)
             {
-                var info = information.FirstOrDefault(x => x.InformationType.Description == trigger.Type && x.Value >= trigger.Lower_Boundary && x.Value < trigger.Upper_Boundary);
+                var info = information.FirstOrDefault(x => x.InformationType.Id == trigger.InformationTypeId && x.Value >= trigger.Lower_Boundary && x.Value < trigger.Upper_Boundary);
                 if (info is not null)
                     Recommendations.Add(trigger.Recommendation);
             }

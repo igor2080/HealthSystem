@@ -91,7 +91,7 @@
                 if (monthlyData.Any(x => x.InformationTypeId == 2))//Blood Pressure
                 {
                     bloodPressureUpper = monthlyData.Where(x => x.InformationTypeId == 2).Average(x => x.Value);
-                    bloodPressureLower = monthlyData.Where(x => x.InformationTypeId == 2).Average(x => x.SecondaryValue);
+                    bloodPressureLower = monthlyData.Where(x => x.InformationTypeId == 2).Average(x => (float)x.SecondaryValue!);
                 }
                 if (monthlyData.Any(x => x.InformationTypeId == 3))//Weight
                     weight = monthlyData.Where(x => x.InformationTypeId == 3).Average(x => x.Value);
