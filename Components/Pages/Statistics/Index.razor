@@ -38,7 +38,7 @@
             XField = "date",
             YField = "value",
             Smooth = true,
-            Width = 20,
+            Width = 50,
             //LineStyle = new LineStyle() { Stroke = "#6897a7" }, - line color
             //Theme = "dark",
             Label = new Label
@@ -64,7 +64,7 @@
             selectedType = informationTypes.First();
             using var Context = DbFactory.CreateDbContext();
             data = GetAveragePerMonth(Context.MedicalInformation.Where(x => x.UserId == userId && x.InformationTypeId == selectedType.Id));
-            lineGraph.ChangeData(data);
+            await lineGraph.ChangeData(data);
             StateHasChanged();
         }
     }

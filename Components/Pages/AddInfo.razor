@@ -5,6 +5,7 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text
 @using System.Globalization
+@using static HealthSystem.Data.Utils
 @inject IDbContextFactory<ApplicationDbContext> DbFactory
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
@@ -30,7 +31,26 @@
                         <div class="segment bad"></div>
                         <div class="segment normal"></div>
                         <div class="segment good"></div>
-                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                        <div class="segment normal"></div>
+                        <div class="segment bad"></div>
+                        @{
+                            float first, second, third, fourth;
+                            if (user.Gender.Equals("male", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                first = 0.38f;
+                                second = 0.43f;
+                                third = 0.5f;
+                                fourth = 0.55f;
+                            }
+                            else
+                            {
+                                first = 0.35f;
+                                second = 0.42f;
+                                third = 0.48f;
+                                fourth = 0.55f;
+                            }
+                        }
+                        <div class="indicator" style="left: @(GetPercentage(first,second,third,fourth,(Input.WaistSize / user.Height)))%;"><span class="value @(Enum.GetName(GetWaistScore(user, Input.WaistSize)))-color">@Input.WaistSize</span></div>
                     </div>
                 </div>
             </div>
@@ -43,6 +63,8 @@
                         <div class="segment bad"></div>
                         <div class="segment normal"></div>
                         <div class="segment good"></div>
+                        <div class="segment normal"></div>
+                        <div class="segment bad"></div>
                         <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
                     </div>
                 </div>
@@ -56,7 +78,9 @@
                         <div class="segment bad"></div>
                         <div class="segment normal"></div>
                         <div class="segment good"></div>
-                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                        <div class="segment normal"></div>
+                        <div class="segment bad"></div>
+                        <div class="indicator" style="left: @(GetPercentage(15,18.5f,25,28,GetBMI(user.Height,Input.Weight)))%;"><span class="value @(Enum.GetName(GetBMIScore(user.Height, Input.Weight)))-color">@Input.Weight</span></div>
                     </div>
                 </div>
             </div>
@@ -69,7 +93,9 @@
                         <div class="segment bad"></div>
                         <div class="segment normal"></div>
                         <div class="segment good"></div>
-                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                        <div class="segment normal"></div>
+                        <div class="segment bad"></div>
+                        <div class="indicator" style="left: @(GetPercentage(35,40,60,80,Input.RestingHeartRate))%;"><span class="value @(Enum.GetName(GetRestingHeartRateScore(Input.RestingHeartRate)))-color">@Input.RestingHeartRate</span></div>
                     </div>
                 </div>
             </div>
@@ -82,7 +108,9 @@
                         <div class="segment bad"></div>
                         <div class="segment normal"></div>
                         <div class="segment good"></div>
-                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                        <div class="segment normal"></div>
+                        <div class="segment bad"></div>
+                        <div class="indicator" style="left: @(GetPercentage(70,75,100,105,Input.CGM))%;"><span class="value @(Enum.GetName(GetCGMScore(Input.CGM)))-color">@Input.CGM</span></div>
                     </div>
                 </div>
             </div>
@@ -95,7 +123,9 @@
                         <div class="segment bad"></div>
                         <div class="segment normal"></div>
                         <div class="segment good"></div>
-                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                        <div class="segment normal"></div>
+                        <div class="segment bad"></div>
+                        <div class="indicator" style="left: @(GetPercentage(1.5f,2.6f,5,11,Input.Insulin))%;"><span class="value @(Enum.GetName(GetInsulinScore(Input.CGM)))-color">@Input.Insulin</span></div>
                     </div>
                 </div>
             </div>
@@ -108,7 +138,9 @@
                         <div class="segment bad"></div>
                         <div class="segment normal"></div>
                         <div class="segment good"></div>
-                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                        <div class="segment normal"></div>
+                        <div class="segment bad"></div>
+                        <div class="indicator" style="left: @(GetPercentage(45,50,180,200,Input.Triglyceride))%;"><span class="value @(Enum.GetName(GetTriglycerideScore(Input.Triglyceride)))-color">@Input.Triglyceride</span></div>
                     </div>
                 </div>
             </div>
@@ -121,7 +153,9 @@
                         <div class="segment bad"></div>
                         <div class="segment normal"></div>
                         <div class="segment good"></div>
-                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                        <div class="segment normal"></div>
+                        <div class="segment bad"></div>
+                        <div class="indicator" style="left: @(GetPercentage(40,50,60,70,Input.HDLCholesterol))%;"><span class="value @(Enum.GetName(GetHDLCholesterolScore(Input.HDLCholesterol)))-color">@Input.HDLCholesterol</span></div>
                     </div>
                 </div>
             </div>
@@ -134,7 +168,9 @@
                         <div class="segment bad"></div>
                         <div class="segment normal"></div>
                         <div class="segment good"></div>
-                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                        <div class="segment normal"></div>
+                        <div class="segment bad"></div>
+                        <div class="indicator" style="left: @(GetPercentage(70,100,130,160,Input.LDLCholesterol))%;"><span class="value @(Enum.GetName(GetLDLCholesterolScore(Input.LDLCholesterol)))-color">@Input.LDLCholesterol</span></div>
                     </div>
                 </div>
             </div>
@@ -174,9 +210,13 @@
                     };
                 using var reader = new StreamReader(response.Content.ReadAsStream());
                 using var csv = new CsvReader(reader, config);
-                var hr = csv.GetRecords<Activity>().Select(x => x.icu_resting_hr).ToList();
-                Input.RestingHeartRate = hr.Last();
-                StateHasChanged();
+                var alldata = csv.GetRecords<Activity>().Where(x => x.start_date.Year == Input.InfoDate.Year && x.start_date.Month == Input.InfoDate.Month).ToList();
+                if (alldata.Count > 0)
+                {
+                    var hr = alldata.Select(x => x.icu_resting_hr).ToList();
+                    Input.RestingHeartRate = hr.Last();
+                    StateHasChanged();
+                }
             }
         }
     }
