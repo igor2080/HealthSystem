@@ -21,6 +21,8 @@
     <script src="_content/AntDesign.Charts/g2plot.min.js"></script>
     <script src="_content/AntDesign.Charts/ant-design-charts-blazor.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
     <script>
         async function getGraphAsImage(){
@@ -39,6 +41,55 @@
             link.href= image;
             link.download = fileName || "graph.png";
             link.click();
+        }
+
+        function drawGraph(){
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const backgroundZonesPlugin = {
+                id: 'backgroundZones',
+                beforeDraw(chart) {
+                const { ctx, chartArea: { top, bottom, left, right }, scales: { y } } = chart;
+
+                const zones = [
+                    { start: 0, end: 30, color: 'rgba(0, 255, 0, 0.1)' },  
+                    { start: 30, end: 70, color: 'rgba(255, 255, 0, 0.1)' },
+                    { start: 70, end: 100, color: 'rgba(255, 0, 0, 0.1)' }  
+                ];
+
+                zones.forEach(zone => {
+                    ctx.save();
+                    ctx.fillStyle = zone.color;
+                    const zoneTop = y.getPixelForValue(zone.end);
+                    const zoneBottom = y.getPixelForValue(zone.start);
+                    ctx.fillRect(left, zoneTop, right - left, zoneBottom - zoneTop);
+                    ctx.restore();
+                });
+                }
+            };
+            Chart.register(backgroundZonesPlugin);
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                labels: ['January', 'February', 'March', 'April', 'May'],
+                datasets: [{
+                    label: 'Dataset 1',
+                    data: [10, 40, 55, 65, 85],
+                    borderColor: 'blue',
+                    backgroundColor: 'blue',
+                    fill: false
+                }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                        min: 0,
+                        max: 100,
+                        }
+                    },
+                }
+            });
         }
     </script>
 </body>

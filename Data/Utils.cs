@@ -63,7 +63,7 @@
             return data.GroupBy(x => new { x.Entry_Date.Year, x.Entry_Date.Month }).Select(x => new { date = $"{x.Key.Month}-{x.Key.Year}", value = float.Parse(x.Average(y => y.Value).ToString("0.00")) }).ToArray();
         }
 
-        public static int GetMetabolicScore(ApplicationUser user, float weight, float waistSize, float insulin, float CGM, float triglyceride, float bloodPressureUpper, float bloodPressureLower, float LDLCholesterol, float HDLCholesterol, float restingHeartRate)
+        public static int GetMetabolicHealth(ApplicationUser user, float weight, float waistSize, float insulin, float CGM, float triglyceride, float bloodPressureUpper, float bloodPressureLower, float LDLCholesterol, float HDLCholesterol, float restingHeartRate)
         {
             return (int)GetBMIScore(user.Height, weight) +
                 (int)GetWaistScore(user, waistSize) +
@@ -75,6 +75,17 @@
                 (int)GetLDLCholesterolScore(LDLCholesterol) +
                 (int)GetRestingHeartRateScore(restingHeartRate);
         }
+
+        public static HealthScore GetMetabolicHealthScore(int health)
+        {
+            if (health >= 15)
+                return HealthScore.good;
+            else if (health >= 10)
+                return HealthScore.normal;
+
+            return HealthScore.bad;
+        }
+
 
         public static float GetBMI(float height, float weight)
         {

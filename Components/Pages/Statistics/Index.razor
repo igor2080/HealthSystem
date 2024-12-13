@@ -9,118 +9,150 @@
 @attribute [Authorize]
 @rendermode InteractiveServer
 
-<select @onchange="OnSelectionChanged">
-    @foreach (var item in informationTypes)
+
+
+<div class="displayTable">
+    <div class="displayTableHeader">
+        <div class="tableLabel date">
+            <InputSelect TValue="int" Value="year" ValueChanged="OnSelectionChanged" ValueExpression="@(() => year)">
+                <option>2024</option>
+                <option>2023</option>
+                <option>2022</option>
+                <option>2021</option>
+                <option>2020</option>
+            </InputSelect>
+            @* <select class="form-select text-center" >
+                <option>2024</option>
+                <option>2023</option>
+                <option>2022</option>
+                <option>2021</option>
+                <option>2020</option>
+            </select> *@
+        </div>
+        <div class="tableEmpty"></div>
+        <div class="tableValueHeader">January</div>
+        <div class="tableValueHeader">February</div>
+        <div class="tableValueHeader">March</div>
+        <div class="tableValueHeader">April</div>
+        <div class="tableValueHeader">May</div>
+        <div class="tableValueHeader">June</div>
+        <div class="tableValueHeader">July</div>
+        <div class="tableValueHeader">August</div>
+        <div class="tableValueHeader">September</div>
+        <div class="tableValueHeader">October</div>
+        <div class="tableValueHeader">November</div>
+        <div class="tableValueHeader">December</div>
+    </div>
+    @foreach (var itemGroup in MedicalInformation)
     {
-        <option value="@item.Id">@item.Description</option>
+        <div>
+            <div class="tableLabel">@informationTypes[itemGroup.Key - 1].Description</div>
+            <div class="tableEmpty"></div>
+            @for (int i = 1; i <= 12; i++)
+            {
+                var item = itemGroup.FirstOrDefault(x => x.Entry_Date.Month == i);
+                <div class="tableValue @GetCalculationScore(itemGroup.Key,item?.Value??0,item?.SecondaryValue)">
+                    @(item?.Value ?? 0)
+                    @if (itemGroup.Key == 2)//blood pressure
+                    {
+                        @(" - " + (item?.SecondaryValue ?? 0))
+                    }
+                </div>
+            }
+        </div>
     }
-</select>
+    <hr />
+    <div>
+        <div class="tableLabel">Metabolic health index</div>
+        <div class="tableEmpty"></div>
+        @for (int i = 1; i <= 12; i++)
+        {
+            if (MedicalInformation.Count > 0)
+            {
+                var item = MedicalInformation.Select(x => x?.FirstOrDefault(y => y.Entry_Date.Month == i)).ToList();
+                var healthScore = @GetMetabolicHealth(user, item[2]?.Value ?? 0, item[0]?.Value ?? 0, item[5]?.Value ?? 0, item[4]?.Value ?? 0, item[6]?.Value ?? 0, item[1]?.Value ?? 0, item[1]?.SecondaryValue ?? 0, item[7]?.Value ?? 0, item[8]?.Value ?? 0, item[3]?.Value ?? 0);
+                <div class="tableValue metabolic @Enum.GetName(GetMetabolicHealthScore(healthScore))">
+                    @healthScore
+                </div>
+            }
+            else
+            {
+                <div class="tableValue metabolic bad">
+                    0
+                </div>
+            }
 
-
-<div style="width:600px; height:400px;">
-    <Line Data="data" Config="config" @ref="lineGraph" />
+        }
+    </div>
 </div>
+
 
 <button class="btn btn-light" @onclick="DownloadGraph">Download</button>
 <button class="btn btn-info" @onclick="SendGraph">Send as Email</button>
 
 @code {
     List<InformationType> informationTypes;
-    InformationType selectedType;
+    List<IGrouping<int, MedicalInformation>> MedicalInformation;
+    int year = DateTime.Now.Year;
     string userId;
     ApplicationUser user;
-    object[] data;
-    IChartComponent lineGraph;
-
-    LineConfig config = new LineConfig()
-        {
-            Padding = "auto",
-            XField = "date",
-            YField = "value",
-            Smooth = true,
-            Width = 50,
-            //LineStyle = new LineStyle() { Stroke = "#6897a7" }, - line color
-            //Theme = "dark",
-            Label = new Label
-            {
-                Visible = false
-            }
-        };
 
     protected override async Task OnInitializedAsync()
     {
         using var Context = DbFactory.CreateDbContext();
         informationTypes = Context.InformationType.ToList();
-        informationTypes.Add(new InformationType() { Id = -1, Description = "Metabolic Health" });
         var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
         user = await UserManager.FindByIdAsync(userId);
+        UpdateTableData(year);
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private void OnSelectionChanged(int e)
     {
-        if (firstRender)
-        {
-            selectedType = informationTypes.First();
-            using var Context = DbFactory.CreateDbContext();
-            data = GetAveragePerMonth(Context.MedicalInformation.Where(x => x.UserId == userId && x.InformationTypeId == selectedType.Id));
-            await lineGraph.ChangeData(data);
-            StateHasChanged();
-        }
+        year = e;
+        UpdateTableData(year);
+
     }
-    private void OnSelectionChanged(ChangeEventArgs e)
+
+    private void UpdateTableData(int year)
     {
-        selectedType = informationTypes.Single(x => x.Id == Convert.ToInt32(e.Value));
-        using var Context = DbFactory.CreateDbContext();
-        //data is averaged per month, then displayed as the month and the average value of that month
-        if (selectedType.Id != -1)
-        {
-            data = GetAveragePerMonth(Context.MedicalInformation.Where(x => x.UserId == userId && x.InformationTypeId == selectedType.Id));
-        }
-        else
-        {
-            var allData = Context.MedicalInformation.Where(x => x.UserId == userId).GroupBy(x => new { x.Entry_Date.Year, x.Entry_Date.Month }).ToList();
-            float weight = -1, waistSize = -1, insulin = -1, CGM = -1, triglyceride = -1, bloodPressureUpper = -1, bloodPressureLower = -1, LDLCholesterol = -1, HDLCholesterol = -1, restingHeartRate = -1;
-            List<object> list = new List<object>();
+        using var context = DbFactory.CreateDbContext();
+        MedicalInformation = context.MedicalInformation.Where(x => x.UserId == userId && x.Entry_Date.Year == year).GroupBy(x => x.InformationTypeId).ToList();
 
-            foreach (var monthlyData in allData)
-            {
-                weight = -1; waistSize = -1; insulin = -1; CGM = -1; triglyceride = -1; bloodPressureUpper = -1; bloodPressureLower = -1; LDLCholesterol = -1; HDLCholesterol = -1; restingHeartRate = -1;
-                if (monthlyData.Any(x => x.InformationTypeId == 1))//Waist Size
-                    waistSize = monthlyData.Where(x => x.InformationTypeId == 1).Average(x => x.Value);
-                if (monthlyData.Any(x => x.InformationTypeId == 2))//Blood Pressure
-                {
-                    bloodPressureUpper = monthlyData.Where(x => x.InformationTypeId == 2).Average(x => x.Value);
-                    bloodPressureLower = monthlyData.Where(x => x.InformationTypeId == 2).Average(x => (float)x.SecondaryValue!);
-                }
-                if (monthlyData.Any(x => x.InformationTypeId == 3))//Weight
-                    weight = monthlyData.Where(x => x.InformationTypeId == 3).Average(x => x.Value);
-                if (monthlyData.Any(x => x.InformationTypeId == 4))//Resting Heart Rate
-                    restingHeartRate = monthlyData.Where(x => x.InformationTypeId == 4).Average(x => x.Value);
-                if (monthlyData.Any(x => x.InformationTypeId == 5))//CGM
-                    CGM = monthlyData.Where(x => x.InformationTypeId == 5).Average(x => x.Value);
-                if (monthlyData.Any(x => x.InformationTypeId == 6))//Insulin
-                    insulin = monthlyData.Where(x => x.InformationTypeId == 6).Average(x => x.Value);
-                if (monthlyData.Any(x => x.InformationTypeId == 7))//Triglyceride
-                    triglyceride = monthlyData.Where(x => x.InformationTypeId == 7).Average(x => x.Value);
-                if (monthlyData.Any(x => x.InformationTypeId == 8))//HDL Cholesterol
-                    HDLCholesterol = monthlyData.Where(x => x.InformationTypeId == 8).Average(x => x.Value);
-                if (monthlyData.Any(x => x.InformationTypeId == 9))//LDL Cholesterol
-                    LDLCholesterol = monthlyData.Where(x => x.InformationTypeId == 9).Average(x => x.Value);
-                list.Add(new { date = $"{monthlyData.Key.Month}-{monthlyData.Key.Year}", value = GetMetabolicScore(user, weight, waistSize, insulin, CGM, triglyceride, bloodPressureUpper, bloodPressureLower, LDLCholesterol, HDLCholesterol, restingHeartRate) });
-            }
-
-            data = list.ToArray();
-        }
-        lineGraph.ChangeData(data);
         StateHasChanged();
+    }
 
+    private string GetCalculationScore(int informationTypeId, float value, float? secondValue)
+    {
+        switch (informationTypeId)
+        {
+            case 1:
+                return Enum.GetName(GetWaistScore(user, value));
+            case 2:
+                return Enum.GetName(GetBloodPressureScore(value, secondValue ?? 0));
+            case 3:
+                return Enum.GetName(GetBMIScore(user.Height, value));
+            case 4:
+                return Enum.GetName(GetRestingHeartRateScore(value));
+            case 5:
+                return Enum.GetName(GetCGMScore(value));
+            case 6:
+                return Enum.GetName(GetInsulinScore(value));
+            case 7:
+                return Enum.GetName(GetTriglycerideScore(value));
+            case 8:
+                return Enum.GetName(GetHDLCholesterolScore(value));
+            case 9:
+                return Enum.GetName(GetLDLCholesterolScore(value));
+            default:
+                return "bad";
+        }
     }
 
 
     private async Task DownloadGraph()
     {
-        await JSRuntime.InvokeVoidAsync("downloadCurrentPageGraph", selectedType.Description + ".png");
+        await JSRuntime.InvokeVoidAsync("downloadCurrentPageGraph", "data" + ".png");
     }
 
     private async Task SendGraph()
