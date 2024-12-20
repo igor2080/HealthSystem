@@ -1,0 +1,63 @@
+﻿.container{
+    font-family:Georgia;
+    padding-top:3%;
+}
+
+
+.title, .period {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    font-size: 24px;
+    color: #4587DD;
+}
+
+.dynamics {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    width: 50%;
+    margin: auto;
+    color: #4587DD;
+}
+
+/*.period {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    font-size: 24px;
+    color: #4587DD;
+}*/
+
+.LeftBad, .RightBad {
+    background-color: #ff6b6b;
+}
+
+.Healthy {
+    background-color: #6bcf6b;
+}
+
+.LeftOkay, .RightOkay {
+    background-color: #ffe066;
+}
+
+.displayTable {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    text-align: center;
+    
+}
+    .displayTable > div {
+        border-right: 1px solid black;
+        border-top: 1px solid black;
+        padding:3px;
+    }
+    .displayTable>div:nth-of-type(3n+1){
+        border-left:1px solid black;
+    }
+        .displayTable > div:nth-of-type(1n+4) {
+            border-bottom: 1px solid black;
+            color: black;
+        }

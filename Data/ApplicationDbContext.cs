@@ -24,7 +24,8 @@ namespace HealthSystem.Data
                 new InformationType { Id = 6, Description = "Insulin" },
                 new InformationType { Id = 7, Description = "Triglyceride" },
                 new InformationType { Id = 8, Description = "HDL Cholesterol" },
-                new InformationType { Id = 9, Description = "LDL Cholesterol" }
+                new InformationType { Id = 9, Description = "LDL Cholesterol" },
+                new InformationType { Id = 10, Description = "Metabolic Health" }
                 );
 
             builder.Entity<IdentityRole>().HasData(

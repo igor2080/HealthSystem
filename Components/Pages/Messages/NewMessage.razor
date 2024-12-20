@@ -13,7 +13,12 @@
     {
         <div>
             <span>Contact the administration</span>
+            <br />
+            <span>Title</span>
+            <InputText class="form-control" style="resize:both;" @bind-Value="Message.Title" />
+            <span>Message</span>
             <InputTextArea class="form-control" style="resize:both;" @bind-Value="Message.Content" />
+            <div>Include screenshot of the current page? <InputCheckbox @bind-Value="requireScreenshot"/></div>
         </div>
         <button @onclick="SendMessage" class="btn btn-primary">Send</button>
     }
@@ -52,8 +57,9 @@
         else
             Message.Id = Context.Message.OrderByDescending(x => x.Id).First().Id + 1;
         Context.Message.Add(Message);
-        Context.SaveChanges();
-
+        await Context.SaveChangesAsync();
+        Message = new();
+        isVisible = false;
 
     }
 }

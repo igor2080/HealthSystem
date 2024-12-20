@@ -5,50 +5,51 @@
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @attribute [Authorize]
+@rendermode InteractiveServer
 
-@foreach (var thread in MessageThreads)
-{
-    <div>
-        <span>From: @userName</span>
-    </div>
-    <div>
-        @thread[0].Content
-    </div>
-    <div>
-        @thread[0].Image
-    </div>
-    <div>
-        Previous responses:
-        @foreach (var message in thread)
+<div class="container">
+    <div class="messageList">
+        <div class="messageListTitle">Messages</div>
+        @foreach (var thread in MessageThreads)
         {
-            @if (message.Id == thread[0].Id)
-            {
-                continue;//skip the first one
-            }
-            <div>From: @message.Sender.Name</div>
-            <div>
-                @message.Content
-            </div>
-            <div>
-                @message.Image
+            <div class="messageThread @(thread[0].ReadDate.HasValue?"":"bold") @(thread[0].Id==currentMessageId?"active":"")" @onclick="async ()=>{await SetActive(thread[0].Id);}">
+                <div class="messageThreadDate">@thread.Last().Date</div>
+                <div class="messageThreadTitle">@thread[0].Title</div>
             </div>
         }
     </div>
-    <span>Reply</span>
-    <div>
-        <EditForm method="post" Model="Message" OnValidSubmit="SendResponse">
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert" />
-            <div class="mb-3">
-                <label for="description" class="form-label">Message:</label>
-                <InputText id="description" @bind-Value="Message.Content" class="form-control" />
-                <ValidationMessage For="() => Message.Content" class="text-danger" />
+    <div class="messageDetails">
+        @if (currentMessageId > 0)
+        {
+            <div class="messageContentTitle">
+                Message
             </div>
-            <button type="submit" class="btn btn-primary">Reply</button>
-        </EditForm>
+
+            <div class="messageContent">
+                @foreach (var threadMessage in currentThread)
+                {
+                    <div class="@(threadMessage.SenderId == user.Id ? "right" : "left")">
+                        @threadMessage.Content
+                    </div>
+                }
+            </div>
+            <hr />
+            <span>Reply</span>
+            <div class="reply">
+                <EditForm method="post" Model="Message" OnValidSubmit="SendResponse">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-danger" role="alert" />
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Message:</label>
+                        <InputText id="description" @bind-Value="Message.Content" class="form-control" />
+                        <ValidationMessage For="() => Message.Content" class="text-danger" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Reply</button>
+                </EditForm>
+            </div>
+        }
     </div>
-    <span>==========</span>
-}
+</div>
 
 
 @code {
@@ -56,22 +57,41 @@
     List<List<Message>> MessageThreads = new();
 
     Message Message { get; set; } = new();
-    string userName;
+    int currentMessageId = 0;
+    List<Message> currentThread;
+    ApplicationUser admin;
+    ApplicationUser user;
 
     protected override async Task OnInitializedAsync()
     {
+        admin = await UserManager.FindByEmailAsync("admin@site.com");
         var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
-        userName = authState.User.Identity.Name;
-        var userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        user = await UserManager.FindByEmailAsync(authState.User.Identity.Name);
+
         using var Context = DbFactory.CreateDbContext();
         //all sent and received messages, should include all of the "related" messages too as users cannot send to other users
-        Messages = Context.Message.Include("Sender").Include("Receiver").Where(x => x.SenderId == userId && x.ReceiverId == userId).OrderByDescending(x => x.Date).ToList();
+        Messages = Context.Message.Include("Sender").Include("Receiver").Where(x => x.SenderId == user.Id || x.ReceiverId == user.Id).OrderByDescending(x => x.Date).ToList();
         //all of the messages that were conversation starters
         MessageThreads = GetMessagesByThread(Messages);
     }
 
     async Task SendResponse(EditContext editContext)
     {
+
+    }
+
+    async Task SetActive(int messageId)
+    {
+        currentMessageId = messageId;
+        currentThread = MessageThreads.Single(x => x[0].Id == messageId);
+
+        //disabled for testing
+
+        // using var Context = DbFactory.CreateDbContext();
+        // Context.Message.Single(x => x.Id == messageId).ReadDate = DateTime.Now;
+        // await Context.SaveChangesAsync();
+
+        StateHasChanged();
 
     }
 }

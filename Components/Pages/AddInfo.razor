@@ -28,11 +28,11 @@
                 <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.WaistSize" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
-                        <div class="segment bad"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment good"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment bad"></div>
+                        <div class="segment LeftBad"></div>
+                        <div class="segment LeftOkay"></div>
+                        <div class="segment Healthy"></div>
+                        <div class="segment RightOkay"></div>
+                        <div class="segment RightBad"></div>
                         @{
                             float first, second, third, fourth;
                             if (user.Gender.Equals("male", StringComparison.CurrentCultureIgnoreCase))
@@ -60,12 +60,12 @@
                 <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.BloodPressureLower" /><InputNumber class="addinfo-number" @bind-Value="Input.BloodPressureUpper" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
-                        <div class="segment bad"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment good"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment bad"></div>
-                        <div class="indicator" style="left: 70%;"><span class="value good-color">70</span></div>
+                        <div class="segment LeftBad"></div>
+                        <div class="segment LeftOkay"></div>
+                        <div class="segment Healthy"></div>
+                        <div class="segment RightOkay"></div>
+                        <div class="segment RightBad"></div>
+                        @* <div class="indicator" style="left: 70%;"><span class="value Healthy-color">70</span></div> *@
                     </div>
                 </div>
             </div>
@@ -75,11 +75,11 @@
                 <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.Weight" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
-                        <div class="segment bad"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment good"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment bad"></div>
+                        <div class="segment LeftBad"></div>
+                        <div class="segment LeftOkay"></div>
+                        <div class="segment Healthy"></div>
+                        <div class="segment RightOkay"></div>
+                        <div class="segment RightBad"></div>
                         <div class="indicator" style="left: @(GetPercentage(15,18.5f,25,28,GetBMI(user.Height,Input.Weight)))%;"><span class="value @(Enum.GetName(GetBMIScore(user.Height, Input.Weight)))-color">@Input.Weight</span></div>
                     </div>
                 </div>
@@ -90,11 +90,11 @@
                 <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.RestingHeartRate" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
-                        <div class="segment bad"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment good"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment bad"></div>
+                        <div class="segment LeftBad"></div>
+                        <div class="segment LeftOkay"></div>
+                        <div class="segment Healthy"></div>
+                        <div class="segment RightOkay"></div>
+                        <div class="segment RightBad"></div>
                         <div class="indicator" style="left: @(GetPercentage(35,40,60,80,Input.RestingHeartRate))%;"><span class="value @(Enum.GetName(GetRestingHeartRateScore(Input.RestingHeartRate)))-color">@Input.RestingHeartRate</span></div>
                     </div>
                 </div>
@@ -105,11 +105,11 @@
                 <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.CGM" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
-                        <div class="segment bad"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment good"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment bad"></div>
+                        <div class="segment LeftBad"></div>
+                        <div class="segment LeftOkay"></div>
+                        <div class="segment Healthy"></div>
+                        <div class="segment RightOkay"></div>
+                        <div class="segment RightBad"></div>
                         <div class="indicator" style="left: @(GetPercentage(70,75,100,105,Input.CGM))%;"><span class="value @(Enum.GetName(GetCGMScore(Input.CGM)))-color">@Input.CGM</span></div>
                     </div>
                 </div>
@@ -120,11 +120,11 @@
                 <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.Insulin" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
-                        <div class="segment bad"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment good"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment bad"></div>
+                        <div class="segment LeftBad"></div>
+                        <div class="segment LeftOkay"></div>
+                        <div class="segment Healthy"></div>
+                        <div class="segment RightOkay"></div>
+                        <div class="segment RightBad"></div>
                         <div class="indicator" style="left: @(GetPercentage(1.5f,2.6f,5,11,Input.Insulin))%;"><span class="value @(Enum.GetName(GetInsulinScore(Input.Insulin)))-color">@Input.Insulin</span></div>
                     </div>
                 </div>
@@ -135,12 +135,12 @@
                 <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.Triglyceride" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
-                        <div class="segment bad"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment good"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment bad"></div>
-                        <div class="indicator" style="left: @(GetPercentage(45,50,180,200,Input.Triglyceride))%;"><span class="value @(Enum.GetName(GetTriglycerideScore(Input.Triglyceride)))-color">@Input.Triglyceride</span></div>
+                        <div class="segment LeftBad"></div>
+                        <div class="segment LeftOkay"></div>
+                        <div class="segment Healthy"></div>
+                        <div class="segment RightOkay"></div>
+                        <div class="segment RightBad"></div>
+                        <div class="indicator" style="left: @(GetPercentage(45,49,180,200,Input.Triglyceride))%;"><span class="value @(Enum.GetName(GetTriglycerideScore(Input.Triglyceride)))-color">@Input.Triglyceride</span></div>
                     </div>
                 </div>
             </div>
@@ -150,11 +150,11 @@
                 <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.HDLCholesterol" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
-                        <div class="segment bad"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment good"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment bad"></div>
+                        <div class="segment LeftBad"></div>
+                        <div class="segment LeftOkay"></div>
+                        <div class="segment Healthy"></div>
+                        <div class="segment RightOkay"></div>
+                        <div class="segment RightBad"></div>
                         <div class="indicator" style="left: @(GetPercentage(40,50,60,70,Input.HDLCholesterol))%;"><span class="value @(Enum.GetName(GetHDLCholesterolScore(Input.HDLCholesterol)))-color">@Input.HDLCholesterol</span></div>
                     </div>
                 </div>
@@ -165,11 +165,11 @@
                 <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.LDLCholesterol" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
-                        <div class="segment bad"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment good"></div>
-                        <div class="segment normal"></div>
-                        <div class="segment bad"></div>
+                        <div class="segment LeftBad"></div>
+                        <div class="segment LeftOkay"></div>
+                        <div class="segment Healthy"></div>
+                        <div class="segment RightOkay"></div>
+                        <div class="segment RightBad"></div>
                         <div class="indicator" style="left: @(GetPercentage(70,100,130,160,Input.LDLCholesterol))%;"><span class="value @(Enum.GetName(GetLDLCholesterolScore(Input.LDLCholesterol)))-color">@Input.LDLCholesterol</span></div>
                     </div>
                 </div>
@@ -224,19 +224,18 @@
     private void UpdateValues()
     {
         using var Context = DbFactory.CreateDbContext();
-        var medicalInfo = Context.MedicalInformation.Where(x => x.Entry_Date.Year == Input.InfoDate.Year && x.Entry_Date.Month == Input.InfoDate.Month && x.UserId == userId);
+        var medicalInfo = Context.MedicalInformation.Where(x => x.Entry_Date.Year == Input.InfoDate.Year && x.Entry_Date.Month == Input.InfoDate.Month && x.UserId == userId).OrderBy(x => x.Entry_Date);
 
-
-        Input.WaistSize = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 1)?.Value ?? 0;
-        Input.BloodPressureLower = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 2)?.Value ?? 0;
-        Input.BloodPressureUpper = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 2)?.SecondaryValue ?? 0;
-        Input.Weight = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 3)?.Value ?? 0;
-        Input.RestingHeartRate = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 4)?.Value ?? 0;
-        Input.CGM = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 5)?.Value ?? 0;
-        Input.Insulin = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 6)?.Value ?? 0;
-        Input.Triglyceride = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 7)?.Value ?? 0;
-        Input.HDLCholesterol = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 8)?.Value ?? 0;
-        Input.LDLCholesterol = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 9)?.Value ?? 0;
+        Input.WaistSize = medicalInfo.LastOrDefault(x => x.InformationTypeId == 1)?.Value ?? 0;
+        Input.BloodPressureLower = medicalInfo.LastOrDefault(x => x.InformationTypeId == 2)?.Value ?? 0;
+        Input.BloodPressureUpper = medicalInfo.LastOrDefault(x => x.InformationTypeId == 2)?.SecondaryValue ?? 0;
+        Input.Weight = medicalInfo.LastOrDefault(x => x.InformationTypeId == 3)?.Value ?? 0;
+        Input.RestingHeartRate = medicalInfo.LastOrDefault(x => x.InformationTypeId == 4)?.Value ?? 0;
+        Input.CGM = medicalInfo.LastOrDefault(x => x.InformationTypeId == 5)?.Value ?? 0;
+        Input.Insulin = medicalInfo.LastOrDefault(x => x.InformationTypeId == 6)?.Value ?? 0;
+        Input.Triglyceride = medicalInfo.LastOrDefault(x => x.InformationTypeId == 7)?.Value ?? 0;
+        Input.HDLCholesterol = medicalInfo.LastOrDefault(x => x.InformationTypeId == 8)?.Value ?? 0;
+        Input.LDLCholesterol = medicalInfo.LastOrDefault(x => x.InformationTypeId == 9)?.Value ?? 0;
     }
 
     private void OnDateChanged(DateTime newValue)
@@ -254,9 +253,9 @@
         else
             id = Context.MedicalInformation.OrderByDescending(x => x.Id).First().Id;
 
-        var medicalInfo = Context.MedicalInformation.Where(x => x.Entry_Date.Year == Input.InfoDate.Year && x.Entry_Date.Month == Input.InfoDate.Month && x.UserId == userId);
+        var medicalInfo = Context.MedicalInformation.Where(x => x.Entry_Date.Year == Input.InfoDate.Year && x.Entry_Date.Month == Input.InfoDate.Month && x.UserId == userId).OrderBy(x => x.Entry_Date);
 
-        var waistSize = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 1);
+        var waistSize = medicalInfo.LastOrDefault(x => x.InformationTypeId == 1);
         if (waistSize is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()
@@ -273,7 +272,7 @@
             waistSize.Value = Input.WaistSize;
         }
 
-        var bloodPressure = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 2);
+        var bloodPressure = medicalInfo.LastOrDefault(x => x.InformationTypeId == 2);
         if (bloodPressure is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()
@@ -292,7 +291,7 @@
             bloodPressure.SecondaryValue = Input.BloodPressureUpper;
         }
 
-        var weight = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 3);
+        var weight = medicalInfo.LastOrDefault(x => x.InformationTypeId == 3);
         if (weight is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()
@@ -309,7 +308,7 @@
             weight.Value = Input.Weight;
         }
 
-        var heartRate = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 4);
+        var heartRate = medicalInfo.LastOrDefault(x => x.InformationTypeId == 4);
         if (heartRate is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()
@@ -326,7 +325,7 @@
             heartRate.Value = Input.RestingHeartRate;
         }
 
-        var cgm = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 5);
+        var cgm = medicalInfo.LastOrDefault(x => x.InformationTypeId == 5);
         if (cgm is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()
@@ -343,7 +342,7 @@
             cgm.Value = Input.CGM;
         }
 
-        var insulin = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 6);
+        var insulin = medicalInfo.LastOrDefault(x => x.InformationTypeId == 6);
         if (insulin is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()
@@ -360,7 +359,7 @@
             insulin.Value = Input.Insulin;
         }
 
-        var triglyceride = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 7);
+        var triglyceride = medicalInfo.LastOrDefault(x => x.InformationTypeId == 7);
         if (triglyceride is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()
@@ -377,7 +376,7 @@
             triglyceride.Value = Input.Triglyceride;
         }
 
-        var hdlcholesterol = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 8);
+        var hdlcholesterol = medicalInfo.LastOrDefault(x => x.InformationTypeId == 8);
         if (hdlcholesterol is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()
@@ -394,7 +393,7 @@
             hdlcholesterol.Value = Input.HDLCholesterol;
         }
 
-        var ldlcholesterol = medicalInfo.FirstOrDefault(x => x.InformationTypeId == 9);
+        var ldlcholesterol = medicalInfo.LastOrDefault(x => x.InformationTypeId == 9);
         if (ldlcholesterol is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()

@@ -1,0 +1,74 @@
+﻿.container {
+    display: grid;
+    grid-template-columns: 3fr 7fr;
+    width: 100%;
+    min-height:100vh;
+    margin: 0;
+
+}
+
+.messageList {
+    background-color: white;
+    border: 3px solid #4587dd;
+}
+
+.messageListTitle, .messageThread {
+    
+    text-align: center;
+    font-family: Georgia;
+    color: #4587dd;
+}
+
+.messageListTitle {
+    border-bottom: solid #4587dd;
+    text-align: center;
+    font-family: Georgia;
+    color: #4587dd;
+    font-size: 22pt;
+    font-weight: bold;
+    padding: 2% 0;
+    height: 2.2em;
+}
+
+.messageThread {
+    border-bottom: solid #4587dd;
+    cursor:pointer;
+    display:flex;
+    flex-direction:column;
+    font-size:16pt;
+    padding:0 1em;
+    
+}
+    .messageThread:hover {
+        background-color: #4587dd;
+        color:white;
+    }
+        .messageThread:hover .messageThreadDate {
+            color: #b2b2b2;
+        }
+.messageThreadDate {
+    color: gray;
+    font-style: italic;
+    align-self: end;
+    font-size:initial;
+}
+
+.messageThreadTitle {
+    align-self: start;
+}
+
+.messageContent{
+    display:flex;
+}
+
+
+.messageContentTitle {
+    background-color: #4587dd;
+    text-align: center;
+    font-family: Georgia;
+    color: white;
+    font-size: 22pt;
+    font-weight: bold;
+    height: 2.3em;
+    line-height: 2.3em;
+}

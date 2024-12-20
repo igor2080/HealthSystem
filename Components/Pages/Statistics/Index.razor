@@ -21,13 +21,6 @@
                 <option>2021</option>
                 <option>2020</option>
             </InputSelect>
-            @* <select class="form-select text-center" >
-                <option>2024</option>
-                <option>2023</option>
-                <option>2022</option>
-                <option>2021</option>
-                <option>2020</option>
-            </select> *@
         </div>
         <div class="tableEmpty"></div>
         <div class="tableValueHeader">January</div>
@@ -50,8 +43,8 @@
             <div class="tableEmpty"></div>
             @for (int i = 1; i <= 12; i++)
             {
-                var item = itemGroup.FirstOrDefault(x => x.Entry_Date.Month == i);
-                <div class="tableValue @GetCalculationScore(itemGroup.Key,item?.Value??0,item?.SecondaryValue)">
+                var item = itemGroup.OrderBy(x => x.Entry_Date).LastOrDefault(x => x.Entry_Date.Month == i);
+                <div class="tableValue @GetCalculationScore(itemGroup.Key, item?.Value??0, item?.SecondaryValue)">
                     @(item?.Value ?? 0)
                     @if (itemGroup.Key == 2)//blood pressure
                     {
@@ -69,8 +62,19 @@
         {
             if (MedicalInformation.Count > 0)
             {
-                var item = MedicalInformation.Select(x => x?.FirstOrDefault(y => y.Entry_Date.Month == i)).ToList();
-                var healthScore = @GetMetabolicHealth(user, item[2]?.Value ?? 0, item[0]?.Value ?? 0, item[5]?.Value ?? 0, item[4]?.Value ?? 0, item[6]?.Value ?? 0, item[1]?.Value ?? 0, item[1]?.SecondaryValue ?? 0, item[7]?.Value ?? 0, item[8]?.Value ?? 0, item[3]?.Value ?? 0);
+                var item = MedicalInformation.Select(x => x?.LastOrDefault(y => y.Entry_Date.Month == i)).ToList();
+
+                var healthScore = @GetMetabolicHealth(user,
+                item.FirstOrDefault(x => x?.InformationTypeId == 1)?.Value ?? 0,
+                item.FirstOrDefault(x => x?.InformationTypeId == 2)?.Value ?? 0,
+                item.FirstOrDefault(x => x?.InformationTypeId == 2)?.SecondaryValue ?? 0,
+                item.FirstOrDefault(x => x?.InformationTypeId == 3)?.Value ?? 0,
+                item.FirstOrDefault(x => x?.InformationTypeId == 4)?.Value ?? 0,
+                item.FirstOrDefault(x => x?.InformationTypeId == 5)?.Value ?? 0,
+                item.FirstOrDefault(x => x?.InformationTypeId == 6)?.Value ?? 0,
+                item.FirstOrDefault(x => x?.InformationTypeId == 7)?.Value ?? 0,
+                item.FirstOrDefault(x => x?.InformationTypeId == 8)?.Value ?? 0,
+                item.FirstOrDefault(x => x?.InformationTypeId == 9)?.Value ?? 0);
                 <div class="tableValue metabolic @Enum.GetName(GetMetabolicHealthScore(healthScore))">
                     @healthScore
                 </div>
@@ -100,7 +104,7 @@
     protected override async Task OnInitializedAsync()
     {
         using var Context = DbFactory.CreateDbContext();
-        informationTypes = Context.InformationType.ToList();
+        informationTypes = Context.InformationType.Where(x => x.Id < 10).ToList();
         var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
         user = await UserManager.FindByIdAsync(userId);
@@ -117,7 +121,7 @@
     private void UpdateTableData(int year)
     {
         using var context = DbFactory.CreateDbContext();
-        MedicalInformation = context.MedicalInformation.Where(x => x.UserId == userId && x.Entry_Date.Year == year).GroupBy(x => x.InformationTypeId).ToList();
+        MedicalInformation = context.MedicalInformation.Where(x => x.UserId == userId && x.Entry_Date.Year == year).OrderBy(x => x.Entry_Date).GroupBy(x => x.InformationTypeId).ToList();
 
         StateHasChanged();
     }

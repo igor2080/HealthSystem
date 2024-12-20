@@ -2,6 +2,7 @@
 @attribute [Authorize(Roles = "Admin")]
 @using Microsoft.EntityFrameworkCore
 @using HealthSystem.Data
+@using static HealthSystem.Data.Utils
 @inject IDbContextFactory<HealthSystem.Data.ApplicationDbContext> DbFactory
 @inject NavigationManager NavigationManager
 
@@ -58,15 +59,19 @@ else
                                 </div>
 
                                 <div class="form-floating">
-                                    <InputNumber class="form-control" @bind-Value="parameter.Lower_Boundary" />
-                                    <label class="form-label" for="parameter.Lower_Boundary">Lower boundary</label>
-                                    <ValidationMessage For="() => parameter.Lower_Boundary" class="text-danger" />
-                                </div>
-
-                                <div class="form-floating">
-                                    <InputNumber class="form-control" @bind-Value="parameter.Upper_Boundary" />
-                                    <label class="form-label" for="parameter.Lower_Boundary">Upper boundary</label>
-                                    <ValidationMessage For="() => parameter.Upper_Boundary" class="text-danger" />
+                                    <InputSelect class="form-control" @bind-Value="parameter.DynamicsScore">
+                                        <option value="" selected disabled>
+                                            Select score ...
+                                        </option>
+                                        @foreach (DynamicsScore score in Enum.GetValues(typeof(DynamicsScore)))
+                                        {
+                                            <option checked="@(parameter.DynamicsScore == score)" value="@score">
+                                                @Enum.GetName(typeof(DynamicsScore), score)
+                                            </option>
+                                        }
+                                    </InputSelect>
+                                    <label for="score">Parameter dynamics</label>
+                                    <ValidationMessage For="() => parameter.DynamicsScore" class="text-danger" />
                                 </div>
 
                             </div>
@@ -120,10 +125,9 @@ else
         foreach (var triggerParameter in TriggerParameters)
         {
             if (context.TriggerParameters.Any(x => x.RecommendationId == Recommendation!.Id
-                && x.Lower_Boundary == triggerParameter.Lower_Boundary
-                && x.Upper_Boundary == triggerParameter.Upper_Boundary
+                && x.DynamicsScore == triggerParameter.DynamicsScore
             && x.Type == triggerParameter.Type))
-            {
+            {//no changes made
                 continue;
             }
             else

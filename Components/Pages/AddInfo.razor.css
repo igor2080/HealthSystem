@@ -3,14 +3,14 @@
     grid-template-rows: 15% 85%;
     height: 100%;
     font-family: Georgia;
-    padding-top:1%;
+    padding-top: 1%;
 }
 
 .info-row {
     display: grid;
     grid-template-columns: 15% 10% 15%;
     grid-column-gap: 1%;
-    margin:1% 0;
+    margin: 1% 0;
 }
 
 .date-row {
@@ -20,7 +20,7 @@
 
     .date-row div input {
         width: 50%;
-        margin:auto;
+        margin: auto;
     }
 
 .info-label {
@@ -64,28 +64,28 @@
     border-radius: 0 5px 5px 0;
 }
 
-.bad {
+.LeftBad, .RightBad {
     background-color: #ff6b6b;
 }
 
-.normal {
-    background-color: #ffe066;
-}
-
-.good {
+.Healthy {
     background-color: #6bcf6b;
 }
 
-.bad-color {
+.LeftOkay, .RightOkay {
+    background-color: #ffe066;
+}
+
+.LeftBad-color, .RightBad-color {
     color: #ff6b6b;
 }
 
-.normal-color {
-    color: #ffe066;
+.Healthy-color {
+    color: #6bcf6b;
 }
 
-.good-color {
-    color: #6bcf6b;
+.LeftOkay-color, .RightOkay-color {
+    color: #ffe066;
 }
 
 .indicator {

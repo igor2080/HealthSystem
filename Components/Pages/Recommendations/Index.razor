@@ -1,9 +1,13 @@
 ﻿@page "/recommendations"
 @using HealthSystem.Data
+@using System.Globalization
+@using static HealthSystem.Data.Utils
 @inject IDbContextFactory<ApplicationDbContext> DbFactory
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @attribute [Authorize]
+@rendermode InteractiveServer
+
 
 @if (userRoles.Contains("Admin"))
 {
@@ -11,64 +15,438 @@
         <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Add recommendation
     </NavLink>
 }
-<table class="table">
-    <thead>
-        <tr>
-            <th> </th>
-            <th> </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Recommendations)
-        {
-            <tr>
-                <td>@item.Description</td>
-                <td>@item.Study_Link</td>
-                @if (userRoles.Contains("Admin"))
+<div class="container">
+    <div class="title">
+        <div>Metabolic health analysis</div>
+        <div>and recommendations for health improvement</div>
+    </div>
+    <br />
+    @if (m1Info is not null)
+    {
+        string m1 = m1Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture),
+        m2 = m2Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture),
+        m3 = m3Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture);
+        <div class="period">
+            <div>Time period</div>
+            <div class="months">@m1, @m2, @m3</div>
+            <div class="years">@(m1Info.First().Entry_Date.Year == m3Info.First().Entry_Date.Year ? m1Info.First().Entry_Date.Year : $"{m1Info.First().Entry_Date.Year} - {m3Info.First().Entry_Date.Year}")</div>
+        </div>
+        <br />
+        <div class="parameter">
+            <div class="dynamics">
+                <div>Metabolic health dynamics in change:</div>
+                <br />
+                <div class="displayTable">
+                    <div>@m1</div>
+                    <div>@m2</div>
+                    <div>@m3</div>
+                    <div class="@Enum.GetName(MetabolicHealth.m1Score)">@MetabolicHealth.m1Value</div>
+                    <div class="@Enum.GetName(MetabolicHealth.m2Score)">@MetabolicHealth.m2Value</div>
+                    <div class="@Enum.GetName(MetabolicHealth.m3Score)">@MetabolicHealth.m3Value</div>
+                </div>
+            </div>
+            <div class="recommendations">
+                @foreach (var recommendation in MetabolicHealth.Recommendations)
                 {
-                    
+                    <div>
+                        <div>@recommendation.Description</div>
+                        <div>@recommendation.Study_Link</div>
+                    </div>
                 }
-            </tr>
-        }
-    </tbody>
-</table>
+            </div>
+        </div>
+        <br />
+        <div class="parameter">
+            <div class="dynamics">
+                <div>Waist size dynamics in change:</div>
+                <br />
+                <div class="displayTable">
+                    <div>@m1</div>
+                    <div>@m2</div>
+                    <div>@m3</div>
+                    <div class="@Enum.GetName(WaistSize.m1Score)">@WaistSize.m1Value</div>
+                    <div class="@Enum.GetName(WaistSize.m2Score)">@WaistSize.m2Value</div>
+                    <div class="@Enum.GetName(WaistSize.m3Score)">@WaistSize.m3Value</div>
+                </div>
+            </div>
+            <div class="recommendations">
+                @foreach (var recommendation in WaistSize.Recommendations)
+                {
+                    <div>
+                        <div>@recommendation.Description</div>
+                        <div>@recommendation.Study_Link</div>
+                    </div>
+                }
+            </div>
+        </div>
+        <br />
+        <div class="parameter">
+            <div class="dynamics">
+                <div>Blood pressure dynamics in change:</div>
+                <br />
+                <div class="displayTable">
+                    <div>@m1</div>
+                    <div>@m2</div>
+                    <div>@m3</div>
+                    <div class="@Enum.GetName(BloodPressure.m1Score)">@BloodPressure.m1Value - @BloodPressure.m1SecondValue</div>
+                    <div class="@Enum.GetName(BloodPressure.m2Score)">@BloodPressure.m2Value - @BloodPressure.m2SecondValue</div>
+                    <div class="@Enum.GetName(BloodPressure.m3Score)">@BloodPressure.m3Value - @BloodPressure.m2SecondValue</div>
+                </div>
+            </div>
+            <div class="recommendations">
+                @foreach (var recommendation in BloodPressure.Recommendations)
+                {
+                    <div>
+                        <div>@recommendation.Description</div>
+                        <div>@recommendation.Study_Link</div>
+                    </div>
+                }
+            </div>
+        </div>
+        <br />
+        <div class="parameter">
+            <div class="dynamics">
+                <div>Weight dynamics in change:</div>
+                <br />
+                <div class="displayTable">
+                    <div>@m1</div>
+                    <div>@m2</div>
+                    <div>@m3</div>
+                    <div class="@Enum.GetName(BMI.m1Score)">@BMI.m1Value</div>
+                    <div class="@Enum.GetName(BMI.m2Score)">@BMI.m2Value</div>
+                    <div class="@Enum.GetName(BMI.m3Score)">@BMI.m3Value</div>
+                </div>
+            </div>
+            <div class="recommendations">
+                @foreach (var recommendation in BMI.Recommendations)
+                {
+                    <div>
+                        <div>@recommendation.Description</div>
+                        <div>@recommendation.Study_Link</div>
+                    </div>
+                }
+            </div>
+        </div>
+        <br />
+        <div class="parameter">
+            <div class="dynamics">
+                <div>Resting heart rate dynamics in change:</div>
+                <br />
+                <div class="displayTable">
+                    <div>@m1</div>
+                    <div>@m2</div>
+                    <div>@m3</div>
+                    <div class="@Enum.GetName(RestingHeartRate.m1Score)">@RestingHeartRate.m1Value</div>
+                    <div class="@Enum.GetName(RestingHeartRate.m2Score)">@RestingHeartRate.m2Value</div>
+                    <div class="@Enum.GetName(RestingHeartRate.m3Score)">@RestingHeartRate.m3Value</div>
+                </div>
+            </div>
+            <div class="recommendations">
+                @foreach (var recommendation in RestingHeartRate.Recommendations)
+                {
+                    <div>
+                        <div>@recommendation.Description</div>
+                        <div>@recommendation.Study_Link</div>
+                    </div>
+                }
+            </div>
+        </div>
+        <br />
+        <div class="parameter">
+            <div class="dynamics">
+                <div>CGM dynamics in change:</div>
+                <br />
+                <div class="displayTable">
+                    <div>@m1</div>
+                    <div>@m2</div>
+                    <div>@m3</div>
+                    <div class="@Enum.GetName(CGM.m1Score)">@CGM.m1Value</div>
+                    <div class="@Enum.GetName(CGM.m2Score)">@CGM.m2Value</div>
+                    <div class="@Enum.GetName(CGM.m3Score)">@CGM.m3Value</div>
+                </div>
+            </div>
+            <div class="recommendations">
+                @foreach (var recommendation in CGM.Recommendations)
+                {
+                    <div>
+                        <div>@recommendation.Description</div>
+                        <div>@recommendation.Study_Link</div>
+                    </div>
+                }
+            </div>
+        </div>
+        <br />
+        <div class="parameter">
+            <div class="dynamics">
+                <div>Insulin dynamics in change:</div>
+                <br />
+                <div class="displayTable">
+                    <div>@m1</div>
+                    <div>@m2</div>
+                    <div>@m3</div>
+                    <div class="@Enum.GetName(Insulin.m1Score)">@Insulin.m1Value</div>
+                    <div class="@Enum.GetName(Insulin.m2Score)">@Insulin.m2Value</div>
+                    <div class="@Enum.GetName(Insulin.m3Score)">@Insulin.m3Value</div>
+                </div>
+            </div>
+            <div class="recommendations">
+                @foreach (var recommendation in Insulin.Recommendations)
+                {
+                    <div>
+                        <div>@recommendation.Description</div>
+                        <div>@recommendation.Study_Link</div>
+                    </div>
+                }
+            </div>
+        </div>
+        <br />
+        <div class="parameter">
+            <div class="dynamics">
+                <div>Triglyceride dynamics in change:</div>
+                <br />
+                <div class="displayTable">
+                    <div>@m1</div>
+                    <div>@m2</div>
+                    <div>@m3</div>
+                    <div class="@Enum.GetName(Triglyceride.m1Score)">@Triglyceride.m1Value</div>
+                    <div class="@Enum.GetName(Triglyceride.m2Score)">@Triglyceride.m2Value</div>
+                    <div class="@Enum.GetName(Triglyceride.m3Score)">@Triglyceride.m3Value</div>
+                </div>
+            </div>
+            <div class="recommendations">
+                @foreach (var recommendation in Triglyceride.Recommendations)
+                {
+                    <div>
+                        <div>@recommendation.Description</div>
+                        <div>@recommendation.Study_Link</div>
+                    </div>
+                }
+            </div>
+        </div>
+        <br />
+        <div class="parameter">
+            <div class="dynamics">
+                <div>HDL Cholesterol dynamics in change:</div>
+                <br />
+                <div class="displayTable">
+                    <div>@m1</div>
+                    <div>@m2</div>
+                    <div>@m3</div>
+                    <div class="@Enum.GetName(HDLCholesterol.m1Score)">@HDLCholesterol.m1Value</div>
+                    <div class="@Enum.GetName(HDLCholesterol.m2Score)">@HDLCholesterol.m2Value</div>
+                    <div class="@Enum.GetName(HDLCholesterol.m3Score)">@HDLCholesterol.m3Value</div>
+                </div>
+            </div>
+            <div class="recommendations">
+                @foreach (var recommendation in HDLCholesterol.Recommendations)
+                {
+                    <div>
+                        <div>@recommendation.Description</div>
+                        <div>@recommendation.Study_Link</div>
+                    </div>
+                }
+            </div>
+        </div>
+        <br />
+        <div class="parameter">
+            <div class="dynamics">
+                <div>LDL Cholesterol dynamics in change:</div>
+                <br />
+                <div class="displayTable">
+                    <div>@m1</div>
+                    <div>@m2</div>
+                    <div>@m3</div>
+                    <div class="@Enum.GetName(LDLCholesterol.m1Score)">@LDLCholesterol.m1Value</div>
+                    <div class="@Enum.GetName(LDLCholesterol.m2Score)">@LDLCholesterol.m2Value</div>
+                    <div class="@Enum.GetName(LDLCholesterol.m3Score)">@LDLCholesterol.m3Value</div>
+                </div>
+            </div>
+            <div class="recommendations">
+                @foreach (var recommendation in LDLCholesterol.Recommendations)
+                {
+                    <div>
+                        <div>@recommendation.Description</div>
+                        <div>@recommendation.Study_Link</div>
+                    </div>
+                }
+            </div>
+        </div>
 
-
-<div>
-    all recommendations here if admin(+edit button), only filtered if regular user
+    }
 </div>
 
+
 @code {
-    ClaimsPrincipal user;
+    ApplicationUser user;
     List<string> userRoles = new();
     List<Recommendation> Recommendations = new();
-
-
+    string? userId;
+    List<MedicalInformation> m1Info;
+    List<MedicalInformation> m2Info;
+    List<MedicalInformation> m3Info;
+    int m1MetabolicHealth, m2MetabolicHealth, m3MetabolicHealth;
+    HealthScore m1Score, m2Score, m3Score;
+    ParameterStats MetabolicHealth, BMI, WaistSize, Insulin, CGM, Triglyceride, BloodPressure, HDLCholesterol, LDLCholesterol, RestingHeartRate;
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
-        user = authState.User;
-        userRoles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(x => x.Value).ToList();
-        var userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-        using var context = DbFactory.CreateDbContext();
-        Recommendations.Clear();
-        if (userRoles.Contains("Admin"))
+        userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        userRoles = authState.User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(x => x.Value).ToList();
+        user = await UserManager.FindByIdAsync(userId);
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
         {
-            Recommendations = context.Recommendations.ToList();
-        }
-        else
-        {
-            var information = context.MedicalInformation.Include("InformationType").Where(x => x.UserId == userId).ToList();
-            var inforomationTypes = information.Select(x => x.InformationTypeId).Distinct().ToList();
-            var triggers = context.TriggerParameters.Include("Recommendation").Where(x => !inforomationTypes.Any(y => x.RecommendationId == y)).ToList();
-            foreach (var trigger in triggers)
+
+
+            using var context = DbFactory.CreateDbContext();
+
+            int medicalInfoId;
+            if (context.MedicalInformation.Count() < 1)
+                medicalInfoId = 0;
+            else
+                medicalInfoId = context.MedicalInformation.OrderByDescending(x => x.Id).First().Id;
+
+            //fetch 3 months worth of data from the database
+            m1Info = context.MedicalInformation.Where(x => x.UserId == userId && x.Entry_Date.Month == DateTime.Now.Month && x.Entry_Date.Year == DateTime.Now.Year).ToList();
+            if (m1Info.Count < 9)//partial or no info at all for this month = make new info
+                m1Info = GenerateMonthlyData(context, userId, ref medicalInfoId);
+            m1Info = m1Info.OrderBy(x => x.InformationTypeId).ToList();
+            m2Info = context.MedicalInformation.Where(x => x.UserId == userId && x.Entry_Date.Month == DateTime.Now.AddMonths(-1).Month && x.Entry_Date.Year == DateTime.Now.AddMonths(-1).Year).ToList();
+            if (m2Info.Count < 9)
+                m2Info = GenerateMonthlyData(context, userId, ref medicalInfoId, 1);
+            m2Info = m2Info.OrderBy(x => x.InformationTypeId).ToList();
+            m3Info = context.MedicalInformation.Where(x => x.UserId == userId && x.Entry_Date.Month == DateTime.Now.AddMonths(-2).Month && x.Entry_Date.Year == DateTime.Now.AddMonths(-2).Year).ToList();
+            if (m3Info.Count < 9)
+                m3Info = GenerateMonthlyData(context, userId, ref medicalInfoId, 2);
+            m3Info = m3Info.OrderBy(x => x.InformationTypeId).ToList();
+
+            MetabolicHealth = new ParameterStats(
+                Parameter.MetabolicHealth,
+                user,
+                GetMetabolicHealth(user,
+            m1Info.LastOrDefault(x => x.InformationTypeId == 1).Value,
+            m1Info.LastOrDefault(x => x.InformationTypeId == 2).Value,
+            m1Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value,
+            m1Info.LastOrDefault(x => x.InformationTypeId == 3).Value,
+            m1Info.LastOrDefault(x => x.InformationTypeId == 4).Value,
+            m1Info.LastOrDefault(x => x.InformationTypeId == 5).Value,
+            m1Info.LastOrDefault(x => x.InformationTypeId == 6).Value,
+            m1Info.LastOrDefault(x => x.InformationTypeId == 7).Value,
+            m1Info.LastOrDefault(x => x.InformationTypeId == 8).Value,
+            m1Info.LastOrDefault(x => x.InformationTypeId == 9).Value
+        ),
+                GetMetabolicHealth(user,
+        m2Info.LastOrDefault(x => x.InformationTypeId == 1).Value,
+        m2Info.LastOrDefault(x => x.InformationTypeId == 2).Value,
+        m2Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value,
+        m2Info.LastOrDefault(x => x.InformationTypeId == 3).Value,
+        m2Info.LastOrDefault(x => x.InformationTypeId == 4).Value,
+        m2Info.LastOrDefault(x => x.InformationTypeId == 5).Value,
+        m2Info.LastOrDefault(x => x.InformationTypeId == 6).Value,
+        m2Info.LastOrDefault(x => x.InformationTypeId == 7).Value,
+        m2Info.LastOrDefault(x => x.InformationTypeId == 8).Value,
+        m2Info.LastOrDefault(x => x.InformationTypeId == 9).Value
+        ),
+                GetMetabolicHealth(user,
+        m3Info.LastOrDefault(x => x.InformationTypeId == 1).Value,
+        m3Info.LastOrDefault(x => x.InformationTypeId == 2).Value,
+        m3Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value,
+        m3Info.LastOrDefault(x => x.InformationTypeId == 3).Value,
+        m3Info.LastOrDefault(x => x.InformationTypeId == 4).Value,
+        m3Info.LastOrDefault(x => x.InformationTypeId == 5).Value,
+        m3Info.LastOrDefault(x => x.InformationTypeId == 6).Value,
+        m3Info.LastOrDefault(x => x.InformationTypeId == 7).Value,
+        m3Info.LastOrDefault(x => x.InformationTypeId == 8).Value,
+        m3Info.LastOrDefault(x => x.InformationTypeId == 9).Value
+        )
+            );
+
+            var isMale = user.Gender.Equals("male", StringComparison.CurrentCultureIgnoreCase);
+            WaistSize = new ParameterStats(isMale ? Parameter.WaistMale : Parameter.WaistFemale, user, m1Info.LastOrDefault(x => x.InformationTypeId == 1).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 1).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 1).Value);
+            BloodPressure = new ParameterStats(Parameter.BloodPressureUpper, user, m1Info.LastOrDefault(x => x.InformationTypeId == 2).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 2).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 2).Value, m1Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value, m2Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value, m3Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value);
+            BMI = new ParameterStats(Parameter.BMI, user, m1Info.LastOrDefault(x => x.InformationTypeId == 3).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 3).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 3).Value);
+            RestingHeartRate = new ParameterStats(Parameter.RestingHeartRate, user, m1Info.LastOrDefault(x => x.InformationTypeId == 4).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 4).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 4).Value);
+            CGM = new ParameterStats(Parameter.CGM, user, m1Info.LastOrDefault(x => x.InformationTypeId == 5).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 5).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 5).Value);
+            Insulin = new ParameterStats(Parameter.Insulin, user, m1Info.LastOrDefault(x => x.InformationTypeId == 6).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 6).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 6).Value);
+            Triglyceride = new ParameterStats(Parameter.Triglyceride, user, m1Info.LastOrDefault(x => x.InformationTypeId == 7).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 7).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 7).Value);
+            HDLCholesterol = new ParameterStats(Parameter.HDLCholesterol, user, m1Info.LastOrDefault(x => x.InformationTypeId == 8).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 8).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 8).Value);
+            LDLCholesterol = new ParameterStats(Parameter.LDLCholesterol, user, m1Info.LastOrDefault(x => x.InformationTypeId == 9).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 9).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 9).Value);
+
+            Recommendations.Clear();
+            if (userRoles.Contains("Admin"))
             {
-                var info = information.FirstOrDefault(x => x.InformationType.Id == trigger.InformationTypeId && x.Value >= trigger.Lower_Boundary && x.Value < trigger.Upper_Boundary);
-                if (info is not null)
-                    Recommendations.Add(trigger.Recommendation);
+                MetabolicHealth.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 10).Select(x => x.Recommendation).ToList();
+                WaistSize.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 1).Select(x => x.Recommendation).ToList();
+                BloodPressure.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 2).Select(x => x.Recommendation).ToList();
+                BMI.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 3).Select(x => x.Recommendation).ToList();
+                RestingHeartRate.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 4).Select(x => x.Recommendation).ToList();
+                CGM.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 5).Select(x => x.Recommendation).ToList();
+                Insulin.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 6).Select(x => x.Recommendation).ToList();
+                Triglyceride.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 7).Select(x => x.Recommendation).ToList();
+                HDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 8).Select(x => x.Recommendation).ToList();
+                LDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 9).Select(x => x.Recommendation).ToList();
+
             }
+            else
+            {
+
+                MetabolicHealth.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 10 && x.DynamicsScore == MetabolicHealth.DynamicsScore).Select(x => x.Recommendation).ToList();
+                WaistSize.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 1 && x.DynamicsScore == WaistSize.DynamicsScore).Select(x => x.Recommendation).ToList();
+                BloodPressure.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 2 && x.DynamicsScore == BloodPressure.DynamicsScore).Select(x => x.Recommendation).ToList();
+                BMI.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 3 && x.DynamicsScore == BMI.DynamicsScore).Select(x => x.Recommendation).ToList();
+                RestingHeartRate.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 4 && x.DynamicsScore == RestingHeartRate.DynamicsScore).Select(x => x.Recommendation).ToList();
+                CGM.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 5 && x.DynamicsScore == CGM.DynamicsScore).Select(x => x.Recommendation).ToList();
+                Insulin.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 6 && x.DynamicsScore == Insulin.DynamicsScore).Select(x => x.Recommendation).ToList();
+                Triglyceride.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 7 && x.DynamicsScore == Triglyceride.DynamicsScore).Select(x => x.Recommendation).ToList();
+                HDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 8 && x.DynamicsScore == HDLCholesterol.DynamicsScore).Select(x => x.Recommendation).ToList();
+                LDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 9 && x.DynamicsScore == LDLCholesterol.DynamicsScore).Select(x => x.Recommendation).ToList();
+
+
+
+                // var information = context.MedicalInformation.Include("InformationType").Where(x => x.UserId == userId).ToList();
+                // var inforomationTypes = information.Select(x => x.InformationTypeId).Distinct().ToList();
+                // var triggers = context.TriggerParameters.Include("Recommendation").Where(x => !inforomationTypes.Any(y => x.RecommendationId == y)).ToList();
+                // foreach (var trigger in triggers)
+                // {
+                //     var info = information.FirstOrDefault(x => x.InformationType.Id == trigger.InformationTypeId && x.Value >= trigger.Lower_Boundary && x.Value < trigger.Upper_Boundary);
+                //     if (info is not null)
+                //         Recommendations.Add(trigger.Recommendation);
+                // }
+            }
+
+            StateHasChanged();
         }
-        StateHasChanged();
+    }
+
+    private sealed class ParameterStats
+    {
+        public Parameter ParameterType;
+        public float m1Value, m2Value, m3Value;
+        public float m1SecondValue, m2SecondValue, m3SecondValue;
+        public HealthScore m1Score, m2Score, m3Score;
+        public DynamicsScore DynamicsScore;
+        public List<Recommendation> Recommendations { get; set; }
+
+        public ParameterStats(Parameter parameterType, ApplicationUser user, float m1Value, float m2Value, float m3Value, float m1SecondValue = 0, float m2SecondValue = 0, float m3SecondValue = 0)
+        {
+            this.m1Value = m1Value;
+            this.m2Value = m2Value;
+            this.m3Value = m3Value;
+            this.m1SecondValue = m1SecondValue;
+            this.m2SecondValue = m2SecondValue;
+            this.m3SecondValue = m3SecondValue;
+            this.ParameterType = parameterType;
+
+            this.m1Score = GetHealthScore(user, this.ParameterType, m1Value, m1SecondValue);
+            this.m2Score = GetHealthScore(user, this.ParameterType, m2Value, m2SecondValue);
+            this.m3Score = GetHealthScore(user, this.ParameterType, m3Value, m3SecondValue);
+            this.DynamicsScore = GetDynamic(user, this.ParameterType, m1Value, m2Value, m3Value, m1SecondValue, m2SecondValue, m3SecondValue);
+        }
+
     }
 }
