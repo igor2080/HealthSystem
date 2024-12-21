@@ -91,8 +91,8 @@
 </div>
 
 
-<button class="btn btn-light" @onclick="DownloadGraph">Download</button>
-<button class="btn btn-info" @onclick="SendGraph">Send as Email</button>
+
+<div class="bottom-section"><button class="btn btn-light" @onclick="DownloadGraph">Download</button><input class="form-control" type="email" @bind-value="EmailAddress" placeholder="email@site.com" /> <button class="btn btn-info" @onclick="SendGraph">Send as Email</button></div>
 
 @code {
     List<InformationType> informationTypes;
@@ -100,6 +100,7 @@
     int year = DateTime.Now.Year;
     string userId;
     ApplicationUser user;
+    string EmailAddress;
 
     protected override async Task OnInitializedAsync()
     {
@@ -162,6 +163,7 @@
     private async Task SendGraph()
     {
         var image = await JSRuntime.InvokeAsync<string>("getGraphAsImage");
-        await EmailService.SendEmailWithImageAsync("master20802@gmail.com", "test email", "", image);
+        await EmailService.SendEmailWithImageAsync(EmailAddress, $"{DateTime.Now.Year} statistics", "", image);
+        await JSRuntime.InvokeVoidAsync("refreshWithMessage", "Email sent successfully");
     }
 }

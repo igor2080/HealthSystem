@@ -31,11 +31,15 @@
                     <div class="@(threadMessage.SenderId == user.Id ? "right" : "left")">
                         @threadMessage.Content
                     </div>
+                    <div class="@(threadMessage.SenderId == user.Id ? "right" : "left")">
+                        @threadMessage.Content
+                    </div>
                 }
             </div>
             <hr />
-            <span>Reply</span>
+            
             <div class="reply">
+                <span>Reply</span>
                 <EditForm method="post" Model="Message" OnValidSubmit="SendResponse">
                     <DataAnnotationsValidator />
                     <ValidationSummary class="text-danger" role="alert" />

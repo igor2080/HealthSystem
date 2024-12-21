@@ -57,3 +57,10 @@
 .LeftOkay-color, .RightOkay-color {
     color: #ffe066;
 }
+
+.bottom-section {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    width: 35%;
+    grid-gap: 1%;
+}

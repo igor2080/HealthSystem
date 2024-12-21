@@ -4,9 +4,7 @@
 @using HealthSystem.Data
 @using System.Globalization
 @using System.Text
-@inject HttpClient Http
-@inject UserManager<ApplicationUser> UserManager
-@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
@@ -17,40 +15,11 @@
         <div class="middle-line">Diagnostic and research</div>
         <hr class="separator" />
         <div class="bottom-line">Over time, with the goal of improving health and preventing chronic illnesses in the future.</div>
-        <button style="" class="button">begin</button>
+        <button @onclick="@(()=>{NavigationManager.NavigateTo("/add-info");})" class="button">begin</button>
     </aside>
 </div>
 
 
 @code {
-    //private List<Activity> activities;
     
-
-
-    // protected override async Task OnInitializedAsync()
-    // {
-        //sample use
-        // var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
-        // var userId = authState.User?.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
-        // if (!string.IsNullOrWhiteSpace(userId))
-        // {
-        //     var user = await UserManager.FindByIdAsync(userId);
-        //     Http.DefaultRequestHeaders.Add("authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"API_KEY:{user.Intervals_API}"))}");
-
-        //     var response = await Http.GetAsync(@"https://intervals.icu/api/v1/athlete/0/activities.csv");
-        //     if (response.IsSuccessStatusCode)
-        //     {
-        //         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-        //             {
-        //                 PrepareHeaderForMatch = args => args.Header.ToLower(),
-        //             };
-        //         using var reader = new StreamReader(response.Content.ReadAsStream());
-        //         using var csv = new CsvReader(reader, config);
-        //         activities = csv.GetRecords<Activity>().ToList();
-        //         StateHasChanged();
-        //     }
-        // }
-
-
-    // }
 }
