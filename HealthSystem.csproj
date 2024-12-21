@@ -9,6 +9,12 @@
     <DockerfileContext>.</DockerfileContext>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Include="Data\HealthSysem.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="BlazorCalendar" Version="2.7.0" />
@@ -30,12 +36,6 @@
 
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Data\HealthSysem.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
