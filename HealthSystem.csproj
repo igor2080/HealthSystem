@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <Content Include="Data\HealthSysem.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

@@ -301,8 +301,6 @@
     {
         if (firstRender)
         {
-
-
             using var context = DbFactory.CreateDbContext();
 
             int medicalInfoId;
@@ -406,17 +404,6 @@
                 HDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 8 && x.DynamicsScore == HDLCholesterol.DynamicsScore).Select(x => x.Recommendation).ToList();
                 LDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 9 && x.DynamicsScore == LDLCholesterol.DynamicsScore).Select(x => x.Recommendation).ToList();
 
-
-
-                // var information = context.MedicalInformation.Include("InformationType").Where(x => x.UserId == userId).ToList();
-                // var inforomationTypes = information.Select(x => x.InformationTypeId).Distinct().ToList();
-                // var triggers = context.TriggerParameters.Include("Recommendation").Where(x => !inforomationTypes.Any(y => x.RecommendationId == y)).ToList();
-                // foreach (var trigger in triggers)
-                // {
-                //     var info = information.FirstOrDefault(x => x.InformationType.Id == trigger.InformationTypeId && x.Value >= trigger.Lower_Boundary && x.Value < trigger.Upper_Boundary);
-                //     if (info is not null)
-                //         Recommendations.Add(trigger.Recommendation);
-                // }
             }
 
             StateHasChanged();
