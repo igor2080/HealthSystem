@@ -30,9 +30,11 @@
     line-height: 1.2em;
 }
 
-/*.info-value {
+.info-value {
+    align-self: end;
 }
-*/
+
+
 .info-value > * {
     width: 1em !important;
 }
