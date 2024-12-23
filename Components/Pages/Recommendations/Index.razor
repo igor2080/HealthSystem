@@ -5,6 +5,8 @@
 @inject IDbContextFactory<ApplicationDbContext> DbFactory
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject EmailService EmailService
+@inject IJSRuntime JSRuntime
 @attribute [Authorize]
 @rendermode InteractiveServer
 
@@ -37,12 +39,15 @@
                 <div>Metabolic health dynamics in change:</div>
                 <br />
                 <div class="displayTable">
-                    <div>@m1</div>
-                    <div>@m2</div>
                     <div>@m3</div>
-                    <div class="@Enum.GetName(MetabolicHealth.m1Score)">@MetabolicHealth.m1Value</div>
-                    <div class="@Enum.GetName(MetabolicHealth.m2Score)">@MetabolicHealth.m2Value</div>
+                    <div>@m2</div>
+                    <div>@m1</div>
                     <div class="@Enum.GetName(MetabolicHealth.m3Score)">@MetabolicHealth.m3Value</div>
+                    <div class="@Enum.GetName(MetabolicHealth.m2Score)">@MetabolicHealth.m2Value</div>
+                    <div class="@Enum.GetName(MetabolicHealth.m1Score)">@MetabolicHealth.m1Value</div>
+                </div>
+                <div class="dynamics">
+                    @Enum.GetName(MetabolicHealth.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
@@ -61,12 +66,15 @@
                 <div>Waist size dynamics in change:</div>
                 <br />
                 <div class="displayTable">
-                    <div>@m1</div>
-                    <div>@m2</div>
                     <div>@m3</div>
-                    <div class="@Enum.GetName(WaistSize.m1Score)">@WaistSize.m1Value</div>
-                    <div class="@Enum.GetName(WaistSize.m2Score)">@WaistSize.m2Value</div>
+                    <div>@m2</div>
+                    <div>@m1</div>
                     <div class="@Enum.GetName(WaistSize.m3Score)">@WaistSize.m3Value</div>
+                    <div class="@Enum.GetName(WaistSize.m2Score)">@WaistSize.m2Value</div>
+                    <div class="@Enum.GetName(WaistSize.m1Score)">@WaistSize.m1Value</div>
+                </div>
+                <div class="dynamics">
+                    @Enum.GetName(WaistSize.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
@@ -85,12 +93,15 @@
                 <div>Blood pressure dynamics in change:</div>
                 <br />
                 <div class="displayTable">
-                    <div>@m1</div>
-                    <div>@m2</div>
                     <div>@m3</div>
-                    <div class="@Enum.GetName(BloodPressure.m1Score)">@BloodPressure.m1Value - @BloodPressure.m1SecondValue</div>
+                    <div>@m2</div>
+                    <div>@m1</div>
+                    <div class="@Enum.GetName(BloodPressure.m3Score)">@BloodPressure.m3Value - @BloodPressure.m3SecondValue</div>
                     <div class="@Enum.GetName(BloodPressure.m2Score)">@BloodPressure.m2Value - @BloodPressure.m2SecondValue</div>
-                    <div class="@Enum.GetName(BloodPressure.m3Score)">@BloodPressure.m3Value - @BloodPressure.m2SecondValue</div>
+                    <div class="@Enum.GetName(BloodPressure.m1Score)">@BloodPressure.m1Value - @BloodPressure.m1SecondValue</div>
+                </div>
+                <div class="dynamics">
+                    @Enum.GetName(BloodPressure.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
@@ -109,12 +120,15 @@
                 <div>Weight dynamics in change:</div>
                 <br />
                 <div class="displayTable">
-                    <div>@m1</div>
-                    <div>@m2</div>
                     <div>@m3</div>
-                    <div class="@Enum.GetName(BMI.m1Score)">@BMI.m1Value</div>
-                    <div class="@Enum.GetName(BMI.m2Score)">@BMI.m2Value</div>
+                    <div>@m2</div>
+                    <div>@m1</div>
                     <div class="@Enum.GetName(BMI.m3Score)">@BMI.m3Value</div>
+                    <div class="@Enum.GetName(BMI.m2Score)">@BMI.m2Value</div>
+                    <div class="@Enum.GetName(BMI.m1Score)">@BMI.m1Value</div>
+                </div>
+                <div class="dynamics">
+                    @Enum.GetName(BMI.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
@@ -133,12 +147,15 @@
                 <div>Resting heart rate dynamics in change:</div>
                 <br />
                 <div class="displayTable">
-                    <div>@m1</div>
-                    <div>@m2</div>
                     <div>@m3</div>
-                    <div class="@Enum.GetName(RestingHeartRate.m1Score)">@RestingHeartRate.m1Value</div>
-                    <div class="@Enum.GetName(RestingHeartRate.m2Score)">@RestingHeartRate.m2Value</div>
+                    <div>@m2</div>
+                    <div>@m1</div>
                     <div class="@Enum.GetName(RestingHeartRate.m3Score)">@RestingHeartRate.m3Value</div>
+                    <div class="@Enum.GetName(RestingHeartRate.m2Score)">@RestingHeartRate.m2Value</div>
+                    <div class="@Enum.GetName(RestingHeartRate.m1Score)">@RestingHeartRate.m1Value</div>
+                </div>
+                <div class="dynamics">
+                    @Enum.GetName(RestingHeartRate.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
@@ -157,12 +174,15 @@
                 <div>CGM dynamics in change:</div>
                 <br />
                 <div class="displayTable">
-                    <div>@m1</div>
-                    <div>@m2</div>
                     <div>@m3</div>
-                    <div class="@Enum.GetName(CGM.m1Score)">@CGM.m1Value</div>
-                    <div class="@Enum.GetName(CGM.m2Score)">@CGM.m2Value</div>
+                    <div>@m2</div>
+                    <div>@m1</div>
                     <div class="@Enum.GetName(CGM.m3Score)">@CGM.m3Value</div>
+                    <div class="@Enum.GetName(CGM.m2Score)">@CGM.m2Value</div>
+                    <div class="@Enum.GetName(CGM.m1Score)">@CGM.m1Value</div>
+                </div>
+                <div class="dynamics">
+                    @Enum.GetName(CGM.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
@@ -181,12 +201,15 @@
                 <div>Insulin dynamics in change:</div>
                 <br />
                 <div class="displayTable">
-                    <div>@m1</div>
-                    <div>@m2</div>
                     <div>@m3</div>
-                    <div class="@Enum.GetName(Insulin.m1Score)">@Insulin.m1Value</div>
-                    <div class="@Enum.GetName(Insulin.m2Score)">@Insulin.m2Value</div>
+                    <div>@m2</div>
+                    <div>@m1</div>
                     <div class="@Enum.GetName(Insulin.m3Score)">@Insulin.m3Value</div>
+                    <div class="@Enum.GetName(Insulin.m2Score)">@Insulin.m2Value</div>
+                    <div class="@Enum.GetName(Insulin.m1Score)">@Insulin.m1Value</div>
+                </div>
+                <div class="dynamics">
+                    @Enum.GetName(Insulin.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
@@ -205,12 +228,15 @@
                 <div>Triglyceride dynamics in change:</div>
                 <br />
                 <div class="displayTable">
-                    <div>@m1</div>
-                    <div>@m2</div>
                     <div>@m3</div>
-                    <div class="@Enum.GetName(Triglyceride.m1Score)">@Triglyceride.m1Value</div>
-                    <div class="@Enum.GetName(Triglyceride.m2Score)">@Triglyceride.m2Value</div>
+                    <div>@m2</div>
+                    <div>@m1</div>
                     <div class="@Enum.GetName(Triglyceride.m3Score)">@Triglyceride.m3Value</div>
+                    <div class="@Enum.GetName(Triglyceride.m2Score)">@Triglyceride.m2Value</div>
+                    <div class="@Enum.GetName(Triglyceride.m1Score)">@Triglyceride.m1Value</div>
+                </div>
+                <div class="dynamics">
+                    @Enum.GetName(Triglyceride.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
@@ -229,12 +255,15 @@
                 <div>HDL Cholesterol dynamics in change:</div>
                 <br />
                 <div class="displayTable">
-                    <div>@m1</div>
-                    <div>@m2</div>
                     <div>@m3</div>
-                    <div class="@Enum.GetName(HDLCholesterol.m1Score)">@HDLCholesterol.m1Value</div>
-                    <div class="@Enum.GetName(HDLCholesterol.m2Score)">@HDLCholesterol.m2Value</div>
+                    <div>@m2</div>
+                    <div>@m1</div>
                     <div class="@Enum.GetName(HDLCholesterol.m3Score)">@HDLCholesterol.m3Value</div>
+                    <div class="@Enum.GetName(HDLCholesterol.m2Score)">@HDLCholesterol.m2Value</div>
+                    <div class="@Enum.GetName(HDLCholesterol.m1Score)">@HDLCholesterol.m1Value</div>
+                </div>
+                <div class="dynamics">
+                    @Enum.GetName(HDLCholesterol.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
@@ -253,13 +282,16 @@
                 <div>LDL Cholesterol dynamics in change:</div>
                 <br />
                 <div class="displayTable">
-                    <div>@m1</div>
-                    <div>@m2</div>
                     <div>@m3</div>
-                    <div class="@Enum.GetName(LDLCholesterol.m1Score)">@LDLCholesterol.m1Value</div>
-                    <div class="@Enum.GetName(LDLCholesterol.m2Score)">@LDLCholesterol.m2Value</div>
+                    <div>@m2</div>
+                    <div>@m1</div>
                     <div class="@Enum.GetName(LDLCholesterol.m3Score)">@LDLCholesterol.m3Value</div>
-                </div>
+                    <div class="@Enum.GetName(LDLCholesterol.m2Score)">@LDLCholesterol.m2Value</div>
+                    <div class="@Enum.GetName(LDLCholesterol.m1Score)">@LDLCholesterol.m1Value</div>
+                    </div>
+                    <div class="dynamics">
+                        @Enum.GetName(LDLCholesterol.DynamicsScore)
+                    </div>
             </div>
             <div class="recommendations">
                 @foreach (var recommendation in LDLCholesterol.Recommendations)
@@ -275,6 +307,9 @@
     }
 </div>
 
+<div class="bottom-section"><input class="form-control" type="email" @bind-value="EmailAddress" placeholder="email@site.com" /> <button class="btn btn-info" @onclick="SendPage">Send as Email</button></div>
+
+
 
 @code {
     ApplicationUser user;
@@ -287,6 +322,8 @@
     int m1MetabolicHealth, m2MetabolicHealth, m3MetabolicHealth;
     HealthScore m1Score, m2Score, m3Score;
     ParameterStats MetabolicHealth, BMI, WaistSize, Insulin, CGM, Triglyceride, BloodPressure, HDLCholesterol, LDLCholesterol, RestingHeartRate;
+    string EmailAddress;
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -407,6 +444,20 @@
             }
 
             StateHasChanged();
+        }
+    }
+
+    private async Task SendPage()
+    {
+        if (m1Info is not null)
+        {
+            var image = await JSRuntime.InvokeAsync<string>("getPageAsImage");
+            string m1 = m1Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture),
+            m2 = m2Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture),
+            m3 = m3Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture);
+            var year = (m1Info.First().Entry_Date.Year == m3Info.First().Entry_Date.Year) ? m1Info.First().Entry_Date.Year.ToString() : $"{m1Info.First().Entry_Date.Year} - {m3Info.First().Entry_Date.Year}";
+            await EmailService.SendEmailWithImageAsync(EmailAddress, $"Recommendations for {m1}, {m2}, {m3} - {year} ", "", image);
+            await JSRuntime.InvokeVoidAsync("refreshWithMessage", "The Email has been sent");
         }
     }
 

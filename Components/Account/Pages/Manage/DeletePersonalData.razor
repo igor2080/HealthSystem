@@ -9,6 +9,7 @@
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<DeletePersonalData> Logger
+@inject IDbContextFactory<HealthSystem.Data.ApplicationDbContext> DbFactory
 
 <PageTitle>Delete Personal Data</PageTitle>
 
@@ -64,6 +65,11 @@
             return;
         }
 
+
+        using var context = DbFactory.CreateDbContext();
+        context.Message.RemoveRange(context.Message.Where(x => x.ReceiverId == user.Id || x.SenderId == user.Id));
+        context.MedicalInformation.RemoveRange(context.MedicalInformation.Where(x=>x.UserId==user.Id));
+        await context.SaveChangesAsync();
         var result = await UserManager.DeleteAsync(user);
         if (!result.Succeeded)
         {

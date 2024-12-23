@@ -157,13 +157,13 @@
 
     private async Task DownloadGraph()
     {
-        await JSRuntime.InvokeVoidAsync("downloadCurrentPageGraph", "data" + ".png");
+        await JSRuntime.InvokeVoidAsync("downloadCurrentPageGraph", $"{user.Name} {user.Surname} stats.png");
     }
 
     private async Task SendGraph()
     {
         var image = await JSRuntime.InvokeAsync<string>("getGraphAsImage");
         await EmailService.SendEmailWithImageAsync(EmailAddress, $"{DateTime.Now.Year} statistics", "", image);
-        await JSRuntime.InvokeVoidAsync("refreshWithMessage", "Email sent successfully");
+        await JSRuntime.InvokeVoidAsync("refreshWithMessage", "The Email has been sent");
     }
 }

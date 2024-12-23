@@ -222,10 +222,24 @@ namespace HealthSystem.Data
             HealthScore m1Score = GetHealthScore(user, parameter, m1, m1Second);
             HealthScore m2Score = GetHealthScore(user, parameter, m2, m2Second);
             HealthScore m3Score = GetHealthScore(user, parameter, m3, m3Second);
-
+            /////////////////////waist score is wrong
             var m1Zone = GetParameterZone(parameter, m1Score);
             var m2Zone = GetParameterZone(parameter, m2Score);
             var m3Zone = GetParameterZone(parameter, m3Score);
+
+            if (parameter == Parameter.WaistMale || parameter == Parameter.WaistFemale)
+            {//waist uses a ratio rather than the flat value
+                m1 /= user.Height;
+                m2 /= user.Height;
+                m3 /= user.Height;
+            }
+            else if (parameter == Parameter.BMI)
+            {//weight stores BMI rather than the weight for calculations
+                m1 = GetBMI(user.Height, m1);
+                m2 = GetBMI(user.Height, m2);
+                m3 = GetBMI(user.Height, m3);
+            }
+
 
             //how far along a specific zone is the parameter
             var m1Percentage = GetZonePercentage(m1Zone.Item1, m1Zone.Item2, m1);
@@ -233,9 +247,9 @@ namespace HealthSystem.Data
             var m3Percentage = GetZonePercentage(m3Zone.Item1, m3Zone.Item2, m3);
 
             //convert percentages to values relative to other zones, greens are 0-100%, yellows are 100-200%, reds are 200-300%
-            m1Percentage += (2 - MapScore((int)m1Score)) * 100;
-            m2Percentage += (2 - MapScore((int)m2Score)) * 100;
-            m3Percentage += (2 - MapScore((int)m3Score)) * 100;
+            m1Percentage = Math.Abs(((2 - MapScore((int)m1Score)) * 100) - m1Percentage);
+            m2Percentage = Math.Abs(((2 - MapScore((int)m2Score)) * 100) - m2Percentage);
+            m3Percentage = Math.Abs(((2 - MapScore((int)m3Score)) * 100) - m3Percentage);
 
             //if the zones are right sided zones, make the percentage negative
             m1Percentage = (m1Score == HealthScore.RightOkay || m1Score == HealthScore.RightBad) ? m1Percentage * -1 : m1Percentage;
@@ -263,12 +277,12 @@ namespace HealthSystem.Data
                     return DynamicsScore.Stable;
             }
 
-
-            if (m3Percentage <= m2Percentage && m2Percentage <= m1Percentage)
-                return DynamicsScore.Improving;
-
-            if (m3Percentage >= m2Percentage && m2Percentage >= m1Percentage)
+            //moving from smaller to larger percentage = improvement
+            if (Math.Abs(m3Percentage) <= Math.Abs(m2Percentage) && Math.Abs(m2Percentage) <= Math.Abs(m1Percentage))
                 return DynamicsScore.Degrading;
+            //moving from larger to smaller percentage = improvement
+            if (Math.Abs(m3Percentage) >= Math.Abs(m2Percentage) && Math.Abs(m2Percentage) >= Math.Abs(m1Percentage))
+                return DynamicsScore.Improving;
 
 
             return DynamicsScore.Inconclusive;

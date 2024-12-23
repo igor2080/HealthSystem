@@ -13,6 +13,9 @@
 
 <h2>Recommendation</h2>
 <hr />
+<div class="ErrorBox">
+    @ErrorMessage
+</div>
 <div class="row">
     <div class="col-md-4">
         <EditForm method="post" Model="Recommendation" OnValidSubmit="AddRecommendation" FormName="create" Enhance>
@@ -95,6 +98,8 @@
 
     List<InformationType> InformationTypes { get; set; } = new();
 
+    string ErrorMessage = "";
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -108,6 +113,13 @@
 
     private async Task AddRecommendation()
     {
+        ErrorMessage = "";
+        if (TriggerParameters.Count < 1)
+        {
+            ErrorMessage = "You must include at least one parameter in this recommendation";
+            return;
+        }
+
         using var context = DbFactory.CreateDbContext();
         //add the recommendation itself
         if (context.Recommendations.Count() < 1)

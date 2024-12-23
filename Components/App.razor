@@ -32,8 +32,10 @@
 
         async function getPageAsImage(){
             document.body.querySelector(".bottom-right-container").style.display="none";
+            document.body.querySelector(".bottom-section").style.display="none";
             const img = await html2canvas(document.body);
             document.body.querySelector(".bottom-right-container").style.display="block";
+            document.body.querySelector(".bottom-section").style.display="block";
             return img.toDataURL("image/png");
         }
 

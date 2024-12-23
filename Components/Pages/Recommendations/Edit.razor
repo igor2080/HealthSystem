@@ -12,6 +12,9 @@
 
 <h2>Recommendation</h2>
 <hr />
+<div class="ErrorBox">
+    @ErrorMessage
+</div>
 @if (Recommendation is null)
 {
     <p><em>Loading...</em></p>
@@ -22,15 +25,14 @@ else
         <div class="col-md-4">
             <EditForm method="post" Model="Recommendation" OnValidSubmit="UpdateRecommendation" FormName="edit" Enhance>
                 <DataAnnotationsValidator />
-                <ValidationSummary role="alert" />
-                <input type="hidden" name="Recommendation.Id" value="@Recommendation.Id" />
+                <ValidationSummary class="text-danger" role="alert" />
                 <div class="mb-3">
                     <label for="description" class="form-label">Description:</label>
                     <InputText id="description" @bind-Value="Recommendation.Description" class="form-control" />
                     <ValidationMessage For="() => Recommendation.Description" class="text-danger" />
                 </div>
                 <div class="mb-3">
-                    <label for="study_link" class="form-label">Study_Link:</label>
+                    <label for="study_link" class="form-label">Study Link:</label>
                     <InputText id="study_link" @bind-Value="Recommendation.Study_Link" class="form-control" />
                     <ValidationMessage For="() => Recommendation.Study_Link" class="text-danger" />
                 </div>
@@ -43,18 +45,18 @@ else
                         <div class="trigger-group">
                             <div>
                                 <div class="form-floating">
-                                    <InputSelect class="form-control" @bind-Value="parameter.Type">
+                                    <InputSelect class="form-control" @bind-Value="parameter.InformationTypeId">
                                         <option value="" selected disabled>
                                             Select parameter type ...
                                         </option>
                                         @foreach (var informationType in InformationTypes)
                                         {
-                                            <option checked="@(parameter.InformationTypeId == informationType.Id)" value="@informationType.Description">
+                                            <option checked="@(parameter.InformationTypeId == informationType.Id)" value="@informationType.Id">
                                                 @informationType.Description
                                             </option>
                                         }
                                     </InputSelect>
-                                    <label for="gender">Parameter type</label>
+                                    <label for="parameter">Parameter type</label>
                                     <ValidationMessage For="() => parameter.Type" class="text-danger" />
                                 </div>
 
@@ -74,6 +76,7 @@ else
                                     <ValidationMessage For="() => parameter.DynamicsScore" class="text-danger" />
                                 </div>
 
+
                             </div>
 
                             <div>
@@ -82,10 +85,17 @@ else
                         </div>
                     }
                 </div>
+
                 <button type="submit" class="btn btn-primary">Save</button>
             </EditForm>
         </div>
     </div>
+
+    <div>
+        <a href="/recommendations">Back to List</a>
+    </div>
+
+
 }
 
 <div>
@@ -102,6 +112,8 @@ else
     List<TriggerParameter> TriggerParameters { get; set; } = new();
 
     List<InformationType> InformationTypes { get; set; } = new();
+
+    string ErrorMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -120,6 +132,14 @@ else
     }
     private async Task UpdateRecommendation()
     {
+
+        ErrorMessage = "";
+        if (TriggerParameters.Count < 1)
+        {
+            ErrorMessage = "You must include at least one parameter in this recommendation";
+            return;
+        }
+
         using var context = DbFactory.CreateDbContext();
         context.Attach(Recommendation!).State = EntityState.Modified;
         foreach (var triggerParameter in TriggerParameters)
