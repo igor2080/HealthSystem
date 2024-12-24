@@ -71,7 +71,7 @@ namespace HealthSystem.Data
             float percent = 10;
             if (current <= first)
                 return percent;
-            if (current <= second)
+            if (current < second)
                 return percent * 3;
             if (current >= second && current <= third)
                 return percent * 5;
