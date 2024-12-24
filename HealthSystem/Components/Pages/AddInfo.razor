@@ -194,6 +194,7 @@
     {
         var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
+        
         user = await UserManager.FindByIdAsync(userId);
         UpdateValues();
 
