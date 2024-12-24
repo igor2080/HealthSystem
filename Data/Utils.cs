@@ -69,7 +69,7 @@ namespace HealthSystem.Data
         public static float GetPercentage(float first, float second, float third, float fourth, float current)
         {
             float percent = 10;
-            if (current <= first)
+            if (current < first)
                 return percent;
             if (current < second)
                 return percent * 3;
