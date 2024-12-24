@@ -228,8 +228,8 @@
         var medicalInfo = Context.MedicalInformation.Where(x => x.Entry_Date.Year == Input.InfoDate.Year && x.Entry_Date.Month == Input.InfoDate.Month && x.UserId == userId).OrderBy(x => x.Entry_Date);
 
         Input.WaistSize = medicalInfo.LastOrDefault(x => x.InformationTypeId == 1)?.Value ?? 0;
-        Input.BloodPressureLower = medicalInfo.LastOrDefault(x => x.InformationTypeId == 2)?.Value ?? 0;
-        Input.BloodPressureUpper = medicalInfo.LastOrDefault(x => x.InformationTypeId == 2)?.SecondaryValue ?? 0;
+        Input.BloodPressureUpper = medicalInfo.LastOrDefault(x => x.InformationTypeId == 2)?.Value ?? 0;
+        Input.BloodPressureLower = medicalInfo.LastOrDefault(x => x.InformationTypeId == 2)?.SecondaryValue ?? 0;
         Input.Weight = medicalInfo.LastOrDefault(x => x.InformationTypeId == 3)?.Value ?? 0;
         Input.RestingHeartRate = medicalInfo.LastOrDefault(x => x.InformationTypeId == 4)?.Value ?? 0;
         Input.CGM = medicalInfo.LastOrDefault(x => x.InformationTypeId == 5)?.Value ?? 0;
