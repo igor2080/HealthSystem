@@ -57,7 +57,7 @@
 
             <div class="info-row">
                 <div class="info-label">Blood Pressure Diastolic, Systolic</div>
-                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.BloodPressureLower" /><InputNumber class="addinfo-number" @bind-Value="Input.BloodPressureUpper" /></div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.BloodPressureUpper" /><InputNumber class="addinfo-number" @bind-Value="Input.BloodPressureLower" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
                         <div class="segment LeftBad"></div>
@@ -65,7 +65,7 @@
                         <div class="segment Healthy"></div>
                         <div class="segment RightOkay"></div>
                         <div class="segment RightBad"></div>
-                        <div class="indicator" style="left: 50%;"><span class="value @(Enum.GetName(GetBloodPressureScore(Input.BloodPressureUpper,Input.BloodPressureLower)))-color">@Input.BloodPressureLower - @Input.BloodPressureUpper</span></div>
+                        <div class="indicator" style="left: 50%;"><span class="value @(Enum.GetName(GetBloodPressureScore(Input.BloodPressureUpper,Input.BloodPressureLower)))-color">@Input.BloodPressureUpper - @Input.BloodPressureLower</span></div>
                         @* <div class="indicator" style="left: 70%;"><span class="value Healthy-color">70</span></div> *@
                     </div>
                 </div>
