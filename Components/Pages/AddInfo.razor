@@ -282,14 +282,14 @@
                     UserId = userId,
                     Id = ++id,
                     InformationTypeId = 2,
-                    Value = Input.BloodPressureLower,
-                    SecondaryValue = Input.BloodPressureUpper,
+                    Value = Input.BloodPressureUpper,
+                    SecondaryValue = Input.BloodPressureLower,
                 });
         }
         else
         {
-            bloodPressure.Value = Input.BloodPressureLower;
-            bloodPressure.SecondaryValue = Input.BloodPressureUpper;
+            bloodPressure.Value = Input.BloodPressureUpper;
+            bloodPressure.SecondaryValue = Input.BloodPressureLower;
         }
 
         var weight = medicalInfo.LastOrDefault(x => x.InformationTypeId == 3);
