@@ -29,7 +29,7 @@ namespace HealthSystemTest
             var mockUserManager = MockUserManager<ApplicationUser>.Create();
             mockUserManager
                 .Setup(um => um.FindByIdAsync(Globals.AdminId))
-                .ReturnsAsync(new ApplicationUser { Id = Globals.AdminId, UserName = "Admin" });
+                .ReturnsAsync(new ApplicationUser { Id = Globals.AdminId, UserName = "Admin", Email = "admin@site.com", Date_of_birth = DateTime.Now.AddYears(-18), Gender = "male", Height = 183, Name = "Admin", Intervals_API = "5g93d03w93b7shop9aealuoac", Surname = "Site" });
             var userManagerMock = mockUserManager.Object;
             Services.AddScoped(_ => mockUserManager.Object);
 
