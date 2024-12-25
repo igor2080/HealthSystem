@@ -34,7 +34,7 @@
                 }
             </div>
             <hr />
-            
+
             <div class="reply">
                 <span>Reply</span>
                 <EditForm method="post" Model="Message" OnValidSubmit="SendResponse">
@@ -78,19 +78,32 @@
 
     async Task SendResponse(EditContext editContext)
     {
+        Message.SenderId = user.Id;
+        Message.ReceiverId = admin.Id;
+        Message.Date = DateTime.Now;
+        Message.PreviousMessageId = currentThread.Last().Id;
+        Message.Title = currentThread.First().Title;
+        using var Context = DbFactory.CreateDbContext();
 
+        Context.Message.Add(Message);
+        await Context.SaveChangesAsync();
+        currentThread.Add(Message);
+        Messages = Context.Message.Include("Sender").Include("Receiver").Where(x => x.SenderId == user.Id || x.ReceiverId == user.Id).OrderByDescending(x => x.Date).ToList();
+        MessageThreads = GetMessagesByThread(Messages);
+        Message.Content = "";
+        StateHasChanged();
     }
 
     async Task SetActive(int messageId)
     {
         currentMessageId = messageId;
         currentThread = MessageThreads.Single(x => x[0].Id == messageId);
+        //make sure the messages are in the right chronological order(oldest first)
+        currentThread = currentThread.OrderBy(x => x.Date).ToList();
 
-        //disabled for testing
-
-        // using var Context = DbFactory.CreateDbContext();
-        // Context.Message.Single(x => x.Id == messageId).ReadDate = DateTime.Now;
-        // await Context.SaveChangesAsync();
+        using var Context = DbFactory.CreateDbContext();
+        Context.Message.Single(x => x.Id == messageId).ReadDate = DateTime.Now;
+        await Context.SaveChangesAsync();
 
         StateHasChanged();
 

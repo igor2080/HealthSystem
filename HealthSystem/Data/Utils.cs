@@ -83,10 +83,16 @@ namespace HealthSystem.Data
         }
         public static float GetZonePercentage(float zoneStart, float zoneEnd, float current)
         {
+            if (current >= zoneEnd) return 100;
+            if (current <= zoneStart) return 0;
+
             return ((current - zoneStart) / (zoneEnd - zoneStart)) * 100;
         }
         static int MapScore(int score)
         {
+            if (score <= 0)
+                return 0;
+
             return 2 - Math.Abs(score - 3); // Maps 1->0, 2->1, 3->2, 4->1, 5->0
         }
         static (float, float) GetParameterZone(Parameter parameter, HealthScore score)
@@ -111,10 +117,10 @@ namespace HealthSystem.Data
         }
         public static List<List<Message>> GetMessagesByThread(List<Message> messages)
         {
-            var messageLookup = messages.ToDictionary(msg => msg.Id);
-            var threadStarters = messages
-            .Where(msg => msg.PreviousMessageId == null || !messageLookup.ContainsKey(msg.PreviousMessageId.Value))
-            .ToList();
+            if (messages is null || messages.Count < 1)
+                return [];
+
+            var threadStarters = messages.Where(x => x.PreviousMessageId == null || x.PreviousMessageId == 0).ToList();
             var threads = new List<List<Message>>();
             foreach (var starter in threadStarters)
             {
@@ -126,18 +132,20 @@ namespace HealthSystem.Data
                     thread.Add(currentMessage);
 
                     // Move to the next message in the chain
-                    currentMessage = currentMessage.PreviousMessageId.HasValue
-                        ? messageLookup.GetValueOrDefault(currentMessage.PreviousMessageId.Value)
-                        : null;
+                    currentMessage = messages.FirstOrDefault(x => x.PreviousMessageId == currentMessage.Id);
                 }
 
                 threads.Add(thread);
             }
+
             return threads;
 
         }
         public static List<MedicalInformation> GenerateMonthlyData(ApplicationDbContext context, string userId, ref int startingId, int monthsAgo = 0)
         {
+            if (context is null)
+                return [];
+
             int tempId = startingId;
             //check if startingId already exists to not start from it
             if (context.MedicalInformation.Any(x => x.Id == tempId))
@@ -181,6 +189,9 @@ namespace HealthSystem.Data
         }
         public static HealthScore GetMetabolicHealthScore(int health)
         {
+            if (health <= 0)
+                return HealthScore.LeftBad;
+
             if (health >= 15)
                 return HealthScore.Healthy;
             else if (health >= 10)
@@ -219,6 +230,9 @@ namespace HealthSystem.Data
         /// <returns></returns>
         public static DynamicsScore GetDynamic(ApplicationUser user, Parameter parameter, float m1, float m2, float m3, float m1Second = 0, float m2Second = 0, float m3Second = 0)
         {
+            if (user is null || m1 <= 0 || m2 <= 0 || m3 <= 0)
+                return DynamicsScore.Inconclusive;
+
             HealthScore m1Score = GetHealthScore(user, parameter, m1, m1Second);
             HealthScore m2Score = GetHealthScore(user, parameter, m2, m2Second);
             HealthScore m3Score = GetHealthScore(user, parameter, m3, m3Second);
@@ -290,12 +304,15 @@ namespace HealthSystem.Data
 
         public static float GetBMI(float height, float weight)
         {
+            if (height <= 0 || weight <= 0)
+                return -1;
+
             return weight / ((height / 100) * (height / 100));
         }
 
         public static HealthScore GetBMIScore(float height, float weight)
         {
-            if (height == -1 || weight == -1)
+            if (height <= 0 || weight <= 0)
                 return HealthScore.LeftBad;
 
             var BMI = GetBMI(height, weight);
@@ -312,7 +329,7 @@ namespace HealthSystem.Data
 
         public static HealthScore GetWaistScore(ApplicationUser user, float waistSize)
         {
-            if (waistSize == -1)
+            if (waistSize <= 0)
                 return HealthScore.LeftBad;
 
             float score = waistSize / user.Height;
@@ -347,7 +364,7 @@ namespace HealthSystem.Data
 
         public static HealthScore GetInsulinScore(float insulin)
         {
-            if (insulin == -1)
+            if (insulin <= 0)
                 return HealthScore.LeftBad;
 
             if (insulin >= ParameterZones[(int)Parameter.Insulin][1] && insulin <= ParameterZones[(int)Parameter.Insulin][2])
@@ -364,7 +381,7 @@ namespace HealthSystem.Data
 
         public static HealthScore GetCGMScore(float CGM)
         {
-            if (CGM == -1)
+            if (CGM <= 0)
                 return HealthScore.LeftBad;
             if (CGM >= ParameterZones[(int)Parameter.CGM][1] && CGM <= ParameterZones[(int)Parameter.CGM][2])
                 return HealthScore.Healthy;
@@ -380,7 +397,7 @@ namespace HealthSystem.Data
 
         public static HealthScore GetTriglycerideScore(float triglyceride)
         {
-            if (triglyceride == -1)
+            if (triglyceride <= 0)
                 return HealthScore.LeftBad;
 
             if (triglyceride >= ParameterZones[(int)Parameter.Triglyceride][1] && triglyceride <= ParameterZones[(int)Parameter.Triglyceride][2])
@@ -397,7 +414,7 @@ namespace HealthSystem.Data
 
         public static HealthScore GetBloodPressureScore(float bloodPressureUpper, float bloodPressureLower)
         {
-            if (bloodPressureLower == -1 || bloodPressureUpper == -1)
+            if (bloodPressureLower <= 0 || bloodPressureUpper <= 0)
                 return HealthScore.LeftBad;
 
             if ((bloodPressureUpper <= ParameterZones[(int)Parameter.BloodPressureUpper][2] && bloodPressureUpper >= ParameterZones[(int)Parameter.BloodPressureUpper][1]) && (bloodPressureLower <= ParameterZones[(int)Parameter.BloodPressureLower][2] && bloodPressureLower >= ParameterZones[(int)Parameter.BloodPressureLower][1]))
@@ -414,7 +431,7 @@ namespace HealthSystem.Data
 
         public static HealthScore GetHDLCholesterolScore(float HDLCholesterol)
         {
-            if (HDLCholesterol == -1)
+            if (HDLCholesterol <= 0)
                 return HealthScore.LeftBad;
 
             if (HDLCholesterol >= ParameterZones[(int)Parameter.HDLCholesterol][1] && HDLCholesterol <= ParameterZones[(int)Parameter.HDLCholesterol][2])
@@ -431,7 +448,7 @@ namespace HealthSystem.Data
 
         public static HealthScore GetLDLCholesterolScore(float LDLCholesterol)
         {
-            if (LDLCholesterol == -1)
+            if (LDLCholesterol <= 0)
                 return HealthScore.LeftBad;
 
             if (LDLCholesterol >= ParameterZones[(int)Parameter.LDLCholesterol][1] && LDLCholesterol <= ParameterZones[(int)Parameter.LDLCholesterol][2])
@@ -448,7 +465,7 @@ namespace HealthSystem.Data
 
         public static HealthScore GetRestingHeartRateScore(float restingHeartRate)
         {
-            if (restingHeartRate == -1)
+            if (restingHeartRate <= 0)
                 return HealthScore.LeftBad;
 
             if (restingHeartRate >= ParameterZones[(int)Parameter.RestingHeartRate][1] && restingHeartRate <= ParameterZones[(int)Parameter.RestingHeartRate][2])
