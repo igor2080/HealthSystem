@@ -31,7 +31,7 @@
 }
 
 .info-value {
-    align-self: end;
+    align-self: center;
 }
 
 
@@ -50,7 +50,7 @@
     /*border: 1px solid #ccc;*/
     border-radius: 5px;
     overflow: visible;
-    top: 35%;
+    top: 50%;
 }
 
 .segment {
