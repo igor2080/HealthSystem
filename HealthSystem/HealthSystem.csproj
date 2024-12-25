@@ -7,10 +7,13 @@
     <UserSecretsId>aspnet-HealthSystem-bcc0bee8-7a1e-4fa3-87fa-edd3bf0c074a</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>.</DockerfileContext>
+    <RazorLangVersion>Latest</RazorLangVersion>
+
   </PropertyGroup>
 
 
   <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.13.1" />
     <PackageReference Include="BlazorCalendar" Version="2.7.0" />
     <PackageReference Include="bunit" Version="1.37.7" />
     <PackageReference Include="BytexDigital.Blazor.Components.CookieConsent" Version="1.2.1" />
@@ -29,8 +32,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Data\Migrations\" />
-  </ItemGroup>
+
 
 </Project>
