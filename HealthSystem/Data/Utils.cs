@@ -86,16 +86,16 @@ namespace HealthSystem.Data
             if (current >= zoneEnd) return 100;
             if (current <= zoneStart) return 0;
 
-            return ((current - zoneStart) / (zoneEnd - zoneStart)) * 100;
+            return (current - zoneStart) / (zoneEnd - zoneStart) * 100;
         }
-        static int MapScore(int score)
+        public static int MapScore(int score)
         {
-            if (score <= 0)
+            if (score <= 0 || score > 5)
                 return 0;
 
             return 2 - Math.Abs(score - 3); // Maps 1->0, 2->1, 3->2, 4->1, 5->0
         }
-        static (float, float) GetParameterZone(Parameter parameter, HealthScore score)
+        public static (float, float) GetParameterZone(Parameter parameter, HealthScore score)
         {
             if (parameter == Parameter.MetabolicHealth)
                 if (score == HealthScore.Healthy)
@@ -236,7 +236,37 @@ namespace HealthSystem.Data
             HealthScore m1Score = GetHealthScore(user, parameter, m1, m1Second);
             HealthScore m2Score = GetHealthScore(user, parameter, m2, m2Second);
             HealthScore m3Score = GetHealthScore(user, parameter, m3, m3Second);
-            /////////////////////waist score is wrong
+
+
+            //two adjacent months 'jump' over the healthy zone straight to the other side(left to right or right to left)
+            if (m2Score != HealthScore.Healthy &&
+            Math.Abs(m1Score - m2Score) >= 2 || Math.Abs(m3Score - m2Score) >= 2
+            )
+            {
+                return DynamicsScore.Inconclusive;
+            }
+
+            //going from yellow to two greens is improving
+            if (m1Score == HealthScore.Healthy && m2Score == HealthScore.Healthy)
+            {
+                if (m3Score == HealthScore.LeftOkay || m3Score == HealthScore.RightOkay)
+                    return DynamicsScore.Improving;
+            }
+            //going from two greens to anything non green is degrading
+            if (m3Score == HealthScore.Healthy && m2Score == HealthScore.Healthy)
+            {
+                if (m1Score != HealthScore.Healthy)
+                    return DynamicsScore.Degrading;
+                else return DynamicsScore.Stable;
+            }
+            //all same zone but not all 3 are healthy
+            if (m1Score == m2Score && m2Score == m3Score)
+            {
+                float errorMargin = m2 * 0.025f;//2.5% distance from the second month - total possible 5% range
+                if (Math.Abs(m1 - m2) <= errorMargin && Math.Abs(m2 - m3) <= errorMargin)
+                    return DynamicsScore.Stable;
+            }
+
             var m1Zone = GetParameterZone(parameter, m1Score);
             var m2Zone = GetParameterZone(parameter, m2Score);
             var m3Zone = GetParameterZone(parameter, m3Score);
@@ -254,7 +284,6 @@ namespace HealthSystem.Data
                 m3 = GetBMI(user.Height, m3);
             }
 
-
             //how far along a specific zone is the parameter
             var m1Percentage = GetZonePercentage(m1Zone.Item1, m1Zone.Item2, m1);
             var m2Percentage = GetZonePercentage(m2Zone.Item1, m2Zone.Item2, m2);
@@ -270,34 +299,14 @@ namespace HealthSystem.Data
             m2Percentage = (m2Score == HealthScore.RightOkay || m2Score == HealthScore.RightBad) ? m2Percentage * -1 : m2Percentage;
             m3Percentage = (m3Score == HealthScore.RightOkay || m3Score == HealthScore.RightBad) ? m3Percentage * -1 : m3Percentage;
 
-            //two adjacent months 'jump' over the healthy zone straight to the other side(left to right or right to left)
-            if (
-            (Math.Abs(m1Percentage) >= 100 && (Math.Abs(m2Percentage) >= 100) && (m1Percentage * m2Percentage) < 0) ||
-            (Math.Abs(m2Percentage) >= 100 && (Math.Abs(m3Percentage) >= 100) && (m2Percentage * m3Percentage) < 0)
-            )
-            {
-                return DynamicsScore.Inconclusive;
-            }
+            
 
-            //same zone
-            if (m1Score == m2Score && m2Score == m3Score)
-            {
-                //all 3 zones being green is stable
-                if (m1Score == HealthScore.Healthy)
-                    return DynamicsScore.Stable;
-
-                float errorMargin = m2Percentage * 0.025f;//2.5% distance from the second month - total possible 5% range
-                if (Math.Abs(m1Percentage - m2Percentage) <= errorMargin && Math.Abs(m2Percentage - m3Percentage) <= errorMargin)
-                    return DynamicsScore.Stable;
-            }
-
-            //moving from smaller to larger percentage = improvement
+            //moving from smaller to larger percentage = degrading health
             if (Math.Abs(m3Percentage) <= Math.Abs(m2Percentage) && Math.Abs(m2Percentage) <= Math.Abs(m1Percentage))
                 return DynamicsScore.Degrading;
             //moving from larger to smaller percentage = improvement
             if (Math.Abs(m3Percentage) >= Math.Abs(m2Percentage) && Math.Abs(m2Percentage) >= Math.Abs(m1Percentage))
                 return DynamicsScore.Improving;
-
 
             return DynamicsScore.Inconclusive;
         }
