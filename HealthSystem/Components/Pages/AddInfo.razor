@@ -15,6 +15,8 @@
 
 <div class="container">
     <EditForm Model="Input" FormName="info" OnValidSubmit="OnValidSubmitAsync" method="post">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
         <div class="date-row">
             <div class="form-floating mb-3">
                 <InputDate Type="InputDateType.Month" @bind-Value="Input.InfoDate" @bind-Value:after="@(()=>{UpdateValues();})" class="form-control addinfo-date" aria-required="true" />
@@ -25,7 +27,7 @@
         <div>
             <div class="info-row">
                 <div class="info-label">Waist Size (cm)</div>
-                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.WaistSize" /></div>
+                <div class="info-value"><InputNumber class="addinfo-number" Min="0" Max="1000" @bind-Value="Input.WaistSize" @bind-Value:after="@(()=>{SetMetabolicHealth();})" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
                         <div class="segment LeftBad"></div>
@@ -57,7 +59,7 @@
 
             <div class="info-row">
                 <div class="info-label">Blood Pressure Diastolic, Systolic (mm Hg)</div>
-                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.BloodPressureUpper" /><InputNumber class="addinfo-number" @bind-Value="Input.BloodPressureLower" /></div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.BloodPressureUpper" @bind-Value:after="@(()=>{SetMetabolicHealth();})" /><InputNumber class="addinfo-number" @bind-Value="Input.BloodPressureLower" @bind-Value:after="@(()=>{SetMetabolicHealth();})" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
                         <div class="segment LeftBad"></div>
@@ -73,7 +75,7 @@
 
             <div class="info-row">
                 <div class="info-label">Weight (kg)</div>
-                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.Weight" /></div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.Weight" @bind-Value:after="@(()=>{SetMetabolicHealth();})" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
                         <div class="segment LeftBad"></div>
@@ -88,7 +90,7 @@
 
             <div class="info-row">
                 <div class="info-label">Resting Heart Rate (bpm)</div>
-                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.RestingHeartRate" /></div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.RestingHeartRate" @bind-Value:after="@(()=>{SetMetabolicHealth();})" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
                         <div class="segment LeftBad"></div>
@@ -103,7 +105,7 @@
 
             <div class="info-row">
                 <div class="info-label">CGM (mg/dL)</div>
-                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.CGM" /></div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.CGM" @bind-Value:after="@(()=>{SetMetabolicHealth();})" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
                         <div class="segment LeftBad"></div>
@@ -118,7 +120,7 @@
 
             <div class="info-row">
                 <div class="info-label">Insulin (μU/mL)</div>
-                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.Insulin" /></div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.Insulin" @bind-Value:after="@(()=>{SetMetabolicHealth();})" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
                         <div class="segment LeftBad"></div>
@@ -133,7 +135,7 @@
 
             <div class="info-row">
                 <div class="info-label">Triglyceride<br />(mg/dL)</div>
-                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.Triglyceride" /></div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.Triglyceride" @bind-Value:after="@(()=>{SetMetabolicHealth();})" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
                         <div class="segment LeftBad"></div>
@@ -148,7 +150,7 @@
 
             <div class="info-row">
                 <div class="info-label">HDL Cholesterol (mg/dL)</div>
-                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.HDLCholesterol" /></div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.HDLCholesterol" @bind-Value:after="@(()=>{SetMetabolicHealth();})" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
                         <div class="segment LeftBad"></div>
@@ -163,7 +165,7 @@
 
             <div class="info-row">
                 <div class="info-label">LDL Cholesterol (mg/dL)</div>
-                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.LDLCholesterol" /></div>
+                <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.LDLCholesterol" @bind-Value:after="@(()=>{SetMetabolicHealth();})" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
                         <div class="segment LeftBad"></div>
@@ -194,7 +196,7 @@
         </div>
         <button>Save</button>
     </EditForm>
-    <div class="right-side-image"></div>
+    <div class="right-side-image"><img src="./Images/infopage.jpg" /></div>
 </div>
 
 
@@ -263,6 +265,11 @@
     private void OnDateChanged(DateTime newValue)
     {
         UpdateValues();
+    }
+
+    public void SetMetabolicHealth(){
+        Input.MetabolicHealth = GetMetabolicHealth(user, Input.WaistSize, Input.BloodPressureUpper, Input.BloodPressureLower, Input.Weight, Input.RestingHeartRate, Input.CGM, Input.Insulin, Input.Triglyceride, Input.HDLCholesterol, Input.LDLCholesterol);
+        StateHasChanged();
     }
 
     private async Task OnValidSubmitAsync(EditContext editContext)
@@ -441,15 +448,25 @@
 
     internal sealed class InputModel
     {
+        [Range(0,1000)]
         public float WaistSize { get; set; } = 0;
+        [Range(0,1000)]
         public float BloodPressureLower { get; set; } = 0;
+        [Range(0, 1000)]
         public float BloodPressureUpper { get; set; } = 0;
+        [Range(0, 1000)]
         public float Weight { get; set; } = 0;
+        [Range(0, 1000)]
         public float RestingHeartRate { get; set; } = 0;
+        [Range(0, 1000)]
         public float CGM { get; set; } = 0;
+        [Range(0,1000)]
         public float Insulin { get; set; } = 0;
+        [Range(0,1000)]
         public float Triglyceride { get; set; } = 0;
+        [Range(0,1000)]
         public float HDLCholesterol { get; set; } = 0;
+        [Range(0, 1000)]
         public float LDLCholesterol { get; set; } = 0;
         public float MetabolicHealth { get; set; } = 0;
 

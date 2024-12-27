@@ -26,13 +26,13 @@ namespace HealthSystemTest
                 DistinctBy(x => x.InformationTypeId).
                 SelectMany(x => new[] { x.Value, x.SecondaryValue ?? null }.Where(v => v != null))
                 .Select(x => x.Value).ToList();
-
+            
             var cut = RenderComponent<AddInfo>();
             
             //try get the same data from the page, 
             var pageResult = cut.FindAll(".addinfo-number").Select(x => Convert.ToSingle(x.GetAttribute("value"))).ToList();
 
-            Assert.Equal(dbData, pageResult);
+            Assert.Equal(dbData, pageResult[..^1]);//result also contains metabolic score, which is not needed here
         }
 
         [Fact]

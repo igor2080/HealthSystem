@@ -83,8 +83,13 @@ namespace HealthSystem.Data
         }
         public static float GetZonePercentage(float zoneStart, float zoneEnd, float current)
         {
+            if (zoneEnd == zoneStart)
+                if (current == zoneStart)
+                    return 100;
+                else return 0;
             if (current >= zoneEnd) return 100;
             if (current <= zoneStart) return 0;
+            
 
             return (current - zoneStart) / (zoneEnd - zoneStart) * 100;
         }
@@ -273,12 +278,16 @@ namespace HealthSystem.Data
 
             if (parameter == Parameter.WaistMale || parameter == Parameter.WaistFemale)
             {//waist uses a ratio rather than the flat value
+                if (user.Height == 0)
+                    return DynamicsScore.Inconclusive;
                 m1 /= user.Height;
                 m2 /= user.Height;
                 m3 /= user.Height;
             }
             else if (parameter == Parameter.BMI)
             {//weight stores BMI rather than the weight for calculations
+                if (user.Height == 0)
+                    return DynamicsScore.Inconclusive;
                 m1 = GetBMI(user.Height, m1);
                 m2 = GetBMI(user.Height, m2);
                 m3 = GetBMI(user.Height, m3);
@@ -299,7 +308,7 @@ namespace HealthSystem.Data
             m2Percentage = (m2Score == HealthScore.RightOkay || m2Score == HealthScore.RightBad) ? m2Percentage * -1 : m2Percentage;
             m3Percentage = (m3Score == HealthScore.RightOkay || m3Score == HealthScore.RightBad) ? m3Percentage * -1 : m3Percentage;
 
-            
+
 
             //moving from smaller to larger percentage = degrading health
             if (Math.Abs(m3Percentage) <= Math.Abs(m2Percentage) && Math.Abs(m2Percentage) <= Math.Abs(m1Percentage))

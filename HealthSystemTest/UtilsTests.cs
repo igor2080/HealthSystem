@@ -39,6 +39,9 @@ namespace HealthSystemTest
             result = GetZonePercentage(70, 80, 100);
 
             Assert.Equal(100, result);
+
+            result = GetZonePercentage(0, 0, 100);
+            Assert.Equal(0, result);
         }
         [Fact]
         public void GetZonePercentage_Valid_Value()
@@ -137,7 +140,7 @@ namespace HealthSystemTest
         [Fact]
         public void GetDynamic_Boundary()
         {
-            var user = new ApplicationUser() { Height = 180, Gender = "male" };
+            var user = new ApplicationUser() { Height = 0, Gender = "male" };
             var result = GetDynamic(user, Parameter.MetabolicHealth, -1, -1, -1, -1, -1, -1);
 
             Assert.Equal(DynamicsScore.Inconclusive, result);
