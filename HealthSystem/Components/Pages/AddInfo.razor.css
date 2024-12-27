@@ -1,21 +1,28 @@
 ﻿.container {
     display: grid;
-    grid-template-rows: 15% 85%;
+    grid-template-columns: 50% 50%;
     height: 100%;
     font-family: Georgia;
     padding-top: 1%;
+    max-width: none;
+}
+
+.right-side-image {
+    background-image: url('./Images/web_startpage_test3.png');
+    background-repeat: no-repeat;
+    background-size: cover
 }
 
 .info-row {
     display: grid;
-    grid-template-columns: 15% 10% 15%;
-    grid-column-gap: 1%;
-    margin: 1% 0;
+    grid-template-columns: 30% 20% 30%;
+    grid-column-gap: 2%;
+    margin: 2% 0;
 }
 
 .date-row {
     display: grid;
-    grid-template-columns: 30% 70%;
+    grid-template-columns: 50% 50%;
 }
 
     .date-row div input {
@@ -35,9 +42,9 @@
 }
 
 
-.info-value > * {
-    width: 1em !important;
-}
+    .info-value > * {
+        width: 1em !important;
+    }
 
 .info-range {
 }
@@ -111,4 +118,8 @@
         /*color: #000;*/
         white-space: nowrap;
         left: -4px;
+    }
+
+    .indicator.invis{
+        background-color: transparent;
     }

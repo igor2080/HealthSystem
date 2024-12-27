@@ -1,6 +1,11 @@
+.page {
+    width: 1500px;
+    margin: auto;
+}
+
 main {
     background-color: #BEE7FD;
-    min-height:100vh;
+    min-height: 100vh;
 }
 
 .left-menu{

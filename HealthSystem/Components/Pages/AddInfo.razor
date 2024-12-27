@@ -65,7 +65,7 @@
                         <div class="segment Healthy"></div>
                         <div class="segment RightOkay"></div>
                         <div class="segment RightBad"></div>
-                        <div class="indicator" style="left: 50%;"><span class="value @(Enum.GetName(GetBloodPressureScore(Input.BloodPressureUpper,Input.BloodPressureLower)))-color">@Input.BloodPressureUpper - @Input.BloodPressureLower</span></div>
+                        <div class="indicator invis" style="left: 50%;"><span class="value @(Enum.GetName(GetBloodPressureScore(Input.BloodPressureUpper,Input.BloodPressureLower)))-color">@Input.BloodPressureUpper - @Input.BloodPressureLower</span></div>
                         @* <div class="indicator" style="left: 70%;"><span class="value Healthy-color">70</span></div> *@
                     </div>
                 </div>
@@ -132,7 +132,7 @@
             </div>
 
             <div class="info-row">
-                <div class="info-label">Triglyceride<br/>(mg/dL)</div>
+                <div class="info-label">Triglyceride<br />(mg/dL)</div>
                 <div class="info-value"><InputNumber class="addinfo-number" @bind-Value="Input.Triglyceride" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
@@ -175,10 +175,26 @@
                     </div>
                 </div>
             </div>
-
+            <hr style="width: 41%;" />
+            <div class="info-row">
+                <div class="info-label">Metabolic Health</div>
+                <div class="info-value"><InputNumber disabled="@(true)" class="addinfo-number" @bind-Value="Input.MetabolicHealth" /></div>
+                <div class="info-range">
+                    <div class="threshold-bar">
+                        <div class="segment LeftBad"></div>
+                        <div class="segment LeftBad"></div>
+                        <div class="segment LeftOkay"></div>
+                        <div class="segment Healthy"></div>
+                        <div class="segment Healthy"></div>
+                        <div class="indicator invis" style="left: 50%;"><span class="value @(Enum.GetName(GetMetabolicHealthScore((int)Input.MetabolicHealth)))-color">@Input.MetabolicHealth</span></div>
+                        @* <div class="indicator" style="left: @(GetPercentage(0,10,15,18,Input.MetabolicHealth))%;"><span class="value @(Enum.GetName(GetMetabolicHealthScore((int)Input.MetabolicHealth)))-color">@Input.MetabolicHealth</span></div> *@
+                    </div>
+                </div>
+            </div>
         </div>
         <button>Save</button>
     </EditForm>
+    <div class="right-side-image"></div>
 </div>
 
 
@@ -194,7 +210,7 @@
     {
         var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
         userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
-        
+
         user = await UserManager.FindByIdAsync(userId);
         UpdateValues();
 
@@ -217,10 +233,13 @@
                 {
                     var hr = alldata.Select(x => x.icu_resting_hr).ToList();
                     Input.RestingHeartRate = hr.Last();
+                    Input.MetabolicHealth = GetMetabolicHealth(user, Input.WaistSize, Input.BloodPressureUpper, Input.BloodPressureLower, Input.Weight, Input.RestingHeartRate, Input.CGM, Input.Insulin, Input.Triglyceride, Input.HDLCholesterol, Input.LDLCholesterol);
                     StateHasChanged();
                 }
             }
         }
+
+
     }
 
     private void UpdateValues()
@@ -238,6 +257,7 @@
         Input.Triglyceride = medicalInfo.LastOrDefault(x => x.InformationTypeId == 7)?.Value ?? 0;
         Input.HDLCholesterol = medicalInfo.LastOrDefault(x => x.InformationTypeId == 8)?.Value ?? 0;
         Input.LDLCholesterol = medicalInfo.LastOrDefault(x => x.InformationTypeId == 9)?.Value ?? 0;
+        Input.MetabolicHealth = GetMetabolicHealth(user, Input.WaistSize, Input.BloodPressureUpper, Input.BloodPressureLower, Input.Weight, Input.RestingHeartRate, Input.CGM, Input.Insulin, Input.Triglyceride, Input.HDLCholesterol, Input.LDLCholesterol);
     }
 
     private void OnDateChanged(DateTime newValue)
@@ -431,6 +451,7 @@
         public float Triglyceride { get; set; } = 0;
         public float HDLCholesterol { get; set; } = 0;
         public float LDLCholesterol { get; set; } = 0;
+        public float MetabolicHealth { get; set; } = 0;
 
         [Required]
         [Display(Name = "Information date")]

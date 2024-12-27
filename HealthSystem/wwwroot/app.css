@@ -64,12 +64,20 @@ h1:focus {
     color: #4587dd;
 }
 
-.addinfo-date {
-    width: 50%;
-    margin: auto;
-    
-}
+    .addinfo-number:disabled{
+        background-color:white;
+    }
+
+    .addinfo-date {
+        width: 50%;
+        margin: auto;
+    }
 .addinfo-label {
     margin: auto;
     left: 32% !important;
+}
+
+.menu-link.active {
+    font-weight: bold;
+    text-decoration: underline;
 }
