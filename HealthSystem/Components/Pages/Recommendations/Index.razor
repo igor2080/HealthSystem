@@ -415,31 +415,31 @@
             Recommendations.Clear();
             if (userRoles.Contains("Admin"))
             {
-                MetabolicHealth.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 10).Select(x => x.Recommendation).ToList();
-                WaistSize.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 1).Select(x => x.Recommendation).ToList();
-                BloodPressure.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 2).Select(x => x.Recommendation).ToList();
-                BMI.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 3).Select(x => x.Recommendation).ToList();
-                RestingHeartRate.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 4).Select(x => x.Recommendation).ToList();
-                CGM.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 5).Select(x => x.Recommendation).ToList();
-                Insulin.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 6).Select(x => x.Recommendation).ToList();
-                Triglyceride.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 7).Select(x => x.Recommendation).ToList();
-                HDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 8).Select(x => x.Recommendation).ToList();
-                LDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 9).Select(x => x.Recommendation).ToList();
+                MetabolicHealth.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 10).Select(x => x.Recommendation).Distinct().ToList();
+                WaistSize.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 1).Select(x => x.Recommendation).Distinct().ToList();
+                BloodPressure.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 2).Select(x => x.Recommendation).Distinct().ToList();
+                BMI.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 3).Select(x => x.Recommendation).Distinct().ToList();
+                RestingHeartRate.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 4).Select(x => x.Recommendation).Distinct().ToList();
+                CGM.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 5).Select(x => x.Recommendation).Distinct().ToList();
+                Insulin.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 6).Select(x => x.Recommendation).Distinct().ToList();
+                Triglyceride.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 7).Select(x => x.Recommendation).Distinct().ToList();
+                HDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 8).Select(x => x.Recommendation).Distinct().ToList();
+                LDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 9).Select(x => x.Recommendation).Distinct().ToList();
 
             }
             else
             {
 
-                MetabolicHealth.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 10 && x.DynamicsScore == MetabolicHealth.DynamicsScore).Select(x => x.Recommendation).ToList();
-                WaistSize.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 1 && x.DynamicsScore == WaistSize.DynamicsScore).Select(x => x.Recommendation).ToList();
-                BloodPressure.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 2 && x.DynamicsScore == BloodPressure.DynamicsScore).Select(x => x.Recommendation).ToList();
-                BMI.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 3 && x.DynamicsScore == BMI.DynamicsScore).Select(x => x.Recommendation).ToList();
-                RestingHeartRate.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 4 && x.DynamicsScore == RestingHeartRate.DynamicsScore).Select(x => x.Recommendation).ToList();
+                MetabolicHealth.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 10 && x.DynamicsScore == MetabolicHealth.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
+                WaistSize.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 1 && x.DynamicsScore == WaistSize.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
+                BloodPressure.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 2 && x.DynamicsScore == BloodPressure.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
+                BMI.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 3 && x.DynamicsScore == BMI.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
+                RestingHeartRate.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 4 && x.DynamicsScore == RestingHeartRate.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
                 CGM.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 5 && x.DynamicsScore == CGM.DynamicsScore).Select(x => x.Recommendation).ToList();
-                Insulin.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 6 && x.DynamicsScore == Insulin.DynamicsScore).Select(x => x.Recommendation).ToList();
-                Triglyceride.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 7 && x.DynamicsScore == Triglyceride.DynamicsScore).Select(x => x.Recommendation).ToList();
-                HDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 8 && x.DynamicsScore == HDLCholesterol.DynamicsScore).Select(x => x.Recommendation).ToList();
-                LDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 9 && x.DynamicsScore == LDLCholesterol.DynamicsScore).Select(x => x.Recommendation).ToList();
+                Insulin.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 6 && x.DynamicsScore == Insulin.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
+                Triglyceride.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 7 && x.DynamicsScore == Triglyceride.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
+                HDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 8 && x.DynamicsScore == HDLCholesterol.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
+                LDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 9 && x.DynamicsScore == LDLCholesterol.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
 
             }
 
