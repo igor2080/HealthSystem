@@ -5,23 +5,18 @@ namespace HealthSystem.Controllers
 {
     [Route("api/strava/")]
     [ApiController]
-    public class ApiController : ControllerBase
+    public class ApiController(StravaTokenService tokenService) : ControllerBase
     {
-        private static readonly string ClientId = "139212";
-        private static readonly string RedirectUri = "https://localhost:7089/api/strava/callback";
-        private readonly StravaTokenService _tokenService;
-
-        public ApiController(StravaTokenService tokenService)
-        {
-            _tokenService = tokenService;
-        }
+        private static readonly string _clientId = "139212";
+        private static readonly string _redirectUri = "https://localhost:7089/api/strava/callback";
+        private readonly StravaTokenService _tokenService = tokenService;
 
         [HttpGet("authorize")]
         public IActionResult Authorize()
         {
             string authorizationUrl = $"https://www.strava.com/oauth/authorize" +
-                $"?client_id={ClientId}" +
-                $"&redirect_uri={RedirectUri}" +
+                $"?client_id={_clientId}" +
+                $"&redirect_uri={_redirectUri}" +
                 $"&response_type=code" +
                 $"&scope=activity:read_all";
 
@@ -32,10 +27,9 @@ namespace HealthSystem.Controllers
         public IActionResult Callback([FromQuery] string code)
         {
             string accessToken = StravaAuth.GetAccessToken(code).Result;
-
             _tokenService.AccessToken = accessToken;
+
             return Content(@"<script>window.close();</script>", "text/html");
-            //return Ok();
         }
     }
 }

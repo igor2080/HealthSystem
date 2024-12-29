@@ -9,7 +9,6 @@ namespace HealthSystemTest
         public static Mock<UserManager<TUser>> Create()
         {
             var store = new Mock<IUserStore<TUser>>();
-
             var userManager = new Mock<UserManager<TUser>>(
                 store.Object,
                 null, // OptionsAccessor

@@ -13,7 +13,6 @@ namespace HealthSystem.Data
             RightBad = 5,
 
         }
-
         public enum DynamicsScore
         {
             Degrading = -1,
@@ -21,7 +20,6 @@ namespace HealthSystem.Data
             Improving = 1,
             Inconclusive = 2
         }
-
         public enum Parameter
         {
             BMI,
@@ -52,7 +50,6 @@ namespace HealthSystem.Data
             [35f, 40f, 60f, 80f],
             [0f,10f,15f,18f],
         ];
-
         ///reference for above array
         //public static readonly float[] BMIZones = [15f, 18.5f, 25f, 28f];
         //public static readonly float[] WaistMaleZones = [0.38f, 0.43f, 0.5f, 0.55f];
@@ -69,12 +66,16 @@ namespace HealthSystem.Data
         public static float GetPercentage(float first, float second, float third, float fourth, float current)
         {
             float percent = 10;
+
             if (current < first)
                 return percent;
+
             if (current < second)
                 return percent * 3;
+
             if (current >= second && current <= third)
                 return percent * 5;
+
             if (current <= fourth)
                 return percent * 7;
 
@@ -87,9 +88,10 @@ namespace HealthSystem.Data
                 if (current == zoneStart)
                     return 100;
                 else return 0;
+
             if (current >= zoneEnd) return 100;
+
             if (current <= zoneStart) return 0;
-            
 
             return (current - zoneStart) / (zoneEnd - zoneStart) * 100;
         }
@@ -127,6 +129,7 @@ namespace HealthSystem.Data
 
             var threadStarters = messages.Where(x => x.PreviousMessageId == null || x.PreviousMessageId == 0).ToList();
             var threads = new List<List<Message>>();
+
             foreach (var starter in threadStarters)
             {
                 var thread = new List<Message>();
@@ -144,7 +147,6 @@ namespace HealthSystem.Data
             }
 
             return threads;
-
         }
         public static List<MedicalInformation> GenerateMonthlyData(ApplicationDbContext context, string userId, ref int startingId, int monthsAgo = 0)
         {
@@ -170,9 +172,7 @@ namespace HealthSystem.Data
                 Value = 0,
                 SecondaryValue = 0,
             }).ToList();
-
             startingId = tempId;
-
             context.MedicalInformation.AddRange(data);
             context.SaveChanges();
 
@@ -241,16 +241,12 @@ namespace HealthSystem.Data
             HealthScore m1Score = GetHealthScore(user, parameter, m1, m1Second);
             HealthScore m2Score = GetHealthScore(user, parameter, m2, m2Second);
             HealthScore m3Score = GetHealthScore(user, parameter, m3, m3Second);
-
-
             //two adjacent months 'jump' over the healthy zone straight to the other side(left to right or right to left)
             if (m2Score != HealthScore.Healthy &&
-            Math.Abs(m1Score - m2Score) >= 2 || Math.Abs(m3Score - m2Score) >= 2
-            )
+            Math.Abs(m1Score - m2Score) >= 2 || Math.Abs(m3Score - m2Score) >= 2)
             {
                 return DynamicsScore.Inconclusive;
             }
-
             //going from yellow to two greens is improving
             if (m1Score == HealthScore.Healthy && m2Score == HealthScore.Healthy)
             {
@@ -280,6 +276,7 @@ namespace HealthSystem.Data
             {//waist uses a ratio rather than the flat value
                 if (user.Height == 0)
                     return DynamicsScore.Inconclusive;
+
                 m1 /= user.Height;
                 m2 /= user.Height;
                 m3 /= user.Height;
@@ -288,6 +285,7 @@ namespace HealthSystem.Data
             {//weight stores BMI rather than the weight for calculations
                 if (user.Height == 0)
                     return DynamicsScore.Inconclusive;
+
                 m1 = GetBMI(user.Height, m1);
                 m2 = GetBMI(user.Height, m2);
                 m3 = GetBMI(user.Height, m3);
@@ -297,19 +295,14 @@ namespace HealthSystem.Data
             var m1Percentage = GetZonePercentage(m1Zone.Item1, m1Zone.Item2, m1);
             var m2Percentage = GetZonePercentage(m2Zone.Item1, m2Zone.Item2, m2);
             var m3Percentage = GetZonePercentage(m3Zone.Item1, m3Zone.Item2, m3);
-
             //convert percentages to values relative to other zones, greens are 0-100%, yellows are 100-200%, reds are 200-300%
             m1Percentage = Math.Abs(((2 - MapScore((int)m1Score)) * 100) - m1Percentage);
             m2Percentage = Math.Abs(((2 - MapScore((int)m2Score)) * 100) - m2Percentage);
             m3Percentage = Math.Abs(((2 - MapScore((int)m3Score)) * 100) - m3Percentage);
-
             //if the zones are right sided zones, make the percentage negative
             m1Percentage = (m1Score == HealthScore.RightOkay || m1Score == HealthScore.RightBad) ? m1Percentage * -1 : m1Percentage;
             m2Percentage = (m2Score == HealthScore.RightOkay || m2Score == HealthScore.RightBad) ? m2Percentage * -1 : m2Percentage;
             m3Percentage = (m3Score == HealthScore.RightOkay || m3Score == HealthScore.RightBad) ? m3Percentage * -1 : m3Percentage;
-
-
-
             //moving from smaller to larger percentage = degrading health
             if (Math.Abs(m3Percentage) <= Math.Abs(m2Percentage) && Math.Abs(m2Percentage) <= Math.Abs(m1Percentage))
                 return DynamicsScore.Degrading;
@@ -319,7 +312,6 @@ namespace HealthSystem.Data
 
             return DynamicsScore.Inconclusive;
         }
-
         public static float GetBMI(float height, float weight)
         {
             if (height <= 0 || weight <= 0)
@@ -327,7 +319,6 @@ namespace HealthSystem.Data
 
             return weight / ((height / 100) * (height / 100));
         }
-
         public static HealthScore GetBMIScore(float height, float weight)
         {
             if (height <= 0 || weight <= 0)
@@ -340,11 +331,12 @@ namespace HealthSystem.Data
                 return HealthScore.LeftOkay;
             else if (BMI > ParameterZones[(int)Parameter.BMI][2] && BMI <= ParameterZones[(int)Parameter.BMI][3])
                 return HealthScore.RightOkay;
+
             if (BMI > ParameterZones[(int)Parameter.BMI][3])
                 return HealthScore.RightBad;
+
             return HealthScore.LeftBad;
         }
-
         public static HealthScore GetWaistScore(ApplicationUser user, float waistSize)
         {
             if (waistSize <= 0)
@@ -378,8 +370,8 @@ namespace HealthSystem.Data
 
                 return HealthScore.LeftBad;
             }
-        }
 
+        }
         public static HealthScore GetInsulinScore(float insulin)
         {
             if (insulin <= 0)
@@ -396,11 +388,11 @@ namespace HealthSystem.Data
 
             return HealthScore.LeftBad;
         }
-
         public static HealthScore GetCGMScore(float CGM)
         {
             if (CGM <= 0)
                 return HealthScore.LeftBad;
+
             if (CGM >= ParameterZones[(int)Parameter.CGM][1] && CGM <= ParameterZones[(int)Parameter.CGM][2])
                 return HealthScore.Healthy;
             else if (CGM >= ParameterZones[(int)Parameter.CGM][0] && CGM < ParameterZones[(int)Parameter.CGM][1])
@@ -412,7 +404,6 @@ namespace HealthSystem.Data
 
             return HealthScore.LeftBad;
         }
-
         public static HealthScore GetTriglycerideScore(float triglyceride)
         {
             if (triglyceride <= 0)
@@ -429,7 +420,6 @@ namespace HealthSystem.Data
 
             return HealthScore.LeftBad;
         }
-
         public static HealthScore GetBloodPressureScore(float bloodPressureUpper, float bloodPressureLower)
         {
             if (bloodPressureLower <= 0 || bloodPressureUpper <= 0)
@@ -446,7 +436,6 @@ namespace HealthSystem.Data
 
             return HealthScore.LeftBad;
         }
-
         public static HealthScore GetHDLCholesterolScore(float HDLCholesterol)
         {
             if (HDLCholesterol <= 0)
@@ -463,7 +452,6 @@ namespace HealthSystem.Data
 
             return HealthScore.LeftBad;
         }
-
         public static HealthScore GetLDLCholesterolScore(float LDLCholesterol)
         {
             if (LDLCholesterol <= 0)
@@ -480,7 +468,6 @@ namespace HealthSystem.Data
 
             return HealthScore.LeftBad;
         }
-
         public static HealthScore GetRestingHeartRateScore(float restingHeartRate)
         {
             if (restingHeartRate <= 0)
@@ -497,6 +484,5 @@ namespace HealthSystem.Data
 
             return HealthScore.LeftBad;
         }
-
     }
 }

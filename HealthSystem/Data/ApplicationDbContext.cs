@@ -15,7 +15,6 @@ namespace HealthSystem.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
             builder.Entity<InformationType>().HasData(
                 new InformationType { Id = 1, Description = "Waist Size" },
                 new InformationType { Id = 2, Description = "Blood Pressure" },
@@ -28,7 +27,6 @@ namespace HealthSystem.Data
                 new InformationType { Id = 9, Description = "LDL Cholesterol" },
                 new InformationType { Id = 10, Description = "Metabolic Health" }
                 );
-
             builder.Entity<Recommendation>().HasData(
                 new Recommendation { Id = 1, Description = "Metabolic syndrome is a clustering of at least three of the following five medical conditions: abdominal obesity, high blood pressure, high blood sugar, high serum triglycerides, and low serum high-density lipoprotein (HDL). Metabolic syndrome is associated with the risk of developing cardiovascular disease and type 2 diabetes. In the U.S., about 25% of the adult population has metabolic syndrome, a proportion increasing with age, particularly among racial and ethnic minorities.", Study_Link = @"https://en.wikipedia.org/wiki/Metabolic_syndrome" },
                 new Recommendation { Id = 2, Description = "Excess body weight and adiposity cause insulin resistance, inflammation, and numerous other alterations in metabolic and hormonal factors that promote atherosclerosis, tumorigenesis, neurodegeneration, and aging. Studies in both animals and humans have demonstrated a beneficial role of dietary restriction and leanness in promoting health and longevity.", Study_Link = @"https://pmc.ncbi.nlm.nih.gov/articles/PMC4032609/" },
@@ -41,7 +39,6 @@ namespace HealthSystem.Data
                 new Recommendation { Id = 9, Description = "LDL is called \"bad\" cholesterol because it can build up and form fatty deposits (plaques) in the walls of your arteries.", Study_Link = @"https://www.mountsinai.org/health-library/tests/ldl-test" },
                 new Recommendation { Id = 10, Description = "Having a high level of triglycerides in your blood can increase your risk of heart disease. But the same lifestyle choices that promote overall health can help lower your triglycerides, too.", Study_Link = @"https://www.mayoclinic.org/diseases-conditions/high-blood-cholesterol/in-depth/triglycerides/art-20048186" }
                 );
-
             builder.Entity<TriggerParameter>().HasData(
                 new TriggerParameter { Id = 1, RecommendationId = 1, InformationTypeId = 10, DynamicsScore = DynamicsScore.Stable },
                 new TriggerParameter { Id = 2, RecommendationId = 1, InformationTypeId = 10, DynamicsScore = DynamicsScore.Degrading },
@@ -84,13 +81,10 @@ namespace HealthSystem.Data
                 new TriggerParameter { Id = 39, RecommendationId = 10, InformationTypeId = 7, DynamicsScore = DynamicsScore.Improving },
                 new TriggerParameter { Id = 40, RecommendationId = 10, InformationTypeId = 7, DynamicsScore = DynamicsScore.Inconclusive }
                 );
-
             builder.Entity<IdentityRole>().HasData(
             new IdentityRole { Id = "1", Name = "Admin", NormalizedName = "ADMIN" },
             new IdentityRole { Id = "2", Name = "User", NormalizedName = "USER" }
                 );
-
-
         }
     }
 }

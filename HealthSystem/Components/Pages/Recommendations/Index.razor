@@ -11,7 +11,7 @@
 @rendermode InteractiveServer
 
 
-@if (userRoles.Contains("Admin"))
+@if (_userRoles.Contains("Admin"))
 {
     <NavLink class="nav-link" href="recommendations/add">
         <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Add recommendation
@@ -23,15 +23,15 @@
         <div>and recommendations for health improvement</div>
     </div>
     <br />
-    @if (m1Info is not null)
+    @if (_m1Info is not null)
     {
-        string m1 = m1Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture),
-        m2 = m2Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture),
-        m3 = m3Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture);
+        string m1 = _m1Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture),
+        m2 = _m2Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture),
+        m3 = _m3Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture);
         <div class="period">
             <div>Time period</div>
             <div class="months">@m1, @m2, @m3</div>
-            <div class="years">@(m1Info.First().Entry_Date.Year == m3Info.First().Entry_Date.Year ? m1Info.First().Entry_Date.Year : $"{m1Info.First().Entry_Date.Year} - {m3Info.First().Entry_Date.Year}")</div>
+            <div class="years">@(_m1Info.First().Entry_Date.Year == _m3Info.First().Entry_Date.Year ? _m1Info.First().Entry_Date.Year : $"{_m1Info.First().Entry_Date.Year} - {_m3Info.First().Entry_Date.Year}")</div>
         </div>
         <br />
         <div class="parameter">
@@ -42,16 +42,16 @@
                     <div>@m3</div>
                     <div>@m2</div>
                     <div>@m1</div>
-                    <div class="@Enum.GetName(MetabolicHealth.m3Score)">@MetabolicHealth.m3Value</div>
-                    <div class="@Enum.GetName(MetabolicHealth.m2Score)">@MetabolicHealth.m2Value</div>
-                    <div class="@Enum.GetName(MetabolicHealth.m1Score)">@MetabolicHealth.m1Value</div>
+                    <div class="@Enum.GetName(_metabolicHealth.M3Score)">@_metabolicHealth.M3Value</div>
+                    <div class="@Enum.GetName(_metabolicHealth.M2Score)">@_metabolicHealth.M2Value</div>
+                    <div class="@Enum.GetName(_metabolicHealth.M1Score)">@_metabolicHealth.M1Value</div>
                 </div>
                 <div class="dynamics">
-                    @Enum.GetName(MetabolicHealth.DynamicsScore)
+                    @Enum.GetName(_metabolicHealth.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
-                @foreach (var recommendation in MetabolicHealth.Recommendations)
+                @foreach (var recommendation in _metabolicHealth.Recommendations)
                 {
                     <div>
                         <div>@recommendation.Description</div>
@@ -69,16 +69,16 @@
                     <div>@m3</div>
                     <div>@m2</div>
                     <div>@m1</div>
-                    <div class="@Enum.GetName(WaistSize.m3Score)">@WaistSize.m3Value</div>
-                    <div class="@Enum.GetName(WaistSize.m2Score)">@WaistSize.m2Value</div>
-                    <div class="@Enum.GetName(WaistSize.m1Score)">@WaistSize.m1Value</div>
+                    <div class="@Enum.GetName(_waistSize.M3Score)">@_waistSize.M3Value</div>
+                    <div class="@Enum.GetName(_waistSize.M2Score)">@_waistSize.M2Value</div>
+                    <div class="@Enum.GetName(_waistSize.M1Score)">@_waistSize.M1Value</div>
                 </div>
                 <div class="dynamics">
-                    @Enum.GetName(WaistSize.DynamicsScore)
+                    @Enum.GetName(_waistSize.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
-                @foreach (var recommendation in WaistSize.Recommendations)
+                @foreach (var recommendation in _waistSize.Recommendations)
                 {
                     <div>
                         <div>@recommendation.Description</div>
@@ -96,16 +96,16 @@
                     <div>@m3</div>
                     <div>@m2</div>
                     <div>@m1</div>
-                    <div class="@Enum.GetName(BloodPressure.m3Score)">@BloodPressure.m3Value - @BloodPressure.m3SecondValue</div>
-                    <div class="@Enum.GetName(BloodPressure.m2Score)">@BloodPressure.m2Value - @BloodPressure.m2SecondValue</div>
-                    <div class="@Enum.GetName(BloodPressure.m1Score)">@BloodPressure.m1Value - @BloodPressure.m1SecondValue</div>
+                    <div class="@Enum.GetName(_bloodPressure.M3Score)">@_bloodPressure.M3Value - @_bloodPressure.M3SecondValue</div>
+                    <div class="@Enum.GetName(_bloodPressure.M2Score)">@_bloodPressure.M2Value - @_bloodPressure.M2SecondValue</div>
+                    <div class="@Enum.GetName(_bloodPressure.M1Score)">@_bloodPressure.M1Value - @_bloodPressure.M1SecondValue</div>
                 </div>
                 <div class="dynamics">
-                    @Enum.GetName(BloodPressure.DynamicsScore)
+                    @Enum.GetName(_bloodPressure.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
-                @foreach (var recommendation in BloodPressure.Recommendations)
+                @foreach (var recommendation in _bloodPressure.Recommendations)
                 {
                     <div>
                         <div>@recommendation.Description</div>
@@ -123,16 +123,16 @@
                     <div>@m3</div>
                     <div>@m2</div>
                     <div>@m1</div>
-                    <div class="@Enum.GetName(BMI.m3Score)">@BMI.m3Value</div>
-                    <div class="@Enum.GetName(BMI.m2Score)">@BMI.m2Value</div>
-                    <div class="@Enum.GetName(BMI.m1Score)">@BMI.m1Value</div>
+                    <div class="@Enum.GetName(_BMI.M3Score)">@_BMI.M3Value</div>
+                    <div class="@Enum.GetName(_BMI.M2Score)">@_BMI.M2Value</div>
+                    <div class="@Enum.GetName(_BMI.M1Score)">@_BMI.M1Value</div>
                 </div>
                 <div class="dynamics">
-                    @Enum.GetName(BMI.DynamicsScore)
+                    @Enum.GetName(_BMI.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
-                @foreach (var recommendation in BMI.Recommendations)
+                @foreach (var recommendation in _BMI.Recommendations)
                 {
                     <div>
                         <div>@recommendation.Description</div>
@@ -150,16 +150,16 @@
                     <div>@m3</div>
                     <div>@m2</div>
                     <div>@m1</div>
-                    <div class="@Enum.GetName(RestingHeartRate.m3Score)">@RestingHeartRate.m3Value</div>
-                    <div class="@Enum.GetName(RestingHeartRate.m2Score)">@RestingHeartRate.m2Value</div>
-                    <div class="@Enum.GetName(RestingHeartRate.m1Score)">@RestingHeartRate.m1Value</div>
+                    <div class="@Enum.GetName(_restingHeartRate.M3Score)">@_restingHeartRate.M3Value</div>
+                    <div class="@Enum.GetName(_restingHeartRate.M2Score)">@_restingHeartRate.M2Value</div>
+                    <div class="@Enum.GetName(_restingHeartRate.M1Score)">@_restingHeartRate.M1Value</div>
                 </div>
                 <div class="dynamics">
-                    @Enum.GetName(RestingHeartRate.DynamicsScore)
+                    @Enum.GetName(_restingHeartRate.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
-                @foreach (var recommendation in RestingHeartRate.Recommendations)
+                @foreach (var recommendation in _restingHeartRate.Recommendations)
                 {
                     <div>
                         <div>@recommendation.Description</div>
@@ -177,16 +177,16 @@
                     <div>@m3</div>
                     <div>@m2</div>
                     <div>@m1</div>
-                    <div class="@Enum.GetName(CGM.m3Score)">@CGM.m3Value</div>
-                    <div class="@Enum.GetName(CGM.m2Score)">@CGM.m2Value</div>
-                    <div class="@Enum.GetName(CGM.m1Score)">@CGM.m1Value</div>
+                    <div class="@Enum.GetName(_CGM.M3Score)">@_CGM.M3Value</div>
+                    <div class="@Enum.GetName(_CGM.M2Score)">@_CGM.M2Value</div>
+                    <div class="@Enum.GetName(_CGM.M1Score)">@_CGM.M1Value</div>
                 </div>
                 <div class="dynamics">
-                    @Enum.GetName(CGM.DynamicsScore)
+                    @Enum.GetName(_CGM.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
-                @foreach (var recommendation in CGM.Recommendations)
+                @foreach (var recommendation in _CGM.Recommendations)
                 {
                     <div>
                         <div>@recommendation.Description</div>
@@ -204,16 +204,16 @@
                     <div>@m3</div>
                     <div>@m2</div>
                     <div>@m1</div>
-                    <div class="@Enum.GetName(Insulin.m3Score)">@Insulin.m3Value</div>
-                    <div class="@Enum.GetName(Insulin.m2Score)">@Insulin.m2Value</div>
-                    <div class="@Enum.GetName(Insulin.m1Score)">@Insulin.m1Value</div>
+                    <div class="@Enum.GetName(_insulin.M3Score)">@_insulin.M3Value</div>
+                    <div class="@Enum.GetName(_insulin.M2Score)">@_insulin.M2Value</div>
+                    <div class="@Enum.GetName(_insulin.M1Score)">@_insulin.M1Value</div>
                 </div>
                 <div class="dynamics">
-                    @Enum.GetName(Insulin.DynamicsScore)
+                    @Enum.GetName(_insulin.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
-                @foreach (var recommendation in Insulin.Recommendations)
+                @foreach (var recommendation in _insulin.Recommendations)
                 {
                     <div>
                         <div>@recommendation.Description</div>
@@ -231,16 +231,16 @@
                     <div>@m3</div>
                     <div>@m2</div>
                     <div>@m1</div>
-                    <div class="@Enum.GetName(Triglyceride.m3Score)">@Triglyceride.m3Value</div>
-                    <div class="@Enum.GetName(Triglyceride.m2Score)">@Triglyceride.m2Value</div>
-                    <div class="@Enum.GetName(Triglyceride.m1Score)">@Triglyceride.m1Value</div>
+                    <div class="@Enum.GetName(_triglyceride.M3Score)">@_triglyceride.M3Value</div>
+                    <div class="@Enum.GetName(_triglyceride.M2Score)">@_triglyceride.M2Value</div>
+                    <div class="@Enum.GetName(_triglyceride.M1Score)">@_triglyceride.M1Value</div>
                 </div>
                 <div class="dynamics">
-                    @Enum.GetName(Triglyceride.DynamicsScore)
+                    @Enum.GetName(_triglyceride.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
-                @foreach (var recommendation in Triglyceride.Recommendations)
+                @foreach (var recommendation in _triglyceride.Recommendations)
                 {
                     <div>
                         <div>@recommendation.Description</div>
@@ -258,16 +258,16 @@
                     <div>@m3</div>
                     <div>@m2</div>
                     <div>@m1</div>
-                    <div class="@Enum.GetName(HDLCholesterol.m3Score)">@HDLCholesterol.m3Value</div>
-                    <div class="@Enum.GetName(HDLCholesterol.m2Score)">@HDLCholesterol.m2Value</div>
-                    <div class="@Enum.GetName(HDLCholesterol.m1Score)">@HDLCholesterol.m1Value</div>
+                    <div class="@Enum.GetName(_HDLCholesterol.M3Score)">@_HDLCholesterol.M3Value</div>
+                    <div class="@Enum.GetName(_HDLCholesterol.M2Score)">@_HDLCholesterol.M2Value</div>
+                    <div class="@Enum.GetName(_HDLCholesterol.M1Score)">@_HDLCholesterol.M1Value</div>
                 </div>
                 <div class="dynamics">
-                    @Enum.GetName(HDLCholesterol.DynamicsScore)
+                    @Enum.GetName(_HDLCholesterol.DynamicsScore)
                 </div>
             </div>
             <div class="recommendations">
-                @foreach (var recommendation in HDLCholesterol.Recommendations)
+                @foreach (var recommendation in _HDLCholesterol.Recommendations)
                 {
                     <div>
                         <div>@recommendation.Description</div>
@@ -285,16 +285,16 @@
                     <div>@m3</div>
                     <div>@m2</div>
                     <div>@m1</div>
-                    <div class="@Enum.GetName(LDLCholesterol.m3Score)">@LDLCholesterol.m3Value</div>
-                    <div class="@Enum.GetName(LDLCholesterol.m2Score)">@LDLCholesterol.m2Value</div>
-                    <div class="@Enum.GetName(LDLCholesterol.m1Score)">@LDLCholesterol.m1Value</div>
-                    </div>
-                    <div class="dynamics">
-                        @Enum.GetName(LDLCholesterol.DynamicsScore)
-                    </div>
+                    <div class="@Enum.GetName(_LDLCholesterol.M3Score)">@_LDLCholesterol.M3Value</div>
+                    <div class="@Enum.GetName(_LDLCholesterol.M2Score)">@_LDLCholesterol.M2Value</div>
+                    <div class="@Enum.GetName(_LDLCholesterol.M1Score)">@_LDLCholesterol.M1Value</div>
+                </div>
+                <div class="dynamics">
+                    @Enum.GetName(_LDLCholesterol.DynamicsScore)
+                </div>
             </div>
             <div class="recommendations">
-                @foreach (var recommendation in LDLCholesterol.Recommendations)
+                @foreach (var recommendation in _LDLCholesterol.Recommendations)
                 {
                     <div>
                         <div>@recommendation.Description</div>
@@ -307,31 +307,29 @@
     }
 </div>
 
-<div class="bottom-section"><input class="form-control" type="email" @bind-value="EmailAddress" placeholder="email@site.com" /> <button class="btn btn-info" @onclick="SendPage">Send as Email</button></div>
+<div class="bottom-section"><input class="form-control" type="email" @bind-value="_emailAddress" placeholder="email@site.com" /> <button class="btn btn-info" @onclick="SendPage">Send as Email</button></div>
 
 
 
 @code {
-    ApplicationUser user;
-    List<string> userRoles = new();
-    List<Recommendation> Recommendations = new();
-    string? userId;
-    List<MedicalInformation> m1Info;
-    List<MedicalInformation> m2Info;
-    List<MedicalInformation> m3Info;
-    int m1MetabolicHealth, m2MetabolicHealth, m3MetabolicHealth;
-    HealthScore m1Score, m2Score, m3Score;
-    ParameterStats MetabolicHealth, BMI, WaistSize, Insulin, CGM, Triglyceride, BloodPressure, HDLCholesterol, LDLCholesterol, RestingHeartRate;
-    string EmailAddress;
+    ApplicationUser _user;
+    List<string> _userRoles = new();
+    List<Recommendation> _recommendations = new();
+    string? _userId;
+    List<MedicalInformation> _m1Info;
+    List<MedicalInformation> _m2Info;
+    List<MedicalInformation> _m3Info;
+    int _m1MetabolicHealth, _m2MetabolicHealth, _m3MetabolicHealth;
+    HealthScore _m1Score, _m2Score, _m3Score;
+    ParameterStats _metabolicHealth, _BMI, _waistSize, _insulin, _CGM, _triglyceride, _bloodPressure, _HDLCholesterol, _LDLCholesterol, _restingHeartRate;
+    string _emailAddress;
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
         var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
-        userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-        userRoles = authState.User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(x => x.Value).ToList();
-        user = await UserManager.FindByIdAsync(userId);
-
+        _userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        _userRoles = authState.User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(x => x.Value).ToList();
+        _user = await UserManager.FindByIdAsync(_userId);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -339,108 +337,110 @@
         if (firstRender)
         {
             using var context = DbFactory.CreateDbContext();
-
             int medicalInfoId;
+
             if (context.MedicalInformation.Count() < 1)
                 medicalInfoId = 0;
             else
                 medicalInfoId = context.MedicalInformation.OrderByDescending(x => x.Id).First().Id;
 
             //fetch 3 months worth of data from the database
-            m1Info = context.MedicalInformation.Where(x => x.UserId == userId && x.Entry_Date.Month == DateTime.Now.Month && x.Entry_Date.Year == DateTime.Now.Year).ToList();
-            if (m1Info.Count < 9)//partial or no info at all for this month = make new info
-                m1Info = GenerateMonthlyData(context, userId, ref medicalInfoId);
-            m1Info = m1Info.OrderBy(x => x.InformationTypeId).ToList();
-            m2Info = context.MedicalInformation.Where(x => x.UserId == userId && x.Entry_Date.Month == DateTime.Now.AddMonths(-1).Month && x.Entry_Date.Year == DateTime.Now.AddMonths(-1).Year).ToList();
-            if (m2Info.Count < 9)
-                m2Info = GenerateMonthlyData(context, userId, ref medicalInfoId, 1);
-            m2Info = m2Info.OrderBy(x => x.InformationTypeId).ToList();
-            m3Info = context.MedicalInformation.Where(x => x.UserId == userId && x.Entry_Date.Month == DateTime.Now.AddMonths(-2).Month && x.Entry_Date.Year == DateTime.Now.AddMonths(-2).Year).ToList();
-            if (m3Info.Count < 9)
-                m3Info = GenerateMonthlyData(context, userId, ref medicalInfoId, 2);
-            m3Info = m3Info.OrderBy(x => x.InformationTypeId).ToList();
+            _m1Info = context.MedicalInformation.Where(x => x.UserId == _userId && x.Entry_Date.Month == DateTime.Now.Month && x.Entry_Date.Year == DateTime.Now.Year).ToList();
+            if (_m1Info.Count < 9)//partial or no info at all for this month = make new info
+                _m1Info = GenerateMonthlyData(context, _userId, ref medicalInfoId);
 
-            MetabolicHealth = new ParameterStats(
+            _m1Info = _m1Info.OrderBy(x => x.InformationTypeId).ToList();
+            _m2Info = context.MedicalInformation.Where(x => x.UserId == _userId && x.Entry_Date.Month == DateTime.Now.AddMonths(-1).Month && x.Entry_Date.Year == DateTime.Now.AddMonths(-1).Year).ToList();
+
+            if (_m2Info.Count < 9)
+                _m2Info = GenerateMonthlyData(context, _userId, ref medicalInfoId, 1);
+
+            _m2Info = _m2Info.OrderBy(x => x.InformationTypeId).ToList();
+            _m3Info = context.MedicalInformation.Where(x => x.UserId == _userId && x.Entry_Date.Month == DateTime.Now.AddMonths(-2).Month && x.Entry_Date.Year == DateTime.Now.AddMonths(-2).Year).ToList();
+
+            if (_m3Info.Count < 9)
+                _m3Info = GenerateMonthlyData(context, _userId, ref medicalInfoId, 2);
+
+            _m3Info = _m3Info.OrderBy(x => x.InformationTypeId).ToList();
+
+            _metabolicHealth = new ParameterStats(
                 Parameter.MetabolicHealth,
-                user,
-                GetMetabolicHealth(user,
-            m1Info.LastOrDefault(x => x.InformationTypeId == 1).Value,
-            m1Info.LastOrDefault(x => x.InformationTypeId == 2).Value,
-            m1Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value,
-            m1Info.LastOrDefault(x => x.InformationTypeId == 3).Value,
-            m1Info.LastOrDefault(x => x.InformationTypeId == 4).Value,
-            m1Info.LastOrDefault(x => x.InformationTypeId == 5).Value,
-            m1Info.LastOrDefault(x => x.InformationTypeId == 6).Value,
-            m1Info.LastOrDefault(x => x.InformationTypeId == 7).Value,
-            m1Info.LastOrDefault(x => x.InformationTypeId == 8).Value,
-            m1Info.LastOrDefault(x => x.InformationTypeId == 9).Value
+                _user,
+                GetMetabolicHealth(_user,
+            _m1Info.LastOrDefault(x => x.InformationTypeId == 1).Value,
+            _m1Info.LastOrDefault(x => x.InformationTypeId == 2).Value,
+            _m1Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value,
+            _m1Info.LastOrDefault(x => x.InformationTypeId == 3).Value,
+            _m1Info.LastOrDefault(x => x.InformationTypeId == 4).Value,
+            _m1Info.LastOrDefault(x => x.InformationTypeId == 5).Value,
+            _m1Info.LastOrDefault(x => x.InformationTypeId == 6).Value,
+            _m1Info.LastOrDefault(x => x.InformationTypeId == 7).Value,
+            _m1Info.LastOrDefault(x => x.InformationTypeId == 8).Value,
+            _m1Info.LastOrDefault(x => x.InformationTypeId == 9).Value
         ),
-                GetMetabolicHealth(user,
-        m2Info.LastOrDefault(x => x.InformationTypeId == 1).Value,
-        m2Info.LastOrDefault(x => x.InformationTypeId == 2).Value,
-        m2Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value,
-        m2Info.LastOrDefault(x => x.InformationTypeId == 3).Value,
-        m2Info.LastOrDefault(x => x.InformationTypeId == 4).Value,
-        m2Info.LastOrDefault(x => x.InformationTypeId == 5).Value,
-        m2Info.LastOrDefault(x => x.InformationTypeId == 6).Value,
-        m2Info.LastOrDefault(x => x.InformationTypeId == 7).Value,
-        m2Info.LastOrDefault(x => x.InformationTypeId == 8).Value,
-        m2Info.LastOrDefault(x => x.InformationTypeId == 9).Value
+                GetMetabolicHealth(_user,
+        _m2Info.LastOrDefault(x => x.InformationTypeId == 1).Value,
+        _m2Info.LastOrDefault(x => x.InformationTypeId == 2).Value,
+        _m2Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value,
+        _m2Info.LastOrDefault(x => x.InformationTypeId == 3).Value,
+        _m2Info.LastOrDefault(x => x.InformationTypeId == 4).Value,
+        _m2Info.LastOrDefault(x => x.InformationTypeId == 5).Value,
+        _m2Info.LastOrDefault(x => x.InformationTypeId == 6).Value,
+        _m2Info.LastOrDefault(x => x.InformationTypeId == 7).Value,
+        _m2Info.LastOrDefault(x => x.InformationTypeId == 8).Value,
+        _m2Info.LastOrDefault(x => x.InformationTypeId == 9).Value
         ),
-                GetMetabolicHealth(user,
-        m3Info.LastOrDefault(x => x.InformationTypeId == 1).Value,
-        m3Info.LastOrDefault(x => x.InformationTypeId == 2).Value,
-        m3Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value,
-        m3Info.LastOrDefault(x => x.InformationTypeId == 3).Value,
-        m3Info.LastOrDefault(x => x.InformationTypeId == 4).Value,
-        m3Info.LastOrDefault(x => x.InformationTypeId == 5).Value,
-        m3Info.LastOrDefault(x => x.InformationTypeId == 6).Value,
-        m3Info.LastOrDefault(x => x.InformationTypeId == 7).Value,
-        m3Info.LastOrDefault(x => x.InformationTypeId == 8).Value,
-        m3Info.LastOrDefault(x => x.InformationTypeId == 9).Value
+                GetMetabolicHealth(_user,
+        _m3Info.LastOrDefault(x => x.InformationTypeId == 1).Value,
+        _m3Info.LastOrDefault(x => x.InformationTypeId == 2).Value,
+        _m3Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value,
+        _m3Info.LastOrDefault(x => x.InformationTypeId == 3).Value,
+        _m3Info.LastOrDefault(x => x.InformationTypeId == 4).Value,
+        _m3Info.LastOrDefault(x => x.InformationTypeId == 5).Value,
+        _m3Info.LastOrDefault(x => x.InformationTypeId == 6).Value,
+        _m3Info.LastOrDefault(x => x.InformationTypeId == 7).Value,
+        _m3Info.LastOrDefault(x => x.InformationTypeId == 8).Value,
+        _m3Info.LastOrDefault(x => x.InformationTypeId == 9).Value
         )
             );
 
-            var isMale = user.Gender.Equals("male", StringComparison.CurrentCultureIgnoreCase);
-            WaistSize = new ParameterStats(isMale ? Parameter.WaistMale : Parameter.WaistFemale, user, m1Info.LastOrDefault(x => x.InformationTypeId == 1).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 1).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 1).Value);
-            BloodPressure = new ParameterStats(Parameter.BloodPressureUpper, user, m1Info.LastOrDefault(x => x.InformationTypeId == 2).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 2).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 2).Value, m1Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value, m2Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value, m3Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value);
-            BMI = new ParameterStats(Parameter.BMI, user, m1Info.LastOrDefault(x => x.InformationTypeId == 3).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 3).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 3).Value);
-            RestingHeartRate = new ParameterStats(Parameter.RestingHeartRate, user, m1Info.LastOrDefault(x => x.InformationTypeId == 4).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 4).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 4).Value);
-            CGM = new ParameterStats(Parameter.CGM, user, m1Info.LastOrDefault(x => x.InformationTypeId == 5).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 5).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 5).Value);
-            Insulin = new ParameterStats(Parameter.Insulin, user, m1Info.LastOrDefault(x => x.InformationTypeId == 6).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 6).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 6).Value);
-            Triglyceride = new ParameterStats(Parameter.Triglyceride, user, m1Info.LastOrDefault(x => x.InformationTypeId == 7).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 7).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 7).Value);
-            HDLCholesterol = new ParameterStats(Parameter.HDLCholesterol, user, m1Info.LastOrDefault(x => x.InformationTypeId == 8).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 8).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 8).Value);
-            LDLCholesterol = new ParameterStats(Parameter.LDLCholesterol, user, m1Info.LastOrDefault(x => x.InformationTypeId == 9).Value, m2Info.LastOrDefault(x => x.InformationTypeId == 9).Value, m3Info.LastOrDefault(x => x.InformationTypeId == 9).Value);
+            var isMale = _user.Gender.Equals("male", StringComparison.CurrentCultureIgnoreCase);
+            _waistSize = new ParameterStats(isMale ? Parameter.WaistMale : Parameter.WaistFemale, _user, _m1Info.LastOrDefault(x => x.InformationTypeId == 1).Value, _m2Info.LastOrDefault(x => x.InformationTypeId == 1).Value, _m3Info.LastOrDefault(x => x.InformationTypeId == 1).Value);
+            _bloodPressure = new ParameterStats(Parameter.BloodPressureUpper, _user, _m1Info.LastOrDefault(x => x.InformationTypeId == 2).Value, _m2Info.LastOrDefault(x => x.InformationTypeId == 2).Value, _m3Info.LastOrDefault(x => x.InformationTypeId == 2).Value, _m1Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value, _m2Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value, _m3Info.LastOrDefault(x => x.InformationTypeId == 2).SecondaryValue.Value);
+            _BMI = new ParameterStats(Parameter.BMI, _user, _m1Info.LastOrDefault(x => x.InformationTypeId == 3).Value, _m2Info.LastOrDefault(x => x.InformationTypeId == 3).Value, _m3Info.LastOrDefault(x => x.InformationTypeId == 3).Value);
+            _restingHeartRate = new ParameterStats(Parameter.RestingHeartRate, _user, _m1Info.LastOrDefault(x => x.InformationTypeId == 4).Value, _m2Info.LastOrDefault(x => x.InformationTypeId == 4).Value, _m3Info.LastOrDefault(x => x.InformationTypeId == 4).Value);
+            _CGM = new ParameterStats(Parameter.CGM, _user, _m1Info.LastOrDefault(x => x.InformationTypeId == 5).Value, _m2Info.LastOrDefault(x => x.InformationTypeId == 5).Value, _m3Info.LastOrDefault(x => x.InformationTypeId == 5).Value);
+            _insulin = new ParameterStats(Parameter.Insulin, _user, _m1Info.LastOrDefault(x => x.InformationTypeId == 6).Value, _m2Info.LastOrDefault(x => x.InformationTypeId == 6).Value, _m3Info.LastOrDefault(x => x.InformationTypeId == 6).Value);
+            _triglyceride = new ParameterStats(Parameter.Triglyceride, _user, _m1Info.LastOrDefault(x => x.InformationTypeId == 7).Value, _m2Info.LastOrDefault(x => x.InformationTypeId == 7).Value, _m3Info.LastOrDefault(x => x.InformationTypeId == 7).Value);
+            _HDLCholesterol = new ParameterStats(Parameter.HDLCholesterol, _user, _m1Info.LastOrDefault(x => x.InformationTypeId == 8).Value, _m2Info.LastOrDefault(x => x.InformationTypeId == 8).Value, _m3Info.LastOrDefault(x => x.InformationTypeId == 8).Value);
+            _LDLCholesterol = new ParameterStats(Parameter.LDLCholesterol, _user, _m1Info.LastOrDefault(x => x.InformationTypeId == 9).Value, _m2Info.LastOrDefault(x => x.InformationTypeId == 9).Value, _m3Info.LastOrDefault(x => x.InformationTypeId == 9).Value);
+            _recommendations.Clear();
 
-            Recommendations.Clear();
-            if (userRoles.Contains("Admin"))
+            if (_userRoles.Contains("Admin"))
             {
-                MetabolicHealth.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 10).Select(x => x.Recommendation).Distinct().ToList();
-                WaistSize.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 1).Select(x => x.Recommendation).Distinct().ToList();
-                BloodPressure.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 2).Select(x => x.Recommendation).Distinct().ToList();
-                BMI.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 3).Select(x => x.Recommendation).Distinct().ToList();
-                RestingHeartRate.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 4).Select(x => x.Recommendation).Distinct().ToList();
-                CGM.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 5).Select(x => x.Recommendation).Distinct().ToList();
-                Insulin.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 6).Select(x => x.Recommendation).Distinct().ToList();
-                Triglyceride.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 7).Select(x => x.Recommendation).Distinct().ToList();
-                HDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 8).Select(x => x.Recommendation).Distinct().ToList();
-                LDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 9).Select(x => x.Recommendation).Distinct().ToList();
-
+                _metabolicHealth.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 10).Select(x => x.Recommendation).Distinct().ToList();
+                _waistSize.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 1).Select(x => x.Recommendation).Distinct().ToList();
+                _bloodPressure.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 2).Select(x => x.Recommendation).Distinct().ToList();
+                _BMI.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 3).Select(x => x.Recommendation).Distinct().ToList();
+                _restingHeartRate.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 4).Select(x => x.Recommendation).Distinct().ToList();
+                _CGM.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 5).Select(x => x.Recommendation).Distinct().ToList();
+                _insulin.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 6).Select(x => x.Recommendation).Distinct().ToList();
+                _triglyceride.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 7).Select(x => x.Recommendation).Distinct().ToList();
+                _HDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 8).Select(x => x.Recommendation).Distinct().ToList();
+                _LDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 9).Select(x => x.Recommendation).Distinct().ToList();
             }
             else
             {
-
-                MetabolicHealth.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 10 && x.DynamicsScore == MetabolicHealth.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
-                WaistSize.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 1 && x.DynamicsScore == WaistSize.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
-                BloodPressure.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 2 && x.DynamicsScore == BloodPressure.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
-                BMI.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 3 && x.DynamicsScore == BMI.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
-                RestingHeartRate.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 4 && x.DynamicsScore == RestingHeartRate.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
-                CGM.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 5 && x.DynamicsScore == CGM.DynamicsScore).Select(x => x.Recommendation).ToList();
-                Insulin.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 6 && x.DynamicsScore == Insulin.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
-                Triglyceride.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 7 && x.DynamicsScore == Triglyceride.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
-                HDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 8 && x.DynamicsScore == HDLCholesterol.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
-                LDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 9 && x.DynamicsScore == LDLCholesterol.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
-
+                _metabolicHealth.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 10 && x.DynamicsScore == _metabolicHealth.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
+                _waistSize.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 1 && x.DynamicsScore == _waistSize.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
+                _bloodPressure.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 2 && x.DynamicsScore == _bloodPressure.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
+                _BMI.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 3 && x.DynamicsScore == _BMI.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
+                _restingHeartRate.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 4 && x.DynamicsScore == _restingHeartRate.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
+                _CGM.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 5 && x.DynamicsScore == _CGM.DynamicsScore).Select(x => x.Recommendation).ToList();
+                _insulin.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 6 && x.DynamicsScore == _insulin.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
+                _triglyceride.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 7 && x.DynamicsScore == _triglyceride.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
+                _HDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 8 && x.DynamicsScore == _HDLCholesterol.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
+                _LDLCholesterol.Recommendations = context.TriggerParameters.Where(x => x.InformationTypeId == 9 && x.DynamicsScore == _LDLCholesterol.DynamicsScore).Select(x => x.Recommendation).Distinct().ToList();
             }
 
             StateHasChanged();
@@ -449,40 +449,41 @@
 
     private async Task SendPage()
     {
-        if (m1Info is not null)
+        //if there is no data, there is nothing to send
+        if (_m1Info is not null)
         {
             var image = await JSRuntime.InvokeAsync<string>("getPageAsImage");
-            string m1 = m1Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture),
-            m2 = m2Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture),
-            m3 = m3Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture);
-            var year = (m1Info.First().Entry_Date.Year == m3Info.First().Entry_Date.Year) ? m1Info.First().Entry_Date.Year.ToString() : $"{m1Info.First().Entry_Date.Year} - {m3Info.First().Entry_Date.Year}";
-            await EmailService.SendEmailWithImageAsync(EmailAddress, $"Recommendations for {m1}, {m2}, {m3} - {year} ", "", image);
+            string m1 = _m1Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture),
+            m2 = _m2Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture),
+            m3 = _m3Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture);
+            var year = (_m1Info.First().Entry_Date.Year == _m3Info.First().Entry_Date.Year) ? _m1Info.First().Entry_Date.Year.ToString() : $"{_m1Info.First().Entry_Date.Year} - {_m3Info.First().Entry_Date.Year}";
+            await EmailService.SendEmailWithImageAsync(_emailAddress, $"Recommendations for {m1}, {m2}, {m3} - {year} ", "", image);
             await JSRuntime.InvokeVoidAsync("refreshWithMessage", "The Email has been sent");
         }
+
     }
 
     private sealed class ParameterStats
     {
+        public List<Recommendation> Recommendations { get; set; } = new();
         public Parameter ParameterType;
-        public float m1Value, m2Value, m3Value;
-        public float m1SecondValue, m2SecondValue, m3SecondValue;
-        public HealthScore m1Score, m2Score, m3Score;
+        public float M1Value, M2Value, M3Value;
+        public float M1SecondValue, M2SecondValue, M3SecondValue;
+        public HealthScore M1Score, M2Score, M3Score;
         public DynamicsScore DynamicsScore;
-        public List<Recommendation> Recommendations { get; set; }
 
         public ParameterStats(Parameter parameterType, ApplicationUser user, float m1Value, float m2Value, float m3Value, float m1SecondValue = 0, float m2SecondValue = 0, float m3SecondValue = 0)
         {
-            this.m1Value = m1Value;
-            this.m2Value = m2Value;
-            this.m3Value = m3Value;
-            this.m1SecondValue = m1SecondValue;
-            this.m2SecondValue = m2SecondValue;
-            this.m3SecondValue = m3SecondValue;
+            this.M1Value = m1Value;
+            this.M2Value = m2Value;
+            this.M3Value = m3Value;
+            this.M1SecondValue = m1SecondValue;
+            this.M2SecondValue = m2SecondValue;
+            this.M3SecondValue = m3SecondValue;
             this.ParameterType = parameterType;
-
-            this.m1Score = GetHealthScore(user, this.ParameterType, m1Value, m1SecondValue);
-            this.m2Score = GetHealthScore(user, this.ParameterType, m2Value, m2SecondValue);
-            this.m3Score = GetHealthScore(user, this.ParameterType, m3Value, m3SecondValue);
+            this.M1Score = GetHealthScore(user, this.ParameterType, m1Value, m1SecondValue);
+            this.M2Score = GetHealthScore(user, this.ParameterType, m2Value, m2SecondValue);
+            this.M3Score = GetHealthScore(user, this.ParameterType, m3Value, m3SecondValue);
             this.DynamicsScore = GetDynamic(user, this.ParameterType, m1Value, m2Value, m3Value, m1SecondValue, m2SecondValue, m3SecondValue);
         }
 

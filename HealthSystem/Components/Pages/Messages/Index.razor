@@ -10,25 +10,25 @@
 <div class="container">
     <div class="messageList">
         <div class="messageListTitle">Messages</div>
-        @foreach (var thread in MessageThreads)
+        @foreach (var thread in _messageThreads)
         {
-            <div class="messageThread @(thread[0].ReadDate.HasValue?"":"bold") @(thread[0].Id==currentMessageId?"active":"")" @onclick="async ()=>{await SetActive(thread[0].Id);}">
+            <div class="messageThread @(thread[0].ReadDate.HasValue?"":"bold") @(thread[0].Id==_currentMessageId?"active":"")" @onclick="async ()=>{await SetActive(thread[0].Id);}">
                 <div class="messageThreadDate">@thread.Last().Date</div>
                 <div class="messageThreadTitle">@thread[0].Title</div>
             </div>
         }
     </div>
     <div class="messageDetails">
-        @if (currentMessageId > 0)
+        @if (_currentMessageId > 0)
         {
             <div class="messageContentTitle">
                 Message
             </div>
 
             <div class="messageContent">
-                @foreach (var threadMessage in currentThread)
+                @foreach (var threadMessage in _currentThread)
                 {
-                    <div class="@(threadMessage.SenderId == user.Id ? "right" : "left")">
+                    <div class="@(threadMessage.SenderId == _user.Id ? "right" : "left")">
                         @threadMessage.Content
                     </div>
                 }
@@ -54,57 +54,57 @@
 
 
 @code {
-    List<Message> Messages = new();
-    List<List<Message>> MessageThreads = new();
-
     Message Message { get; set; } = new();
-    int currentMessageId = 0;
-    List<Message> currentThread;
-    ApplicationUser admin;
-    ApplicationUser user;
+    List<Message> _messages = new();
+    List<List<Message>> _messageThreads = new();
+    int _currentMessageId = 0;
+    List<Message> _currentThread;
+    ApplicationUser _admin;
+    ApplicationUser _user;
 
     protected override async Task OnInitializedAsync()
     {
-        admin = await UserManager.FindByEmailAsync("admin@site.com");
+        _admin = await UserManager.FindByEmailAsync("admin@site.com");
+
         var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
-        user = await UserManager.FindByEmailAsync(authState.User.Identity.Name);
+        _user = await UserManager.FindByEmailAsync(authState.User.Identity.Name);
 
         using var Context = DbFactory.CreateDbContext();
         //all sent and received messages, should include all of the "related" messages too as users cannot send to other users
-        Messages = Context.Message.Include("Sender").Include("Receiver").Where(x => x.SenderId == user.Id || x.ReceiverId == user.Id).OrderByDescending(x => x.Date).ToList();
+        _messages = Context.Message.Include("Sender").Include("Receiver").Where(x => x.SenderId == _user.Id || x.ReceiverId == _user.Id).OrderByDescending(x => x.Date).ToList();
         //all of the messages that were conversation starters
-        MessageThreads = GetMessagesByThread(Messages);
+        _messageThreads = GetMessagesByThread(_messages);
     }
 
     async Task SendResponse(EditContext editContext)
     {
-        Message.SenderId = user.Id;
-        Message.ReceiverId = admin.Id;
+        Message.SenderId = _user.Id;
+        Message.ReceiverId = _admin.Id;
         Message.Date = DateTime.Now;
-        Message.PreviousMessageId = currentThread.Last().Id;
-        Message.Title = currentThread.First().Title;
-        using var Context = DbFactory.CreateDbContext();
+        Message.PreviousMessageId = _currentThread.Last().Id;
+        Message.Title = _currentThread.First().Title;
 
+        using var Context = DbFactory.CreateDbContext();
         Context.Message.Add(Message);
         await Context.SaveChangesAsync();
-        currentThread.Add(Message);
-        Messages = Context.Message.Include("Sender").Include("Receiver").Where(x => x.SenderId == user.Id || x.ReceiverId == user.Id).OrderByDescending(x => x.Date).ToList();
-        MessageThreads = GetMessagesByThread(Messages);
+        //add the message to the current thread without re-fetching it from the database
+        _currentThread.Add(Message);
+        _messages = Context.Message.Include("Sender").Include("Receiver").Where(x => x.SenderId == _user.Id || x.ReceiverId == _user.Id).OrderByDescending(x => x.Date).ToList();
+        _messageThreads = GetMessagesByThread(_messages);
         Message.Content = "";
         StateHasChanged();
     }
 
     async Task SetActive(int messageId)
     {
-        currentMessageId = messageId;
-        currentThread = MessageThreads.Single(x => x[0].Id == messageId);
+        _currentMessageId = messageId;
+        _currentThread = _messageThreads.Single(x => x[0].Id == messageId);
         //make sure the messages are in the right chronological order(oldest first)
-        currentThread = currentThread.OrderBy(x => x.Date).ToList();
+        _currentThread = _currentThread.OrderBy(x => x.Date).ToList();
 
         using var Context = DbFactory.CreateDbContext();
         Context.Message.Single(x => x.Id == messageId).ReadDate = DateTime.Now;
         await Context.SaveChangesAsync();
-
         StateHasChanged();
 
     }

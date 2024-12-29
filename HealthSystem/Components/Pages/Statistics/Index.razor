@@ -9,12 +9,10 @@
 @attribute [Authorize]
 @rendermode InteractiveServer
 
-
-
 <div class="displayTable">
     <div class="displayTableHeader">
         <div class="tableLabel date">
-            <InputSelect TValue="int" Value="year" ValueChanged="OnSelectionChanged" ValueExpression="@(() => year)">
+            <InputSelect TValue="int" Value="_year" ValueChanged="OnSelectionChanged" ValueExpression="@(() => _year)">
                 <option>2024</option>
                 <option>2023</option>
                 <option>2022</option>
@@ -36,10 +34,10 @@
         <div class="tableValueHeader">November</div>
         <div class="tableValueHeader">December</div>
     </div>
-    @foreach (var itemGroup in MedicalInformation)
+    @foreach (var itemGroup in _medicalInformation)
     {
         <div>
-            <div class="tableLabel">@informationTypes[itemGroup.Key - 1].Description</div>
+            <div class="tableLabel">@_informationTypes[itemGroup.Key - 1].Description</div>
             <div class="tableEmpty"></div>
             @for (int i = 1; i <= 12; i++)
             {
@@ -60,11 +58,11 @@
         <div class="tableEmpty"></div>
         @for (int i = 1; i <= 12; i++)
         {
-            if (MedicalInformation.Count > 0)
+            if (_medicalInformation.Count > 0)
             {
-                var item = MedicalInformation.Select(x => x?.LastOrDefault(y => y.Entry_Date.Month == i)).ToList();
+                var item = _medicalInformation.Select(x => x?.LastOrDefault(y => y.Entry_Date.Month == i)).ToList();
 
-                var healthScore = @GetMetabolicHealth(user,
+                var healthScore = @GetMetabolicHealth(_user,
                 item.FirstOrDefault(x => x?.InformationTypeId == 1)?.Value ?? 0,
                 item.FirstOrDefault(x => x?.InformationTypeId == 2)?.Value ?? 0,
                 item.FirstOrDefault(x => x?.InformationTypeId == 2)?.SecondaryValue ?? 0,
@@ -92,38 +90,39 @@
 
 
 
-<div class="bottom-section"><button class="btn btn-light" @onclick="DownloadGraph">Download</button><input class="form-control" type="email" @bind-value="EmailAddress" placeholder="email@site.com" /> <button class="btn btn-info" @onclick="SendGraph">Send as Email</button></div>
+<div class="bottom-section"><button class="btn btn-light" @onclick="DownloadGraph">Download</button><input class="form-control" type="email" @bind-value="_emailAddress" placeholder="email@site.com" /> <button class="btn btn-info" @onclick="SendGraph">Send as Email</button></div>
 
 @code {
-    List<InformationType> informationTypes;
-    List<IGrouping<int, MedicalInformation>> MedicalInformation;
-    int year = DateTime.Now.Year;
-    string userId;
-    ApplicationUser user;
-    string EmailAddress;
+    List<InformationType> _informationTypes;
+    List<IGrouping<int, MedicalInformation>> _medicalInformation;
+    int _year = DateTime.Now.Year;
+    string _userId, _emailAddress;
+    ApplicationUser _user;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        using var Context = DbFactory.CreateDbContext();
-        informationTypes = Context.InformationType.Where(x => x.Id < 10).ToList();
-        var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
-        userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
-        user = await UserManager.FindByIdAsync(userId);
-        UpdateTableData(year);
+        if(firstRender)
+        {
+            using var Context = DbFactory.CreateDbContext();
+            _informationTypes = Context.InformationType.Where(x => x.Id < 10).ToList();
+            var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+            _userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
+            _user = await UserManager.FindByIdAsync(_userId);
+            UpdateTableData(_year);
+        }
+
     }
 
     private void OnSelectionChanged(int e)
     {
-        year = e;
-        UpdateTableData(year);
-
+        _year = e;
+        UpdateTableData(_year);
     }
 
     private void UpdateTableData(int year)
     {
         using var context = DbFactory.CreateDbContext();
-        MedicalInformation = context.MedicalInformation.Where(x => x.UserId == userId && x.Entry_Date.Year == year).OrderBy(x => x.Entry_Date).GroupBy(x => x.InformationTypeId).ToList();
-
+        _medicalInformation = context.MedicalInformation.Where(x => x.UserId == _userId && x.Entry_Date.Year == year).OrderBy(x => x.Entry_Date).GroupBy(x => x.InformationTypeId).ToList();
         StateHasChanged();
     }
 
@@ -132,11 +131,11 @@
         switch (informationTypeId)
         {
             case 1:
-                return Enum.GetName(GetWaistScore(user, value));
+                return Enum.GetName(GetWaistScore(_user, value));
             case 2:
                 return Enum.GetName(GetBloodPressureScore(value, secondValue ?? 0));
             case 3:
-                return Enum.GetName(GetBMIScore(user.Height, value));
+                return Enum.GetName(GetBMIScore(_user.Height, value));
             case 4:
                 return Enum.GetName(GetRestingHeartRateScore(value));
             case 5:
@@ -154,16 +153,15 @@
         }
     }
 
-
     private async Task DownloadGraph()
     {
-        await JSRuntime.InvokeVoidAsync("downloadCurrentPageGraph", $"{user.Name} {user.Surname} stats.png");
+        await JSRuntime.InvokeVoidAsync("downloadCurrentPageGraph", $"{_user.Name} {_user.Surname} stats.png");
     }
 
     private async Task SendGraph()
     {
         var image = await JSRuntime.InvokeAsync<string>("getGraphAsImage");
-        await EmailService.SendEmailWithImageAsync(EmailAddress, $"{DateTime.Now.Year} statistics", "", image);
+        await EmailService.SendEmailWithImageAsync(_emailAddress, $"{DateTime.Now.Year} statistics", "", image);
         await JSRuntime.InvokeVoidAsync("refreshWithMessage", "The Email has been sent");
     }
 }

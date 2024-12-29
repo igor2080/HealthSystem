@@ -37,7 +37,7 @@
                         <div class="segment RightBad"></div>
                         @{
                             float first, second, third, fourth;
-                            if (user.Gender.Equals("male", StringComparison.CurrentCultureIgnoreCase))
+                            if (_user.Gender.Equals("male", StringComparison.CurrentCultureIgnoreCase))
                             {
                                 first = 0.38f;
                                 second = 0.43f;
@@ -52,7 +52,7 @@
                                 fourth = 0.55f;
                             }
                         }
-                        <div class="indicator" style="left: @(GetPercentage(first,second,third,fourth,(Input.WaistSize / user.Height)))%;"><span class="value @(Enum.GetName(GetWaistScore(user, Input.WaistSize)))-color">@Input.WaistSize</span></div>
+                        <div class="indicator" style="left: @(GetPercentage(first,second,third,fourth,(Input.WaistSize / _user.Height)))%;"><span class="value @(Enum.GetName(GetWaistScore(_user, Input.WaistSize)))-color">@Input.WaistSize</span></div>
                     </div>
                 </div>
             </div>
@@ -83,7 +83,7 @@
                         <div class="segment Healthy"></div>
                         <div class="segment RightOkay"></div>
                         <div class="segment RightBad"></div>
-                        <div class="indicator" style="left: @(GetPercentage(15,18.5f,25,28,GetBMI(user.Height,Input.Weight)))%;"><span class="value @(Enum.GetName(GetBMIScore(user.Height, Input.Weight)))-color">@Input.Weight</span></div>
+                        <div class="indicator" style="left: @(GetPercentage(15,18.5f,25,28,GetBMI(_user.Height,Input.Weight)))%;"><span class="value @(Enum.GetName(GetBMIScore(_user.Height, Input.Weight)))-color">@Input.Weight</span></div>
                     </div>
                 </div>
             </div>
@@ -204,51 +204,54 @@
 
 @code {
     private InputModel Input { get; set; } = new();
-    private string status;
-    string userId;
-    ApplicationUser user;
+    string _userId;
+    ApplicationUser _user;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
-        userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
-
-        user = await UserManager.FindByIdAsync(userId);
-        UpdateValues();
-
-        //try get data from intervals
-        if (Input.RestingHeartRate == 0)
+        if (firstRender)
         {
-            if (!Http.DefaultRequestHeaders.Contains("authorization"))
-                Http.DefaultRequestHeaders.Add("authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"API_KEY:{user.Intervals_API}"))}");
-            var response = await Http.GetAsync(@"https://intervals.icu/api/v1/athlete/0/activities.csv");
-            if (response.IsSuccessStatusCode)
+            var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+            _userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
+            _user = await UserManager.FindByIdAsync(_userId);
+            UpdateValues();
+            //try get data from intervals
+            if (Input.RestingHeartRate == 0)
             {
-                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-                    {
-                        PrepareHeaderForMatch = args => args.Header.ToLower(),
-                    };
-                using var reader = new StreamReader(response.Content.ReadAsStream());
-                using var csv = new CsvReader(reader, config);
-                var alldata = csv.GetRecords<Activity>().Where(x => x.start_date.Year == Input.InfoDate.Year && x.start_date.Month == Input.InfoDate.Month).ToList();
-                if (alldata.Count > 0)
+                if (!Http.DefaultRequestHeaders.Contains("authorization"))
+                    Http.DefaultRequestHeaders.Add("authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"API_KEY:{_user.Intervals_API}"))}");
+
+                var response = await Http.GetAsync(@"https://intervals.icu/api/v1/athlete/0/activities.csv");
+
+                if (response.IsSuccessStatusCode)
                 {
-                    var hr = alldata.Select(x => x.icu_resting_hr).ToList();
-                    Input.RestingHeartRate = hr.Last();
-                    Input.MetabolicHealth = GetMetabolicHealth(user, Input.WaistSize, Input.BloodPressureUpper, Input.BloodPressureLower, Input.Weight, Input.RestingHeartRate, Input.CGM, Input.Insulin, Input.Triglyceride, Input.HDLCholesterol, Input.LDLCholesterol);
-                    StateHasChanged();
+                    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                        {
+                            PrepareHeaderForMatch = args => args.Header.ToLower(),
+                        };
+                    using var reader = new StreamReader(response.Content.ReadAsStream());
+                    using var csv = new CsvReader(reader, config);
+                    var alldata = csv.GetRecords<Activity>().Where(x => x.start_date.Year == Input.InfoDate.Year && x.start_date.Month == Input.InfoDate.Month).ToList();
+
+                    if (alldata.Count > 0)
+                    {
+                        var hr = alldata.Select(x => x.icu_resting_hr).ToList();
+                        Input.RestingHeartRate = hr.Last();
+                        Input.MetabolicHealth = GetMetabolicHealth(_user, Input.WaistSize, Input.BloodPressureUpper, Input.BloodPressureLower, Input.Weight, Input.RestingHeartRate, Input.CGM, Input.Insulin, Input.Triglyceride, Input.HDLCholesterol, Input.LDLCholesterol);
+                        StateHasChanged();
+                    }
+
                 }
+
             }
+
         }
-
-
     }
 
     private void UpdateValues()
     {
         using var Context = DbFactory.CreateDbContext();
-        var medicalInfo = Context.MedicalInformation.Where(x => x.Entry_Date.Year == Input.InfoDate.Year && x.Entry_Date.Month == Input.InfoDate.Month && x.UserId == userId).OrderBy(x => x.Entry_Date);
-
+        var medicalInfo = Context.MedicalInformation.Where(x => x.Entry_Date.Year == Input.InfoDate.Year && x.Entry_Date.Month == Input.InfoDate.Month && x.UserId == _userId).OrderBy(x => x.Entry_Date);
         Input.WaistSize = medicalInfo.LastOrDefault(x => x.InformationTypeId == 1)?.Value ?? 0;
         Input.BloodPressureUpper = medicalInfo.LastOrDefault(x => x.InformationTypeId == 2)?.Value ?? 0;
         Input.BloodPressureLower = medicalInfo.LastOrDefault(x => x.InformationTypeId == 2)?.SecondaryValue ?? 0;
@@ -259,7 +262,7 @@
         Input.Triglyceride = medicalInfo.LastOrDefault(x => x.InformationTypeId == 7)?.Value ?? 0;
         Input.HDLCholesterol = medicalInfo.LastOrDefault(x => x.InformationTypeId == 8)?.Value ?? 0;
         Input.LDLCholesterol = medicalInfo.LastOrDefault(x => x.InformationTypeId == 9)?.Value ?? 0;
-        Input.MetabolicHealth = GetMetabolicHealth(user, Input.WaistSize, Input.BloodPressureUpper, Input.BloodPressureLower, Input.Weight, Input.RestingHeartRate, Input.CGM, Input.Insulin, Input.Triglyceride, Input.HDLCholesterol, Input.LDLCholesterol);
+        Input.MetabolicHealth = GetMetabolicHealth(_user, Input.WaistSize, Input.BloodPressureUpper, Input.BloodPressureLower, Input.Weight, Input.RestingHeartRate, Input.CGM, Input.Insulin, Input.Triglyceride, Input.HDLCholesterol, Input.LDLCholesterol);
     }
 
     private void OnDateChanged(DateTime newValue)
@@ -267,30 +270,31 @@
         UpdateValues();
     }
 
-    public void SetMetabolicHealth(){
-        Input.MetabolicHealth = GetMetabolicHealth(user, Input.WaistSize, Input.BloodPressureUpper, Input.BloodPressureLower, Input.Weight, Input.RestingHeartRate, Input.CGM, Input.Insulin, Input.Triglyceride, Input.HDLCholesterol, Input.LDLCholesterol);
+    public void SetMetabolicHealth()
+    {
+        Input.MetabolicHealth = GetMetabolicHealth(_user, Input.WaistSize, Input.BloodPressureUpper, Input.BloodPressureLower, Input.Weight, Input.RestingHeartRate, Input.CGM, Input.Insulin, Input.Triglyceride, Input.HDLCholesterol, Input.LDLCholesterol);
         StateHasChanged();
     }
 
     private async Task OnValidSubmitAsync(EditContext editContext)
     {
         using var Context = DbFactory.CreateDbContext();
-
         int id;
+        //figure out which ID to start the next message from
         if (Context.MedicalInformation.Count() < 1)
             id = 0;
         else
             id = Context.MedicalInformation.OrderByDescending(x => x.Id).First().Id;
 
-        var medicalInfo = Context.MedicalInformation.Where(x => x.Entry_Date.Year == Input.InfoDate.Year && x.Entry_Date.Month == Input.InfoDate.Month && x.UserId == userId).OrderBy(x => x.Entry_Date);
-
+        var medicalInfo = Context.MedicalInformation.Where(x => x.Entry_Date.Year == Input.InfoDate.Year && x.Entry_Date.Month == Input.InfoDate.Month && x.UserId == _userId).OrderBy(x => x.Entry_Date);
         var waistSize = medicalInfo.LastOrDefault(x => x.InformationTypeId == 1);
+
         if (waistSize is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()
                 {
                     Entry_Date = Input.InfoDate,
-                    UserId = userId,
+                    UserId = _userId,
                     Id = ++id,
                     InformationTypeId = 1,
                     Value = Input.WaistSize,
@@ -302,12 +306,13 @@
         }
 
         var bloodPressure = medicalInfo.LastOrDefault(x => x.InformationTypeId == 2);
+
         if (bloodPressure is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()
                 {
                     Entry_Date = Input.InfoDate,
-                    UserId = userId,
+                    UserId = _userId,
                     Id = ++id,
                     InformationTypeId = 2,
                     Value = Input.BloodPressureUpper,
@@ -321,12 +326,13 @@
         }
 
         var weight = medicalInfo.LastOrDefault(x => x.InformationTypeId == 3);
+
         if (weight is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()
                 {
                     Entry_Date = Input.InfoDate,
-                    UserId = userId,
+                    UserId = _userId,
                     Id = ++id,
                     InformationTypeId = 3,
                     Value = Input.Weight,
@@ -338,12 +344,13 @@
         }
 
         var heartRate = medicalInfo.LastOrDefault(x => x.InformationTypeId == 4);
+
         if (heartRate is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()
                 {
                     Entry_Date = Input.InfoDate,
-                    UserId = userId,
+                    UserId = _userId,
                     Id = ++id,
                     InformationTypeId = 4,
                     Value = Input.RestingHeartRate,
@@ -355,12 +362,13 @@
         }
 
         var cgm = medicalInfo.LastOrDefault(x => x.InformationTypeId == 5);
+
         if (cgm is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()
                 {
                     Entry_Date = Input.InfoDate,
-                    UserId = userId,
+                    UserId = _userId,
                     Id = ++id,
                     InformationTypeId = 5,
                     Value = Input.CGM,
@@ -372,12 +380,13 @@
         }
 
         var insulin = medicalInfo.LastOrDefault(x => x.InformationTypeId == 6);
+
         if (insulin is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()
                 {
                     Entry_Date = Input.InfoDate,
-                    UserId = userId,
+                    UserId = _userId,
                     Id = ++id,
                     InformationTypeId = 6,
                     Value = Input.Insulin,
@@ -389,12 +398,13 @@
         }
 
         var triglyceride = medicalInfo.LastOrDefault(x => x.InformationTypeId == 7);
+
         if (triglyceride is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()
                 {
                     Entry_Date = Input.InfoDate,
-                    UserId = userId,
+                    UserId = _userId,
                     Id = ++id,
                     InformationTypeId = 7,
                     Value = Input.Triglyceride,
@@ -406,12 +416,13 @@
         }
 
         var hdlcholesterol = medicalInfo.LastOrDefault(x => x.InformationTypeId == 8);
+
         if (hdlcholesterol is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()
                 {
                     Entry_Date = Input.InfoDate,
-                    UserId = userId,
+                    UserId = _userId,
                     Id = ++id,
                     InformationTypeId = 8,
                     Value = Input.HDLCholesterol,
@@ -423,12 +434,13 @@
         }
 
         var ldlcholesterol = medicalInfo.LastOrDefault(x => x.InformationTypeId == 9);
+
         if (ldlcholesterol is null)
         {
             Context.MedicalInformation.Add(new MedicalInformation()
                 {
                     Entry_Date = Input.InfoDate,
-                    UserId = userId,
+                    UserId = _userId,
                     Id = ++id,
                     InformationTypeId = 9,
                     Value = Input.LDLCholesterol,
@@ -441,16 +453,14 @@
 
         await Context.SaveChangesAsync();
         StateHasChanged();
-        status = "Your profile has been updated";
-
 
     }
 
     internal sealed class InputModel
     {
-        [Range(0,1000)]
+        [Range(0, 1000)]
         public float WaistSize { get; set; } = 0;
-        [Range(0,1000)]
+        [Range(0, 1000)]
         public float BloodPressureLower { get; set; } = 0;
         [Range(0, 1000)]
         public float BloodPressureUpper { get; set; } = 0;
@@ -460,16 +470,15 @@
         public float RestingHeartRate { get; set; } = 0;
         [Range(0, 1000)]
         public float CGM { get; set; } = 0;
-        [Range(0,1000)]
+        [Range(0, 1000)]
         public float Insulin { get; set; } = 0;
-        [Range(0,1000)]
+        [Range(0, 1000)]
         public float Triglyceride { get; set; } = 0;
-        [Range(0,1000)]
+        [Range(0, 1000)]
         public float HDLCholesterol { get; set; } = 0;
         [Range(0, 1000)]
         public float LDLCholesterol { get; set; } = 0;
         public float MetabolicHealth { get; set; } = 0;
-
         [Required]
         [Display(Name = "Information date")]
         [DataType(DataType.DateTime)]

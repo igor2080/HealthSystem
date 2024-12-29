@@ -18,6 +18,7 @@ namespace HealthSystem.Data
 
             var adminEmail = "admin@site.com";
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
             if (adminUser == null)
             {
                 adminUser = new ApplicationUser
@@ -30,11 +31,11 @@ namespace HealthSystem.Data
                     Name = "Admin",
                     Surname = "Admin",
                     Height=100,
-                    
                 };
                 await userManager.CreateAsync(adminUser, "123123"); 
                 await userManager.AddToRoleAsync(adminUser, "Admin");
             }
+
         }
     }
 

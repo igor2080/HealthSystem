@@ -7,9 +7,9 @@
 @rendermode InteractiveServer
 <div class="bottom-right-container">
     <button @onclick="ToggleVisibility">
-        @(isVisible ? "Hide" : "Show")
+        @(_isVisible ? "Hide" : "Show")
     </button>
-    @if (isVisible)
+    @if (_isVisible)
     {
         <div>
             <span>Contact the administration</span>
@@ -18,7 +18,7 @@
             <InputText class="form-control" style="resize:both;" @bind-Value="Message.Title" />
             <span>Message</span>
             <InputTextArea class="form-control" style="resize:both;" @bind-Value="Message.Content" />
-            <div>Include screenshot of the current page? <InputCheckbox @bind-Value="requireScreenshot"/></div>
+            <div>Include screenshot of the current page? <InputCheckbox @bind-Value="_requireScreenshot"/></div>
         </div>
         <button @onclick="SendMessage" class="btn btn-primary">Send</button>
     }
@@ -26,40 +26,42 @@
 
 @code {
     Message Message { get; set; } = new();
-    private bool isVisible = false;
-    AuthenticationState? authState;
-    private bool requireScreenshot = false;
+    bool _isVisible = false;
+    AuthenticationState? _authState;
+    bool _requireScreenshot = false;
 
     protected override async Task OnInitializedAsync()
     {
-        authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        _authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
     }
 
     private void ToggleVisibility()
     {
-        isVisible = !isVisible;
+        _isVisible = !_isVisible;
     }
 
     private async Task SendMessage()
     {
         var admin = await UserManager.FindByEmailAsync("admin@site.com");
-        var user = await UserManager.FindByEmailAsync(authState.User.Identity.Name);
+        var user = await UserManager.FindByEmailAsync(_authState.User.Identity.Name);
         Message.ReceiverId = admin.Id;
         Message.SenderId = user.Id;
         Message.Date = DateTime.Now;
         using var Context = DbFactory.CreateDbContext();
-        if (requireScreenshot)
+
+        if (_requireScreenshot)
         {
             Message.Image = await JSRuntime.InvokeAsync<string>("getPageAsImage");
         }
+        //figure out which ID to start the next message from
         if (Context.Message.Count() < 1)
             Message.Id = 1;
         else
             Message.Id = Context.Message.OrderByDescending(x => x.Id).First().Id + 1;
+
         Context.Message.Add(Message);
         await Context.SaveChangesAsync();
         Message = new();
-        isVisible = false;
-
+        _isVisible = false;
     }
 }

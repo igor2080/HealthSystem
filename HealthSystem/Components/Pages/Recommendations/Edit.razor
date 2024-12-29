@@ -5,6 +5,7 @@
 @using static HealthSystem.Data.Utils
 @inject IDbContextFactory<HealthSystem.Data.ApplicationDbContext> DbFactory
 @inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 <PageTitle>Edit</PageTitle>
 
@@ -13,7 +14,7 @@
 <h2>Recommendation</h2>
 <hr />
 <div class="ErrorBox">
-    @ErrorMessage
+    @_errorMessage
 </div>
 @if (Recommendation is null)
 {
@@ -98,61 +99,64 @@ else
 
 }
 
-<div>
-    <a href="/recommendations">Back to List</a>
-</div>
 
 @code {
     [Parameter]
     public int Id { get; set; }
-
     [SupplyParameterFromForm]
     private Recommendation? Recommendation { get; set; }
-
     List<TriggerParameter> TriggerParameters { get; set; } = new();
-
     List<InformationType> InformationTypes { get; set; } = new();
+    string _errorMessage;
 
-    string ErrorMessage;
-
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        using var context = DbFactory.CreateDbContext();
-        Recommendation ??= await context.Recommendations.FirstOrDefaultAsync(m => m.Id == Id);
+        if (firstRender)
+        {
+            using var context = DbFactory.CreateDbContext();
+            Recommendation ??= await context.Recommendations.FirstOrDefaultAsync(m => m.Id == Id);
+            //return to the home page on an invalid recommendation
+            if (Recommendation is null)
+            {
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                InformationTypes = context.InformationType.ToList();
+                TriggerParameters = context.TriggerParameters.Where(x => x.RecommendationId == Recommendation.Id).ToList();
+            }
 
-        if (Recommendation is null)
-        {
-            NavigationManager.NavigateTo("/");
+            StateHasChanged();
         }
-        else
-        {
-            InformationTypes = context.InformationType.ToList();
-            TriggerParameters = context.TriggerParameters.Where(x => x.RecommendationId == Recommendation.Id).ToList();
-        }
+
     }
+
     private async Task UpdateRecommendation()
     {
+        _errorMessage = "";
 
-        ErrorMessage = "";
         if (TriggerParameters.Count < 1)
         {
-            ErrorMessage = "You must include at least one parameter in this recommendation";
+            _errorMessage = "You must include at least one parameter in this recommendation";
+
             return;
         }
 
         using var context = DbFactory.CreateDbContext();
         context.Attach(Recommendation!).State = EntityState.Modified;
+
         foreach (var triggerParameter in TriggerParameters)
         {
             if (context.TriggerParameters.Any(x => x.RecommendationId == Recommendation!.Id
                 && x.DynamicsScore == triggerParameter.DynamicsScore
             && x.Type == triggerParameter.Type))
-            {//no changes made
+            {//no changes made, no need to modify anything
                 continue;
             }
             else
                 context.TriggerParameters.Add(triggerParameter);
         }
+
         try
         {
             await context.SaveChangesAsync();
@@ -175,6 +179,7 @@ else
     private bool RecommendationExists(int id)
     {
         using var context = DbFactory.CreateDbContext();
+
         return context.Recommendations.Any(e => e.Id == id);
     }
 
@@ -191,6 +196,10 @@ else
     private void RemoveParameter(TriggerParameter parameter)
     {
         TriggerParameters.Remove(parameter);
+        using var context = DbFactory.CreateDbContext();
+        context.TriggerParameters.Remove(parameter);
+        context.SaveChanges();
+        StateHasChanged();
     }
 
 }

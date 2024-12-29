@@ -3,10 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HealthSystemTest
 {
@@ -28,11 +24,10 @@ namespace HealthSystemTest
                 .AddIdentityCookies();
             var mockUserManager = MockUserManager<ApplicationUser>.Create();
             mockUserManager
-                .Setup(um => um.FindByIdAsync(Globals.AdminId))
-                .ReturnsAsync(new ApplicationUser { Id = Globals.AdminId, UserName = "Admin", Email = "admin@site.com", Date_of_birth = DateTime.Now.AddYears(-18), Gender = "male", Height = 183, Name = "Admin", Intervals_API = "5g93d03w93b7shop9aealuoac", Surname = "Site" });
+                .Setup(um => um.FindByIdAsync(AdminId))
+                .ReturnsAsync(new ApplicationUser { Id = AdminId, UserName = "Admin", Email = "admin@site.com", Date_of_birth = DateTime.Now.AddYears(-18), Gender = "male", Height = 183, Name = "Admin", Intervals_API = "5g93d03w93b7shop9aealuoac", Surname = "Site" });
             var userManagerMock = mockUserManager.Object;
             Services.AddScoped(_ => mockUserManager.Object);
-
             var authContext = self.AddTestAuthorization();
             authContext.SetAuthorizing();
             authContext.RegisterAuthorizationServices(Services);
@@ -40,7 +35,6 @@ namespace HealthSystemTest
             authContext.SetRoles("Admin");
             authContext.SetClaims(
                 new System.Security.Claims.Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", AdminId)
-
                 );
         }
     }

@@ -14,7 +14,7 @@
 <h2>Recommendation</h2>
 <hr />
 <div class="ErrorBox">
-    @ErrorMessage
+    @_errorMessage
 </div>
 <div class="row">
     <div class="col-md-4">
@@ -93,42 +93,40 @@
 @code {
     [SupplyParameterFromForm]
     Recommendation Recommendation { get; set; } = new();
-
     List<TriggerParameter> TriggerParameters { get; set; } = new();
-
     List<InformationType> InformationTypes { get; set; } = new();
-
-    string ErrorMessage = "";
+    string _errorMessage = "";
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
         using var context = DbFactory.CreateDbContext();
-
         InformationTypes = context.InformationType.ToList();
-
         StateHasChanged();
     }
 
     private async Task AddRecommendation()
     {
-        ErrorMessage = "";
+        _errorMessage = "";
+        //Recommendations require parameters
         if (TriggerParameters.Count < 1)
         {
-            ErrorMessage = "You must include at least one parameter in this recommendation";
+            _errorMessage = "You must include at least one parameter in this recommendation";
+
             return;
         }
 
         using var context = DbFactory.CreateDbContext();
         //add the recommendation itself
+        //figure out which ID to start the next message from
         if (context.Recommendations.Count() < 1)
             Recommendation.Id = 1;
         else
             Recommendation.Id = context.Recommendations.OrderByDescending(x => x.Id).First().Id + 1;
+
         context.Recommendations.Add(Recommendation);
         await context.SaveChangesAsync();
-
         //add the trigger parameters associated with the recommendation, if any
         foreach (var triggerParameter in TriggerParameters)
         {
@@ -137,7 +135,6 @@
         }
 
         await context.SaveChangesAsync();
-
         NavigationManager.ToAbsoluteUri("/recommendations");
     }
 

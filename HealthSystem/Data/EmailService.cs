@@ -19,7 +19,6 @@ namespace HealthSystem.Data
                 Credentials = new NetworkCredential(_emailFrom, _password),
                 EnableSsl = true
             };
-
             var mailMessage = new MailMessage
             {
                 From = new MailAddress(_emailFrom),
@@ -27,9 +26,7 @@ namespace HealthSystem.Data
                 Body = body,
                 IsBodyHtml = true
             };
-
             mailMessage.To.Add(recipientEmail);
-
             await smtpClient.SendMailAsync(mailMessage);
         }
 
@@ -41,31 +38,24 @@ namespace HealthSystem.Data
                 Credentials = new NetworkCredential(_emailFrom, _password),
                 EnableSsl = true
             };
-
             var imageBytes = Convert.FromBase64String(base64Image.Replace("data:image/png;base64,", ""));
 
-            using (var mailMessage = new MailMessage())
+            using var mailMessage = new MailMessage();
+            mailMessage.From = new MailAddress(_emailFrom);
+            mailMessage.To.Add(recipientEmail);
+            mailMessage.Subject = subject;
+            // Add body with the linked image
+            var htmlBody = $"{body}<br><img src='cid:InlineImage' />";
+            var alternateView = AlternateView.CreateAlternateViewFromString(htmlBody, null, "text/html");
+            // Create the inline image
+            var linkedImage = new LinkedResource(new MemoryStream(imageBytes), "image/png")
             {
-                mailMessage.From = new MailAddress(_emailFrom);
-                mailMessage.To.Add(recipientEmail);
-                mailMessage.Subject = subject;
-
-                // Add body with the linked image
-                var htmlBody = $"{body}<br><img src='cid:InlineImage' />";
-                var alternateView = AlternateView.CreateAlternateViewFromString(htmlBody, null, "text/html");
-
-                // Create the inline image
-                var linkedImage = new LinkedResource(new MemoryStream(imageBytes), "image/png")
-                {
-                    ContentId = "InlineImage",
-                    TransferEncoding = System.Net.Mime.TransferEncoding.Base64
-                };
-                alternateView.LinkedResources.Add(linkedImage);
-
-                mailMessage.AlternateViews.Add(alternateView);
-
-                await smtpClient.SendMailAsync(mailMessage);
-            }
+                ContentId = "InlineImage",
+                TransferEncoding = System.Net.Mime.TransferEncoding.Base64
+            };
+            alternateView.LinkedResources.Add(linkedImage);
+            mailMessage.AlternateViews.Add(alternateView);
+            await smtpClient.SendMailAsync(mailMessage);
         }
     }
 
