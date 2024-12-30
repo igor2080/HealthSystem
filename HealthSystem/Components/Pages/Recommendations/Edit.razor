@@ -165,7 +165,7 @@ else
         {
             if (!RecommendationExists(Recommendation!.Id))
             {
-                NavigationManager.NavigateTo("/");
+                NavigationManager.NavigateTo("/recommendations");
             }
             else
             {
@@ -173,7 +173,7 @@ else
             }
         }
 
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/recommendations");
     }
 
     private bool RecommendationExists(int id)

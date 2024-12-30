@@ -54,9 +54,10 @@
     font-size:initial;
 }
 
-.messageThreadTitle{
-    display:grid;
+.messageThreadTitle {
+    display: grid;
     grid-template-columns: 95fr 5fr;
+    padding-bottom: 1%;
 }
 
 .messageThreadTitle .threadTitle {

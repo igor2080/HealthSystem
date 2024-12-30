@@ -29,6 +29,15 @@
             return img.toDataURL("image/png");
         }
 
+        async function getElementAsImage(elementClass){
+            const img = await html2canvas(document.getElementsByClassName(elementClass)[0]);
+            return img.toDataURL("image/png");
+        }
+
+        function confirmAction(message) {
+            return confirm(message);
+        }
+
         async function getPageAsImage(){
             document.body.querySelector(".bottom-right-container").style.display="none";
             var bottomSection = document.body.querySelector(".bottom-section");

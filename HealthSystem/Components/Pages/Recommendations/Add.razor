@@ -135,7 +135,7 @@
         }
 
         await context.SaveChangesAsync();
-        NavigationManager.ToAbsoluteUri("/recommendations");
+        NavigationManager.NavigateTo("/recommendations");
     }
 
     private void AddNewParameter()

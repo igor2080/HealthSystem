@@ -6,6 +6,7 @@
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject EmailService EmailService
+@inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @attribute [Authorize]
 @rendermode InteractiveServer
@@ -30,7 +31,7 @@
         m3 = _m3Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture);
         <div class="period">
             <div>Time period</div>
-            <div class="months">@m1, @m2, @m3</div>
+            <div class="months">@m3, @m2, @m1</div>
             <div class="years">@(_m1Info.First().Entry_Date.Year == _m3Info.First().Entry_Date.Year ? _m1Info.First().Entry_Date.Year : $"{_m1Info.First().Entry_Date.Year} - {_m3Info.First().Entry_Date.Year}")</div>
         </div>
         <br />
@@ -53,9 +54,19 @@
             <div class="recommendations">
                 @foreach (var recommendation in _metabolicHealth.Recommendations)
                 {
-                    <div>
+                    <div class="recommendation">
                         <div>@recommendation.Description</div>
-                        <div>@recommendation.Study_Link</div>
+                        <hr />
+                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+
+                        @if (_userRoles.Contains("Admin"))
+                        {
+                            <hr />
+                            <div class="adminButtons">
+                                <button class="btn btn-outline-dark" @onclick=@(()=>{EditRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="m18.988 2.012 3 3L19.701 7.3l-3-3zM8 16h3l7.287-7.287-3-3L8 13z"></path><path d="M19 19H8.158c-.026 0-.053.01-.079.01-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .896-2 2v14c0 1.104.897 2 2 2h14a2 2 0 0 0 2-2v-8.668l-2 2V19z"></path></svg></button>
+                                <button class="btn btn-outline-dark" @onclick=@(async ()=>{await DeleteRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg></button>
+                            </div>
+                        }
                     </div>
                 }
             </div>
@@ -80,9 +91,19 @@
             <div class="recommendations">
                 @foreach (var recommendation in _waistSize.Recommendations)
                 {
-                    <div>
+                    <div class="recommendation">
                         <div>@recommendation.Description</div>
-                        <div>@recommendation.Study_Link</div>
+                        <hr />
+                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+
+                        @if (_userRoles.Contains("Admin"))
+                        {
+                            <hr />
+                            <div class="adminButtons">
+                                <button class="btn btn-outline-dark" @onclick=@(()=>{EditRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="m18.988 2.012 3 3L19.701 7.3l-3-3zM8 16h3l7.287-7.287-3-3L8 13z"></path><path d="M19 19H8.158c-.026 0-.053.01-.079.01-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .896-2 2v14c0 1.104.897 2 2 2h14a2 2 0 0 0 2-2v-8.668l-2 2V19z"></path></svg></button>
+                                <button class="btn btn-outline-dark" @onclick=@(async ()=>{await DeleteRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg></button>
+                            </div>
+                        }
                     </div>
                 }
             </div>
@@ -107,9 +128,19 @@
             <div class="recommendations">
                 @foreach (var recommendation in _bloodPressure.Recommendations)
                 {
-                    <div>
+                    <div class="recommendation">
                         <div>@recommendation.Description</div>
-                        <div>@recommendation.Study_Link</div>
+                        <hr />
+                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+
+                        @if (_userRoles.Contains("Admin"))
+                        {
+                            <hr />
+                            <div class="adminButtons">
+                                <button class="btn btn-outline-dark" @onclick=@(()=>{EditRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="m18.988 2.012 3 3L19.701 7.3l-3-3zM8 16h3l7.287-7.287-3-3L8 13z"></path><path d="M19 19H8.158c-.026 0-.053.01-.079.01-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .896-2 2v14c0 1.104.897 2 2 2h14a2 2 0 0 0 2-2v-8.668l-2 2V19z"></path></svg></button>
+                                <button class="btn btn-outline-dark" @onclick=@(async ()=>{await DeleteRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg></button>
+                            </div>
+                        }
                     </div>
                 }
             </div>
@@ -134,9 +165,19 @@
             <div class="recommendations">
                 @foreach (var recommendation in _BMI.Recommendations)
                 {
-                    <div>
+                    <div class="recommendation">
                         <div>@recommendation.Description</div>
-                        <div>@recommendation.Study_Link</div>
+                        <hr />
+                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+
+                        @if (_userRoles.Contains("Admin"))
+                        {
+                            <hr />
+                            <div class="adminButtons">
+                                <button class="btn btn-outline-dark" @onclick=@(()=>{EditRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="m18.988 2.012 3 3L19.701 7.3l-3-3zM8 16h3l7.287-7.287-3-3L8 13z"></path><path d="M19 19H8.158c-.026 0-.053.01-.079.01-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .896-2 2v14c0 1.104.897 2 2 2h14a2 2 0 0 0 2-2v-8.668l-2 2V19z"></path></svg></button>
+                                <button class="btn btn-outline-dark" @onclick=@(async ()=>{await DeleteRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg></button>
+                            </div>
+                        }
                     </div>
                 }
             </div>
@@ -161,9 +202,19 @@
             <div class="recommendations">
                 @foreach (var recommendation in _restingHeartRate.Recommendations)
                 {
-                    <div>
+                    <div class="recommendation">
                         <div>@recommendation.Description</div>
-                        <div>@recommendation.Study_Link</div>
+                        <hr />
+                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+
+                        @if (_userRoles.Contains("Admin"))
+                        {
+                            <hr />
+                            <div class="adminButtons">
+                                <button class="btn btn-outline-dark" @onclick=@(()=>{EditRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="m18.988 2.012 3 3L19.701 7.3l-3-3zM8 16h3l7.287-7.287-3-3L8 13z"></path><path d="M19 19H8.158c-.026 0-.053.01-.079.01-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .896-2 2v14c0 1.104.897 2 2 2h14a2 2 0 0 0 2-2v-8.668l-2 2V19z"></path></svg></button>
+                                <button class="btn btn-outline-dark" @onclick=@(async ()=>{await DeleteRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg></button>
+                            </div>
+                        }
                     </div>
                 }
             </div>
@@ -188,9 +239,19 @@
             <div class="recommendations">
                 @foreach (var recommendation in _CGM.Recommendations)
                 {
-                    <div>
+                    <div class="recommendation">
                         <div>@recommendation.Description</div>
-                        <div>@recommendation.Study_Link</div>
+                        <hr />
+                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+
+                        @if (_userRoles.Contains("Admin"))
+                        {
+                            <hr />
+                            <div class="adminButtons">
+                                <button class="btn btn-outline-dark" @onclick=@(()=>{EditRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="m18.988 2.012 3 3L19.701 7.3l-3-3zM8 16h3l7.287-7.287-3-3L8 13z"></path><path d="M19 19H8.158c-.026 0-.053.01-.079.01-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .896-2 2v14c0 1.104.897 2 2 2h14a2 2 0 0 0 2-2v-8.668l-2 2V19z"></path></svg></button>
+                                <button class="btn btn-outline-dark" @onclick=@(async ()=>{await DeleteRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg></button>
+                            </div>
+                        }
                     </div>
                 }
             </div>
@@ -215,9 +276,19 @@
             <div class="recommendations">
                 @foreach (var recommendation in _insulin.Recommendations)
                 {
-                    <div>
+                    <div class="recommendation">
                         <div>@recommendation.Description</div>
-                        <div>@recommendation.Study_Link</div>
+                        <hr />
+                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+
+                        @if (_userRoles.Contains("Admin"))
+                        {
+                            <hr />
+                            <div class="adminButtons">
+                                <button class="btn btn-outline-dark" @onclick=@(()=>{EditRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="m18.988 2.012 3 3L19.701 7.3l-3-3zM8 16h3l7.287-7.287-3-3L8 13z"></path><path d="M19 19H8.158c-.026 0-.053.01-.079.01-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .896-2 2v14c0 1.104.897 2 2 2h14a2 2 0 0 0 2-2v-8.668l-2 2V19z"></path></svg></button>
+                                <button class="btn btn-outline-dark" @onclick=@(async ()=>{await DeleteRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg></button>
+                            </div>
+                        }
                     </div>
                 }
             </div>
@@ -242,9 +313,19 @@
             <div class="recommendations">
                 @foreach (var recommendation in _triglyceride.Recommendations)
                 {
-                    <div>
+                    <div class="recommendation">
                         <div>@recommendation.Description</div>
-                        <div>@recommendation.Study_Link</div>
+                        <hr />
+                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+
+                        @if (_userRoles.Contains("Admin"))
+                        {
+                            <hr />
+                            <div class="adminButtons">
+                                <button class="btn btn-outline-dark" @onclick=@(()=>{EditRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="m18.988 2.012 3 3L19.701 7.3l-3-3zM8 16h3l7.287-7.287-3-3L8 13z"></path><path d="M19 19H8.158c-.026 0-.053.01-.079.01-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .896-2 2v14c0 1.104.897 2 2 2h14a2 2 0 0 0 2-2v-8.668l-2 2V19z"></path></svg></button>
+                                <button class="btn btn-outline-dark" @onclick=@(async ()=>{await DeleteRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg></button>
+                            </div>
+                        }
                     </div>
                 }
             </div>
@@ -269,9 +350,19 @@
             <div class="recommendations">
                 @foreach (var recommendation in _HDLCholesterol.Recommendations)
                 {
-                    <div>
+                    <div class="recommendation">
                         <div>@recommendation.Description</div>
-                        <div>@recommendation.Study_Link</div>
+                        <hr />
+                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+
+                        @if (_userRoles.Contains("Admin"))
+                        {
+                            <hr />
+                            <div class="adminButtons">
+                                <button class="btn btn-outline-dark" @onclick=@(()=>{EditRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="m18.988 2.012 3 3L19.701 7.3l-3-3zM8 16h3l7.287-7.287-3-3L8 13z"></path><path d="M19 19H8.158c-.026 0-.053.01-.079.01-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .896-2 2v14c0 1.104.897 2 2 2h14a2 2 0 0 0 2-2v-8.668l-2 2V19z"></path></svg></button>
+                                <button class="btn btn-outline-dark" @onclick=@(async ()=>{await DeleteRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg></button>
+                            </div>
+                        }
                     </div>
                 }
             </div>
@@ -296,9 +387,19 @@
             <div class="recommendations">
                 @foreach (var recommendation in _LDLCholesterol.Recommendations)
                 {
-                    <div>
+                    <div class="recommendation">
                         <div>@recommendation.Description</div>
-                        <div>@recommendation.Study_Link</div>
+                        <hr />
+                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+
+                        @if (_userRoles.Contains("Admin"))
+                        {
+                            <hr />
+                            <div class="adminButtons">
+                                <button class="btn btn-outline-dark" @onclick=@(()=>{EditRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="m18.988 2.012 3 3L19.701 7.3l-3-3zM8 16h3l7.287-7.287-3-3L8 13z"></path><path d="M19 19H8.158c-.026 0-.053.01-.079.01-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .896-2 2v14c0 1.104.897 2 2 2h14a2 2 0 0 0 2-2v-8.668l-2 2V19z"></path></svg></button>
+                                <button class="btn btn-outline-dark" @onclick=@(async ()=>{await DeleteRecommendation(recommendation.Id);})><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z"></path><path d="M9 10h2v8H9zm4 0h2v8h-2z"></path></svg></button>
+                            </div>
+                        }
                     </div>
                 }
             </div>
@@ -452,13 +553,35 @@
         //if there is no data, there is nothing to send
         if (_m1Info is not null)
         {
-            var image = await JSRuntime.InvokeAsync<string>("getPageAsImage");
+            // var image = await JSRuntime.InvokeAsync<string>("getPageAsImage");
+            var image = await JSRuntime.InvokeAsync<string>("getElementAsImage", "container");
             string m1 = _m1Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture),
             m2 = _m2Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture),
             m3 = _m3Info.First().Entry_Date.ToString("MMMM", CultureInfo.InvariantCulture);
             var year = (_m1Info.First().Entry_Date.Year == _m3Info.First().Entry_Date.Year) ? _m1Info.First().Entry_Date.Year.ToString() : $"{_m1Info.First().Entry_Date.Year} - {_m3Info.First().Entry_Date.Year}";
             await EmailService.SendEmailWithImageAsync(_emailAddress, $"Recommendations for {m1}, {m2}, {m3} - {year} ", "", image);
             await JSRuntime.InvokeVoidAsync("refreshWithMessage", "The Email has been sent");
+        }
+
+    }
+
+    private void EditRecommendation(int id)
+    {
+        NavigationManager.NavigateTo($"/recommendations/edit/{id}");
+    }
+
+    private async Task DeleteRecommendation(int id)
+    {
+        var result = await JSRuntime.InvokeAsync<bool>("confirmAction", "Are you sure you want to delete this recommendation?");
+
+        if (result)
+        {
+            using var context = DbFactory.CreateDbContext();
+            //delete the parameters first as they rely on the recommendation
+            context.TriggerParameters.RemoveRange(context.TriggerParameters.Where(x => x.RecommendationId == id));
+            context.Recommendations.Remove(context.Recommendations.SingleOrDefault(x => x.Id == id));
+            await context.SaveChangesAsync();
+            await JSRuntime.InvokeVoidAsync("refreshWithMessage", "The recommendation has been deleted.");
         }
 
     }

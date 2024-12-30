@@ -3,6 +3,13 @@
     padding-top:3%;
 }
 
+.bottom-section {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    width: 28%;
+    grid-gap: 1%;
+    margin: 1% auto 0 auto;
+}
 
 .title, .period {
     text-align: center;
@@ -21,15 +28,6 @@
     margin: auto;
     color: #4587DD;
 }
-
-/*.period {
-    text-align: center;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    font-size: 24px;
-    color: #4587DD;
-}*/
 
 .LeftBad, .RightBad {
     background-color: #ff6b6b;
@@ -61,3 +59,24 @@
             border-bottom: 1px solid black;
             color: black;
         }
+
+.recommendations{
+    
+}
+
+.recommendation {
+    width: 50%;
+    margin: auto;
+    background-color: #f2f5f7;
+    border: 1px solid black;
+    padding: 0.5%;
+    text-align: justify;
+    margin-top: 1%;
+    font-family: Georgia;
+    color: #4587DD;
+    font-size: 13pt;
+}
+
+    .recommendation .recommendationLink{
+        font-weight:bold;
+    }
