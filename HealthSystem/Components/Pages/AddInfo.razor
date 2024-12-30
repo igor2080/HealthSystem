@@ -183,11 +183,11 @@
                 <div class="info-value"><InputNumber disabled="@(true)" class="addinfo-number" @bind-Value="Input.MetabolicHealth" /></div>
                 <div class="info-range">
                     <div class="threshold-bar">
-                        <div class="segment LeftBad"></div>
-                        <div class="segment LeftBad"></div>
-                        <div class="segment LeftOkay"></div>
-                        <div class="segment Healthy"></div>
-                        <div class="segment Healthy"></div>
+                        <div class="segment @(Enum.GetName(GetMetabolicHealthScore((int)Input.MetabolicHealth)))"></div>
+                        <div class="segment @(Enum.GetName(GetMetabolicHealthScore((int)Input.MetabolicHealth)))"></div>
+                        <div class="segment @(Enum.GetName(GetMetabolicHealthScore((int)Input.MetabolicHealth)))"></div>
+                        <div class="segment @(Enum.GetName(GetMetabolicHealthScore((int)Input.MetabolicHealth)))"></div>
+                        <div class="segment @(Enum.GetName(GetMetabolicHealthScore((int)Input.MetabolicHealth)))"></div>
                         <div class="indicator invis" style="left: 50%;"><span class="value @(Enum.GetName(GetMetabolicHealthScore((int)Input.MetabolicHealth)))-color">@Input.MetabolicHealth</span></div>
                         @* <div class="indicator" style="left: @(GetPercentage(0,10,15,18,Input.MetabolicHealth))%;"><span class="value @(Enum.GetName(GetMetabolicHealthScore((int)Input.MetabolicHealth)))-color">@Input.MetabolicHealth</span></div> *@
                     </div>
