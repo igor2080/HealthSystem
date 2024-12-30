@@ -207,40 +207,36 @@
     string _userId;
     ApplicationUser _user;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender)
+        var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        _userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
+        _user = await UserManager.FindByIdAsync(_userId);
+        UpdateValues();
+        //try get data from intervals
+        if (Input.RestingHeartRate == 0)
         {
-            var authState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
-            _userId = authState.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "";
-            _user = await UserManager.FindByIdAsync(_userId);
-            UpdateValues();
-            //try get data from intervals
-            if (Input.RestingHeartRate == 0)
+            if (!Http.DefaultRequestHeaders.Contains("authorization"))
+                Http.DefaultRequestHeaders.Add("authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"API_KEY:{_user.Intervals_API}"))}");
+
+            var response = await Http.GetAsync(@"https://intervals.icu/api/v1/athlete/0/activities.csv");
+
+            if (response.IsSuccessStatusCode)
             {
-                if (!Http.DefaultRequestHeaders.Contains("authorization"))
-                    Http.DefaultRequestHeaders.Add("authorization", $"Basic {Convert.ToBase64String(Encoding.UTF8.GetBytes($"API_KEY:{_user.Intervals_API}"))}");
-
-                var response = await Http.GetAsync(@"https://intervals.icu/api/v1/athlete/0/activities.csv");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-                        {
-                            PrepareHeaderForMatch = args => args.Header.ToLower(),
-                        };
-                    using var reader = new StreamReader(response.Content.ReadAsStream());
-                    using var csv = new CsvReader(reader, config);
-                    var alldata = csv.GetRecords<Activity>().Where(x => x.start_date.Year == Input.InfoDate.Year && x.start_date.Month == Input.InfoDate.Month).ToList();
-
-                    if (alldata.Count > 0)
+                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
                     {
-                        var hr = alldata.Select(x => x.icu_resting_hr).ToList();
-                        Input.RestingHeartRate = hr.Last();
-                        Input.MetabolicHealth = GetMetabolicHealth(_user, Input.WaistSize, Input.BloodPressureUpper, Input.BloodPressureLower, Input.Weight, Input.RestingHeartRate, Input.CGM, Input.Insulin, Input.Triglyceride, Input.HDLCholesterol, Input.LDLCholesterol);
-                        StateHasChanged();
-                    }
+                        PrepareHeaderForMatch = args => args.Header.ToLower(),
+                    };
+                using var reader = new StreamReader(response.Content.ReadAsStream());
+                using var csv = new CsvReader(reader, config);
+                var alldata = csv.GetRecords<Activity>().Where(x => x.start_date.Year == Input.InfoDate.Year && x.start_date.Month == Input.InfoDate.Month).ToList();
 
+                if (alldata.Count > 0)
+                {
+                    var hr = alldata.Select(x => x.icu_resting_hr).ToList();
+                    Input.RestingHeartRate = hr.Last();
+                    Input.MetabolicHealth = GetMetabolicHealth(_user, Input.WaistSize, Input.BloodPressureUpper, Input.BloodPressureLower, Input.Weight, Input.RestingHeartRate, Input.CGM, Input.Insulin, Input.Triglyceride, Input.HDLCholesterol, Input.LDLCholesterol);
+                    StateHasChanged();
                 }
 
             }
