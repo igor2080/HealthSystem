@@ -54,8 +54,17 @@
     font-size:initial;
 }
 
-.messageThreadTitle {
-    align-self: start;
+.messageThreadTitle{
+    display:grid;
+    grid-template-columns: 95fr 5fr;
+}
+
+.messageThreadTitle .threadTitle {
+    text-align: left;
+}
+
+.messageThreadTitle .threadMessageIcon{
+
 }
 
 .messageContent {

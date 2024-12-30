@@ -47,6 +47,13 @@
             link.click();
         }
 
+        function downloadImage(image, fileName){
+            const link = document.createElement("a");
+            link.href = image;
+            link.download = fileName || "image.png";
+            link.click();
+        }
+
         function drawGraph(){
             const ctx = document.getElementById('myChart').getContext('2d');
             const backgroundZonesPlugin = {

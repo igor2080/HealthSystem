@@ -4,6 +4,7 @@
 @inject IDbContextFactory<ApplicationDbContext> DbFactory
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject IJSRuntime JSRuntime
 @attribute [Authorize]
 @rendermode InteractiveServer
 
@@ -14,7 +15,18 @@
         {
             <div class="messageThread @(thread[0].ReadDate.HasValue?"":"bold") @(thread[0].Id==_currentMessageId?"active":"")" @onclick="async ()=>{await SetActive(thread[0].Id);}">
                 <div class="messageThreadDate">@thread.Last().Date</div>
-                <div class="messageThreadTitle">@thread[0].Title</div>
+                <div class="messageThreadTitle">
+                    <div class="threadTitle">@thread[0].Title</div>
+                    @if (string.IsNullOrEmpty(thread[0].Image))
+                    {
+                        <div class="threadMessageIcon"></div>
+                    }
+                    else
+                    {
+                        <div class="threadMessageIcon"><button @onclick="@(()=>{DownloadImage(thread[0].Image);})"></button></div>
+                    }
+
+                </div>
             </div>
         }
     </div>
@@ -106,6 +118,10 @@
         Context.Message.Single(x => x.Id == messageId).ReadDate = DateTime.Now;
         await Context.SaveChangesAsync();
         StateHasChanged();
+    }
 
+    async Task DownloadImage(string image)
+    {
+        await JSRuntime.InvokeVoidAsync("downloadImage", image);
     }
 }
