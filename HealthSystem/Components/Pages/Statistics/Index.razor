@@ -94,7 +94,7 @@
 
 @code {
     List<InformationType> _informationTypes;
-    List<IGrouping<int, MedicalInformation>> _medicalInformation;
+    List<IGrouping<int, MedicalInformation>> _medicalInformation=new();
     int _year = DateTime.Now.Year;
     string _userId, _emailAddress;
     ApplicationUser _user;
