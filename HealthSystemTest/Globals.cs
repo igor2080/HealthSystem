@@ -13,6 +13,7 @@ namespace HealthSystemTest
 
         public static void InitializeUserData(TestContext self, TestServiceProvider Services)
         {
+            //In case of error 14: unable to open the database file, check if bin/debug and bin/release contain Data/HealthSystem.db inside, automatic copying may be disabled to prevent overwriting
             Services.AddDbContextFactory<ApplicationDbContext>(options =>
                 options.UseSqlite(Globals.ConnectionString));
             Services.AddCascadingAuthenticationState();
