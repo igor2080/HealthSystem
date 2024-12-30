@@ -18,9 +18,8 @@
     <Routes />
     <script src="_framework/blazor.web.js"></script>
 
-    <script src="_content/AntDesign.Charts/g2plot.min.js"></script>
-    <script src="_content/AntDesign.Charts/ant-design-charts-blazor.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    @* <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> *@
+    <script src="./html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
@@ -32,10 +31,17 @@
 
         async function getPageAsImage(){
             document.body.querySelector(".bottom-right-container").style.display="none";
-            document.body.querySelector(".bottom-section").style.display="none";
+            var bottomSection = document.body.querySelector(".bottom-section");
+            if(bottomSection!=null)
+            {
+                document.body.querySelector(".bottom-section").style.display="none";
+            }
             const img = await html2canvas(document.body);
             document.body.querySelector(".bottom-right-container").style.display="block";
-            document.body.querySelector(".bottom-section").style.display="block";
+            if(bottomSection!=null)
+            {
+                document.body.querySelector(".bottom-section").style.display="block";
+            }
             return img.toDataURL("image/png");
         }
 
@@ -62,9 +68,9 @@
                 const { ctx, chartArea: { top, bottom, left, right }, scales: { y } } = chart;
 
                 const zones = [
-                    { start: 0, end: 30, color: 'rgba(0, 255, 0, 0.1)' },  
+                    { start: 0, end: 30, color: 'rgba(0, 255, 0, 0.1)' },
                     { start: 30, end: 70, color: 'rgba(255, 255, 0, 0.1)' },
-                    { start: 70, end: 100, color: 'rgba(255, 0, 0, 0.1)' }  
+                    { start: 70, end: 100, color: 'rgba(255, 0, 0, 0.1)' }
                 ];
 
                 zones.forEach(zone => {

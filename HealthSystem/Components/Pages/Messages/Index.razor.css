@@ -67,6 +67,10 @@
 
 }
 
+.bold .messageThreadTitle .threadTitle {
+    font-weight: bold;
+}
+
 .messageContent {
     display: flex;
     flex-direction: column;

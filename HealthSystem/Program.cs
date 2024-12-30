@@ -73,7 +73,7 @@ namespace HealthSystem
             builder.Services.AddSingleton<StravaTokenService>();
             builder.Services.AddSignalR(x =>
             {
-                x.MaximumReceiveMessageSize = 1024 * 200;
+                x.MaximumReceiveMessageSize = 1024 * 1024 * 10;
             });
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 

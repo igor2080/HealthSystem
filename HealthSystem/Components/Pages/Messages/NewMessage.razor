@@ -42,8 +42,6 @@
 
     private async Task SendMessage()
     {
-
-
         var admin = await UserManager.FindByEmailAsync("admin@site.com");
         var user = await UserManager.FindByEmailAsync(_authState.User.Identity.Name);
         Message.ReceiverId = admin.Id;
