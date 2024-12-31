@@ -3,6 +3,10 @@
     padding-top:3%;
 }
 
+.parameter{
+    margin-bottom:2%;
+}
+
 .bottom-section {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -27,6 +31,14 @@
     width: 50%;
     margin: auto;
     color: #4587DD;
+}
+
+.dynamicsTitle {
+    font-size: 16pt;
+}
+
+.dynamicsResult{
+    margin-left:5em;
 }
 
 .LeftBad, .RightBad {

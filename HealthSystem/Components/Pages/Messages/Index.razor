@@ -54,7 +54,7 @@
                     <ValidationSummary class="text-danger" role="alert" />
                     <div class="mb-3">
                         <label for="description" class="form-label">Message:</label>
-                        <InputText id="description" @bind-Value="Message.Content" class="form-control" />
+                        <InputText id="description" @bind-Value="Message.Content" autocomplete="off" class="form-control" />
                         <ValidationMessage For="() => Message.Content" class="text-danger" />
                     </div>
                     <button type="submit" class="btn btn-primary">Reply</button>
@@ -90,17 +90,24 @@
 
     async Task SendResponse(EditContext editContext)
     {
-        Message.SenderId = _user.Id;
-        Message.ReceiverId = _admin.Id;
-        Message.Date = DateTime.Now;
-        Message.PreviousMessageId = _currentThread.Last().Id;
-        Message.Title = _currentThread.First().Title;
+        var currentMessage = _currentThread.Last();
+
+        var response = new Message
+            {
+                Content = Message.Content,
+                SenderId = _user.Id,
+                ReceiverId = currentMessage.SenderId,
+                Date = DateTime.Now,
+                PreviousMessageId = currentMessage.Id,
+                Title = currentMessage.Title
+
+            };
 
         using var Context = DbFactory.CreateDbContext();
-        Context.Message.Add(Message);
+        Context.Message.Add(response);
         await Context.SaveChangesAsync();
         //add the message to the current thread without re-fetching it from the database
-        _currentThread.Add(Message);
+        _currentThread.Add(response);
         _messages = Context.Message.Include("Sender").Include("Receiver").Where(x => x.SenderId == _user.Id || x.ReceiverId == _user.Id).OrderByDescending(x => x.Date).ToList();
         _messageThreads = GetMessagesByThread(_messages);
         Message.Content = "";

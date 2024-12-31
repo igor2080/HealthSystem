@@ -37,7 +37,7 @@
         <br />
         <div class="parameter">
             <div class="dynamics">
-                <div>Metabolic health dynamics in change:</div>
+                <div class="dynamicsTitle">Metabolic health dynamics in change:</div>
                 <br />
                 <div class="displayTable">
                     <div>@m3</div>
@@ -47,7 +47,7 @@
                     <div class="@Enum.GetName(_metabolicHealth.M2Score)">@_metabolicHealth.M2Value</div>
                     <div class="@Enum.GetName(_metabolicHealth.M1Score)">@_metabolicHealth.M1Value</div>
                 </div>
-                <div class="dynamics">
+                <div class="dynamicsResult">
                     @Enum.GetName(_metabolicHealth.DynamicsScore)
                 </div>
             </div>
@@ -57,7 +57,7 @@
                     <div class="recommendation">
                         <div>@recommendation.Description</div>
                         <hr />
-                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+                        <a class="recommendationLink" target="_blank" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
 
                         @if (_userRoles.Contains("Admin"))
                         {
@@ -74,7 +74,7 @@
         <br />
         <div class="parameter">
             <div class="dynamics">
-                <div>Waist size dynamics in change:</div>
+                <div class="dynamicsTitle">Waist size dynamics in change:</div>
                 <br />
                 <div class="displayTable">
                     <div>@m3</div>
@@ -84,7 +84,7 @@
                     <div class="@Enum.GetName(_waistSize.M2Score)">@_waistSize.M2Value</div>
                     <div class="@Enum.GetName(_waistSize.M1Score)">@_waistSize.M1Value</div>
                 </div>
-                <div class="dynamics">
+                <div class="dynamicsResult">
                     @Enum.GetName(_waistSize.DynamicsScore)
                 </div>
             </div>
@@ -94,7 +94,7 @@
                     <div class="recommendation">
                         <div>@recommendation.Description</div>
                         <hr />
-                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+                        <a class="recommendationLink" target="_blank" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
 
                         @if (_userRoles.Contains("Admin"))
                         {
@@ -111,7 +111,7 @@
         <br />
         <div class="parameter">
             <div class="dynamics">
-                <div>Blood pressure dynamics in change:</div>
+                <div class="dynamicsTitle">Blood pressure dynamics in change:</div>
                 <br />
                 <div class="displayTable">
                     <div>@m3</div>
@@ -121,7 +121,7 @@
                     <div class="@Enum.GetName(_bloodPressure.M2Score)">@_bloodPressure.M2Value - @_bloodPressure.M2SecondValue</div>
                     <div class="@Enum.GetName(_bloodPressure.M1Score)">@_bloodPressure.M1Value - @_bloodPressure.M1SecondValue</div>
                 </div>
-                <div class="dynamics">
+                <div class="dynamicsResult">
                     @Enum.GetName(_bloodPressure.DynamicsScore)
                 </div>
             </div>
@@ -131,7 +131,7 @@
                     <div class="recommendation">
                         <div>@recommendation.Description</div>
                         <hr />
-                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+                        <a class="recommendationLink" target="_blank" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
 
                         @if (_userRoles.Contains("Admin"))
                         {
@@ -148,7 +148,7 @@
         <br />
         <div class="parameter">
             <div class="dynamics">
-                <div>Weight dynamics in change:</div>
+                <div class="dynamicsTitle">Weight dynamics in change:</div>
                 <br />
                 <div class="displayTable">
                     <div>@m3</div>
@@ -158,7 +158,7 @@
                     <div class="@Enum.GetName(_BMI.M2Score)">@_BMI.M2Value</div>
                     <div class="@Enum.GetName(_BMI.M1Score)">@_BMI.M1Value</div>
                 </div>
-                <div class="dynamics">
+                <div class="dynamicsResult">
                     @Enum.GetName(_BMI.DynamicsScore)
                 </div>
             </div>
@@ -168,7 +168,7 @@
                     <div class="recommendation">
                         <div>@recommendation.Description</div>
                         <hr />
-                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+                        <a class="recommendationLink" target="_blank" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
 
                         @if (_userRoles.Contains("Admin"))
                         {
@@ -185,7 +185,7 @@
         <br />
         <div class="parameter">
             <div class="dynamics">
-                <div>Resting heart rate dynamics in change:</div>
+                <div class="dynamicsTitle">Resting heart rate dynamics in change:</div>
                 <br />
                 <div class="displayTable">
                     <div>@m3</div>
@@ -195,7 +195,7 @@
                     <div class="@Enum.GetName(_restingHeartRate.M2Score)">@_restingHeartRate.M2Value</div>
                     <div class="@Enum.GetName(_restingHeartRate.M1Score)">@_restingHeartRate.M1Value</div>
                 </div>
-                <div class="dynamics">
+                <div class="dynamicsResult">
                     @Enum.GetName(_restingHeartRate.DynamicsScore)
                 </div>
             </div>
@@ -205,7 +205,7 @@
                     <div class="recommendation">
                         <div>@recommendation.Description</div>
                         <hr />
-                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+                        <a class="recommendationLink" target="_blank" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
 
                         @if (_userRoles.Contains("Admin"))
                         {
@@ -222,7 +222,7 @@
         <br />
         <div class="parameter">
             <div class="dynamics">
-                <div>CGM dynamics in change:</div>
+                <div class="dynamicsTitle">CGM dynamics in change:</div>
                 <br />
                 <div class="displayTable">
                     <div>@m3</div>
@@ -232,7 +232,7 @@
                     <div class="@Enum.GetName(_CGM.M2Score)">@_CGM.M2Value</div>
                     <div class="@Enum.GetName(_CGM.M1Score)">@_CGM.M1Value</div>
                 </div>
-                <div class="dynamics">
+                <div class="dynamicsResult">
                     @Enum.GetName(_CGM.DynamicsScore)
                 </div>
             </div>
@@ -242,7 +242,7 @@
                     <div class="recommendation">
                         <div>@recommendation.Description</div>
                         <hr />
-                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+                        <a class="recommendationLink" target="_blank" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
 
                         @if (_userRoles.Contains("Admin"))
                         {
@@ -259,7 +259,7 @@
         <br />
         <div class="parameter">
             <div class="dynamics">
-                <div>Insulin dynamics in change:</div>
+                <div class="dynamicsTitle">Insulin dynamics in change:</div>
                 <br />
                 <div class="displayTable">
                     <div>@m3</div>
@@ -269,7 +269,7 @@
                     <div class="@Enum.GetName(_insulin.M2Score)">@_insulin.M2Value</div>
                     <div class="@Enum.GetName(_insulin.M1Score)">@_insulin.M1Value</div>
                 </div>
-                <div class="dynamics">
+                <div class="dynamicsResult">
                     @Enum.GetName(_insulin.DynamicsScore)
                 </div>
             </div>
@@ -279,7 +279,7 @@
                     <div class="recommendation">
                         <div>@recommendation.Description</div>
                         <hr />
-                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+                        <a class="recommendationLink" target="_blank" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
 
                         @if (_userRoles.Contains("Admin"))
                         {
@@ -296,7 +296,7 @@
         <br />
         <div class="parameter">
             <div class="dynamics">
-                <div>Triglyceride dynamics in change:</div>
+                <div class="dynamicsTitle">Triglyceride dynamics in change:</div>
                 <br />
                 <div class="displayTable">
                     <div>@m3</div>
@@ -306,7 +306,7 @@
                     <div class="@Enum.GetName(_triglyceride.M2Score)">@_triglyceride.M2Value</div>
                     <div class="@Enum.GetName(_triglyceride.M1Score)">@_triglyceride.M1Value</div>
                 </div>
-                <div class="dynamics">
+                <div class="dynamicsResult">
                     @Enum.GetName(_triglyceride.DynamicsScore)
                 </div>
             </div>
@@ -316,7 +316,7 @@
                     <div class="recommendation">
                         <div>@recommendation.Description</div>
                         <hr />
-                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+                        <a class="recommendationLink" target="_blank" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
 
                         @if (_userRoles.Contains("Admin"))
                         {
@@ -333,7 +333,7 @@
         <br />
         <div class="parameter">
             <div class="dynamics">
-                <div>HDL Cholesterol dynamics in change:</div>
+                <div class="dynamicsTitle">HDL Cholesterol dynamics in change:</div>
                 <br />
                 <div class="displayTable">
                     <div>@m3</div>
@@ -343,7 +343,7 @@
                     <div class="@Enum.GetName(_HDLCholesterol.M2Score)">@_HDLCholesterol.M2Value</div>
                     <div class="@Enum.GetName(_HDLCholesterol.M1Score)">@_HDLCholesterol.M1Value</div>
                 </div>
-                <div class="dynamics">
+                <div class="dynamicsResult">
                     @Enum.GetName(_HDLCholesterol.DynamicsScore)
                 </div>
             </div>
@@ -353,7 +353,7 @@
                     <div class="recommendation">
                         <div>@recommendation.Description</div>
                         <hr />
-                        <a class="recommendationLink" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
+                        <a class="recommendationLink" target="_blank" href="@recommendation.Study_Link">@recommendation.Study_Link</a>
 
                         @if (_userRoles.Contains("Admin"))
                         {
@@ -370,7 +370,7 @@
         <br />
         <div class="parameter">
             <div class="dynamics">
-                <div>LDL Cholesterol dynamics in change:</div>
+                <div class="dynamicsTitle">LDL Cholesterol dynamics in change:</div>
                 <br />
                 <div class="displayTable">
                     <div>@m3</div>
@@ -380,7 +380,7 @@
                     <div class="@Enum.GetName(_LDLCholesterol.M2Score)">@_LDLCholesterol.M2Value</div>
                     <div class="@Enum.GetName(_LDLCholesterol.M1Score)">@_LDLCholesterol.M1Value</div>
                 </div>
-                <div class="dynamics">
+                <div class="dynamicsResult">
                     @Enum.GetName(_LDLCholesterol.DynamicsScore)
                 </div>
             </div>
@@ -439,6 +439,10 @@
         {
             using var context = DbFactory.CreateDbContext();
             int medicalInfoId;
+            var m1Date = DateTime.Now;
+            var m2Date = DateTime.Now.AddMonths(-1);
+            var m3Date = DateTime.Now.AddMonths(-2);
+
 
             if (context.MedicalInformation.Count() < 1)
                 medicalInfoId = 0;
@@ -446,18 +450,19 @@
                 medicalInfoId = context.MedicalInformation.OrderByDescending(x => x.Id).First().Id;
 
             //fetch 3 months worth of data from the database
-            _m1Info = context.MedicalInformation.Where(x => x.UserId == _userId && x.Entry_Date.Month == DateTime.Now.Month && x.Entry_Date.Year == DateTime.Now.Year).ToList();
+            _m1Info = context.MedicalInformation.Where(x => x.UserId == _userId && x.Entry_Date.Month == m1Date.Month && x.Entry_Date.Year == m1Date.Year).ToList();
+
             if (_m1Info.Count < 9)//partial or no info at all for this month = make new info
                 _m1Info = GenerateMonthlyData(context, _userId, ref medicalInfoId);
 
             _m1Info = _m1Info.OrderBy(x => x.InformationTypeId).ToList();
-            _m2Info = context.MedicalInformation.Where(x => x.UserId == _userId && x.Entry_Date.Month == DateTime.Now.AddMonths(-1).Month && x.Entry_Date.Year == DateTime.Now.AddMonths(-1).Year).ToList();
+            _m2Info = context.MedicalInformation.Where(x => x.UserId == _userId && x.Entry_Date.Month == m2Date.Month && x.Entry_Date.Year == m2Date.Year).ToList();
 
             if (_m2Info.Count < 9)
                 _m2Info = GenerateMonthlyData(context, _userId, ref medicalInfoId, 1);
 
             _m2Info = _m2Info.OrderBy(x => x.InformationTypeId).ToList();
-            _m3Info = context.MedicalInformation.Where(x => x.UserId == _userId && x.Entry_Date.Month == DateTime.Now.AddMonths(-2).Month && x.Entry_Date.Year == DateTime.Now.AddMonths(-2).Year).ToList();
+            _m3Info = context.MedicalInformation.Where(x => x.UserId == _userId && x.Entry_Date.Month == m3Date.Month && x.Entry_Date.Year == m3Date.Year).ToList();
 
             if (_m3Info.Count < 9)
                 _m3Info = GenerateMonthlyData(context, _userId, ref medicalInfoId, 2);
