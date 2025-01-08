@@ -234,7 +234,7 @@
                 if (alldata.Count > 0)
                 {
                     var hr = alldata.Select(x => x.icu_resting_hr).ToList();
-                    Input.RestingHeartRate = hr.Last();
+                    Input.RestingHeartRate = hr.Last().Value;
                     Input.MetabolicHealth = GetMetabolicHealth(_user, Input.WaistSize, Input.BloodPressureUpper, Input.BloodPressureLower, Input.Weight, Input.RestingHeartRate, Input.CGM, Input.Insulin, Input.Triglyceride, Input.HDLCholesterol, Input.LDLCholesterol);
                     StateHasChanged();
                 }
